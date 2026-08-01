@@ -1,0 +1,604 @@
+import os
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers, Model, callbacks
+from sklearn.model_selection import train_test_split
+from google.colab import drive
+import matplotlib.pyplot as plt
+import json
+import pandas as pd
+from skimage import measure
+from scipy.spatial.distance import cdist
+from scipy.stats import pearsonr
+from matplotlib.colors import ListedColormap
+
+print("GPU Available:", tf.config.list_physical_devices('GPU'))
+print("TensorFlow Version:", tf.__version__)
+
+drive.mount('/content/drive', force_remount=True)
+
+SEED = 42
+os.environ["PYTHONHASHSEED"] = str(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+
+# ====================== ICC ======================
+def icc(y_true, y_pred):
+    y_true_f = y_true.flatten().astype(np.float32)
+    y_pred_f = y_pred.flatten().astype(np.float32)
+    if np.std(y_true_f) == 0 or np.std(y_pred_f) == 0:
+        return 1.0 if np.allclose(y_true_f, y_pred_f) else 0.0
+    corr, _ = pearsonr(y_true_f, y_pred_f)
+    return float(corr)
+
+# ====================== Bootstrap CI ======================
+def bootstrap_ci(data, n_bootstrap=1000, confidence=95):
+    data = np.array(data)
+    means = [np.mean(np.random.choice(data, size=len(data), replace=True)) for _ in range(n_bootstrap)]
+    lower = np.percentile(means, (100 - confidence) / 2)
+    upper = np.percentile(means, 100 - (100 - confidence) / 2)
+    return lower, upper
+
+# ====================== Metric Functions ======================
+def dice_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    denominator = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f)
+    return tf.where(denominator > 0, (2. * intersection + 1e-5) / (denominator + 1e-5), 0.0)
+
+def iou_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    union = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) - intersection
+    return tf.where(union > 0, (intersection + 1e-5) / (union + 1e-5), 0.0)
+
+def precision_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    tp = tf.reduce_sum(y_true_f * y_pred_f)
+    pred_pos = tf.reduce_sum(y_pred_f)
+    return tf.where(pred_pos > 0, tp / (pred_pos + 1e-5), 0.0)
+
+def recall_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    tp = tf.reduce_sum(y_true_f * y_pred_f)
+    actual_pos = tf.reduce_sum(y_true_f)
+    return tf.where(actual_pos > 0, tp / (actual_pos + 1e-5), 0.0)
+
+def dice_liver(y_true, y_pred): return dice_per_class(y_true, y_pred, 1)
+def dice_tumor(y_true, y_pred): return dice_per_class(y_true, y_pred, 2)
+def iou_liver(y_true, y_pred): return iou_per_class(y_true, y_pred, 1)
+def iou_tumor(y_true, y_pred): return iou_per_class(y_true, y_pred, 2)
+def precision_liver(y_true, y_pred): return precision_per_class(y_true, y_pred, 1)
+def precision_tumor(y_true, y_pred): return precision_per_class(y_true, y_pred, 2)
+def recall_liver(y_true, y_pred): return recall_per_class(y_true, y_pred, 1)
+def recall_tumor(y_true, y_pred): return recall_per_class(y_true, y_pred, 2)
+def dice_avg(y_true, y_pred):
+    return (dice_liver(y_true, y_pred) + dice_tumor(y_true, y_pred)) / 2
+
+# ====================== Loss Functions ======================
+def tversky_loss(y_true, y_pred, alpha=0.6, beta=0.4):
+    y_true_f = tf.one_hot(tf.cast(y_true, tf.int32), depth=3)
+    y_pred_f = tf.nn.softmax(y_pred, axis=-1)
+    numerator = tf.reduce_sum(y_true_f * y_pred_f, axis=[1, 2])
+    denominator = numerator + alpha * tf.reduce_sum(y_true_f * (1 - y_pred_f), axis=[1, 2]) + \
+                  beta * tf.reduce_sum((1 - y_true_f) * y_pred_f, axis=[1, 2])
+    tversky = numerator / (denominator + 1e-5)
+    return tf.where(denominator > 0, 1 - tf.reduce_mean(tversky), 0.0)
+
+def focal_loss(gamma=2., alpha=0.25):
+    def focal_loss_fixed(y_true, y_pred):
+        y_true = tf.one_hot(tf.cast(y_true, tf.int32), depth=3)
+        y_pred = tf.clip_by_value(y_pred, 1e-7, 1. - 1e-7)
+        ce = -y_true * tf.math.log(y_pred)
+        weight = y_true * tf.pow(1 - y_pred, gamma)
+        fl = alpha * weight * ce
+        return tf.reduce_mean(fl)
+    return focal_loss_fixed
+
+# ====================== CLA ======================
+class ContinuousLearningAutomata:
+    def __init__(self, num_classes=3, initial_weights=None, alpha=0.18, beta=0.09, liver_priority=1.5, tumor_priority=4.0):
+        self.num_classes = num_classes
+        self.alpha = alpha
+        self.beta = beta
+        self.liver_priority = liver_priority
+        self.tumor_priority = tumor_priority
+        self.weights = np.array(initial_weights) if initial_weights is not None else np.ones(num_classes)
+        self.probabilities = np.array([1.0 / num_classes] * num_classes)
+        self.history = []
+        self.best_weights = self.weights.copy()
+        self.best_probabilities = self.probabilities.copy()
+        self.best_metric = 0.0
+        self.moving_avg_dice_liver = []
+        self.moving_avg_dice_tumor = []
+        self.window_size = 5
+        self.tumor_boost = 1.0
+        self.mean = np.ones(num_classes) * 0.5
+        self.variance = np.ones(num_classes) * 0.1
+
+    def select_action(self):
+        if len(self.moving_avg_dice_tumor) >= self.window_size and np.mean(self.moving_avg_dice_tumor[-self.window_size:]) < 0.80:
+            return 2
+        elif len(self.moving_avg_dice_liver) >= self.window_size and np.mean(self.moving_avg_dice_liver[-self.window_size:]) < 0.90:
+            return 1
+        else:
+            adjusted_probs = self.probabilities.copy()
+            adjusted_probs[1] *= self.liver_priority
+            adjusted_probs[2] *= self.tumor_priority * self.tumor_boost
+            adjusted_probs /= np.sum(adjusted_probs)
+            return np.random.choice(self.num_classes, p=adjusted_probs)
+
+    def update_weights(self, selected_class, reward, metric, liver_metric, tumor_metric, precision_liver, epoch):
+        self.moving_avg_dice_liver.append(liver_metric)
+        self.moving_avg_dice_tumor.append(tumor_metric)
+        if len(self.moving_avg_dice_tumor) >= self.window_size:
+            avg = np.mean(self.moving_avg_dice_tumor[-self.window_size:])
+            if avg < 0.80:
+                self.tumor_boost = min(self.tumor_boost + 0.1, 5.0)
+            else:
+                self.tumor_boost = max(self.tumor_boost - 0.05, 1.0)
+
+        combined = 0.3 * liver_metric + 0.5 * tumor_metric + 0.2 * precision_liver
+        if combined > self.best_metric:
+            self.best_metric = combined
+            self.best_weights = self.weights.copy()
+            self.best_probabilities = self.probabilities.copy()
+
+        alpha = self.alpha * np.exp(-epoch / 50) + 0.01
+        beta = self.beta * np.exp(-epoch / 50) + 0.005
+
+        if reward > 0:
+            self.mean[selected_class] += alpha * (1.0 - self.mean[selected_class])
+            self.variance[selected_class] = max(0.01, self.variance[selected_class] * (1.0 - beta))
+            if selected_class == 2 and tumor_metric < 0.80:
+                self.mean[2] += alpha * self.tumor_boost * 0.5
+        else:
+            self.mean[selected_class] = max(0.0, self.mean[selected_class] - beta * self.mean[selected_class])
+            self.variance[selected_class] = min(1.0, self.variance[selected_class] * (1.0 + beta))
+
+        self.mean = np.clip(self.mean, 0.0, 1.0)
+        self.variance = np.clip(self.variance, 0.01, 1.0)
+
+        self.probabilities = np.array([np.exp(-0.5 * ((x - self.mean[i]) ** 2) / self.variance[i])
+                                      for i, x in enumerate(np.linspace(0, 1, self.num_classes))])
+        self.probabilities /= np.sum(self.probabilities)
+
+        self.weights = self.probabilities * np.sum(self.weights)
+        self.weights = np.clip(self.weights, 1.0, 10.0)
+        self.probabilities = self.weights / np.sum(self.weights)
+
+        self.history.append({
+            'weights': self.weights.tolist(),
+            'probabilities': self.probabilities.tolist(),
+            'mean': self.mean.tolist(),
+            'variance': self.variance.tolist(),
+            'metric': float(metric),
+            'liver_metric': float(liver_metric),
+            'tumor_metric': float(tumor_metric),
+            'precision_liver': float(precision_liver),
+            'tumor_boost': float(self.tumor_boost)
+        })
+
+    def get_weights(self):
+        return self.weights
+
+    def get_best_weights(self):
+        return self.best_weights
+
+# ====================== Combined Loss ======================
+def combined_loss_with_cla(cla):
+    def loss(y_true, y_pred):
+        current_weights = cla.get_weights()
+        adjusted_weights = np.clip(current_weights, 1.0, 8.0)
+        adjusted_weights[2] *= cla.tumor_boost
+        ce_loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
+        weights = tf.cast(tf.gather(adjusted_weights, tf.cast(y_true, tf.int32)), tf.float32)
+        weighted_ce = tf.reduce_mean(ce_loss * weights)
+        focal = focal_loss(gamma=2., alpha=0.25)(y_true, y_pred)
+        tversky = tversky_loss(y_true, y_pred, alpha=0.6, beta=0.4)
+        return 0.25 * weighted_ce + 0.25 * focal + 0.5 * tversky
+    return loss
+# ====================== Data ======================
+def load_and_preprocess(vol_path, seg_path):
+    try:
+        vol_data = np.load(vol_path)
+        seg_data = np.load(seg_path)
+        vol_resized = tf.image.resize(vol_data[..., np.newaxis], (128, 128)).numpy()
+        seg_resized = tf.image.resize(seg_data[..., np.newaxis], (128, 128), method='nearest').numpy()
+        vol_normalized = (vol_resized - vol_resized.min()) / (vol_resized.max() - vol_resized.min() + 1e-6)
+        seg_resized = np.round(seg_resized).astype(np.uint8)
+        seg_resized = np.clip(seg_resized[..., 0], 0, 2)
+        return vol_normalized, seg_resized
+    except Exception as e:
+        print(f"Error loading {vol_path}: {e}")
+        return np.zeros((128, 128, 1)), np.zeros((128, 128))
+
+def data_generator(pairs, batch_size=8, shuffle=True):
+    while True:
+        if shuffle:
+            np.random.shuffle(pairs)   # این خط باید indent داشته باشد
+        for i in range(0, len(pairs), batch_size):
+            batch_pairs = pairs[i:i + batch_size]
+            vol_batch = []
+            seg_batch = []
+            for vol_path, seg_path in batch_pairs:
+                vol_norm, seg = load_and_preprocess(vol_path, seg_path)
+                vol_batch.append(vol_norm)
+                seg_batch.append(seg)
+            if len(vol_batch) == 0:
+                continue
+            yield (np.array(vol_batch), np.array(seg_batch))
+
+# ====================== ResUNet ======================
+def residual_block(x, filters, kernel_size=3, strides=1):
+    shortcut = x
+    x = layers.Conv2D(filters, kernel_size, strides=strides, padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.Conv2D(filters, kernel_size, padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    if strides != 1 or shortcut.shape[-1] != filters:
+        shortcut = layers.Conv2D(filters, 1, strides=strides, padding='same')(shortcut)
+        shortcut = layers.BatchNormalization()(shortcut)
+    x = layers.Add()([shortcut, x])
+    x = layers.Activation('relu')(x)
+    return x
+
+def resunet(input_shape=(128, 128, 1), num_classes=3):
+    inputs = layers.Input(input_shape)
+    c1 = residual_block(inputs, 64)
+    p1 = layers.MaxPooling2D((2, 2))(c1)
+    c2 = residual_block(p1, 128)
+    p2 = layers.MaxPooling2D((2, 2))(c2)
+    c3 = residual_block(p2, 256)
+    p3 = layers.MaxPooling2D((2, 2))(c3)
+    c4 = residual_block(p3, 512)
+    p4 = layers.MaxPooling2D((2, 2))(c4)
+    bridge = residual_block(p4, 1024)
+    u4 = layers.UpSampling2D((2, 2))(bridge)
+    u4 = layers.Concatenate()([u4, c4])
+    d4 = residual_block(u4, 512)
+    u3 = layers.UpSampling2D((2, 2))(d4)
+    u3 = layers.Concatenate()([u3, c3])
+    d3 = residual_block(u3, 256)
+    u2 = layers.UpSampling2D((2, 2))(d3)
+    u2 = layers.Concatenate()([u2, c2])
+    d2 = residual_block(u2, 128)
+    u1 = layers.UpSampling2D((2, 2))(d2)
+    u1 = layers.Concatenate()([u1, c1])
+    d1 = residual_block(u1, 64)
+    outputs = layers.Conv2D(num_classes, 1, activation='softmax')(d1)
+    return Model(inputs, outputs)
+
+# ====================== Data Preparation ======================
+base_path = "/content/drive/MyDrive/LITS/Preprocessed"
+seg_files = sorted([f for f in os.listdir(base_path) if f.startswith('seg_slice_')])
+vol_files = sorted([f for f in os.listdir(base_path) if f.startswith('vol_slice_')])
+
+tumor_pairs = []
+other_pairs = []
+
+for v, s in zip(vol_files, seg_files):
+    try:
+        seg_data = np.load(os.path.join(base_path, s))
+        if np.any(seg_data == 2):
+            tumor_pairs.append((os.path.join(base_path, v), os.path.join(base_path, s)))
+        else:
+            other_pairs.append((os.path.join(base_path, v), os.path.join(base_path, s)))
+    except:
+        continue
+
+tumor_pairs = tumor_pairs[:500]
+other_pairs = other_pairs[:500]
+pairs = tumor_pairs + other_pairs
+
+train_pairs, val_pairs = train_test_split(pairs, test_size=0.2, random_state=42)
+train_gen = data_generator(
+    train_pairs,
+    batch_size=8,
+    shuffle=True
+)
+
+val_gen = data_generator(
+    val_pairs,
+    batch_size=8,
+    shuffle=False
+)
+
+print(f"Train samples: {len(train_pairs)}, Val samples: {len(val_pairs)}, Tumor slices: {len(tumor_pairs)}")
+
+# ====================== Model ======================
+cla = ContinuousLearningAutomata(
+    num_classes=3,
+    initial_weights=[7.0, 7.0, 7.0],
+    alpha=0.18,
+    beta=0.09,
+    liver_priority=1.5,
+    tumor_priority=4.0
+)
+
+model = resunet(input_shape=(128, 128, 1), num_classes=3)
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=4.2e-5),
+    loss=combined_loss_with_cla(cla),
+    metrics=['accuracy', dice_liver, dice_tumor, iou_liver, iou_tumor,
+             precision_liver, precision_tumor, recall_liver, recall_tumor, dice_avg]
+)
+
+# ====================== Callbacks ======================
+
+class ContinuousLearningAutomataCallback(callbacks.Callback):
+    def __init__(self, cla, reward_type="proposed"):
+        super().__init__()
+        self.cla = cla
+        self.reward_type = reward_type
+        self.best_val_combined = -np.inf
+
+        # History for convergence plots
+        self.weight_history = []
+        self.reward_history = []
+        self.metric_history = []
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+
+        val_dice_liver = logs.get('val_dice_liver', 0.0)
+        val_dice_tumor = logs.get('val_dice_tumor', 0.0)
+        val_precision_liver = logs.get('val_precision_liver', 0.0)
+        val_dice_avg = logs.get('val_dice_avg', 0.0)
+
+        # ====================================================
+        # Reward Formulation
+        # ====================================================
+        if self.reward_type == "proposed":
+            combined_metric = 0.3 * val_dice_liver + 0.5 * val_dice_tumor + 0.2 * val_precision_liver
+        elif self.reward_type == "tumor_only":
+            combined_metric = val_dice_tumor
+        elif self.reward_type == "equal_dice":
+            combined_metric = 0.5 * val_dice_liver + 0.5 * val_dice_tumor
+        elif self.reward_type == "gmean":
+            combined_metric = np.sqrt(max(val_dice_liver,1e-6) * max(val_dice_tumor,1e-6))
+        else:
+            raise ValueError("Unknown reward formulation")
+
+        # ====================================================
+        # Moving Average
+        # ====================================================
+        if len(self.cla.moving_avg_dice_liver) >= self.cla.window_size:
+            moving_avg_dice_liver = np.mean(self.cla.moving_avg_dice_liver[-self.cla.window_size:])
+        else:
+            moving_avg_dice_liver = 0.90
+
+        if len(self.cla.moving_avg_dice_tumor) >= self.cla.window_size:
+            moving_avg_dice_tumor = np.mean(self.cla.moving_avg_dice_tumor[-self.cla.window_size:])
+        else:
+            moving_avg_dice_tumor = 0.80
+
+        # ====================================================
+        # Reward Calculation
+        # ====================================================
+        improvement = combined_metric - self.best_val_combined
+        if (val_dice_liver > moving_avg_dice_liver * 0.95 and 
+            val_dice_tumor > moving_avg_dice_tumor * 0.95):
+            reward = np.clip(improvement * 10.0, -1.0, 1.0)
+        else:
+            reward = -0.5
+
+        # ====================================================
+        # CLA Update
+        # ====================================================
+        selected_class = self.cla.select_action()
+        self.cla.update_weights(
+            selected_class, reward, val_dice_avg, 
+            val_dice_liver, val_dice_tumor, val_precision_liver, epoch
+        )
+
+        # ====================== ذخیره تاریخچه وزن‌ها ======================
+        weights = self.cla.get_weights()
+        self.weight_history.append({
+            'epoch': epoch + 1,
+            'background': float(weights[0]),
+            'liver': float(weights[1]),
+            'tumor': float(weights[2])
+        })
+
+        # ذخیره هر ۱۰ epoch
+        if (epoch + 1) % 10 == 0 or epoch + 1 == 100:
+            pd.DataFrame(self.weight_history).to_csv(
+                '/content/drive/MyDrive/LITS/cla_weight_history.csv', 
+                index=False
+            )
+
+        # ====================================================
+        # Print
+        # ====================================================
+        print(
+            f"Epoch {epoch+1} | "
+            f"Reward={reward:.3f} | "
+            f"Metric={combined_metric:.4f} | "
+            f"BG={weights[0]:.3f} | "
+            f"Liver={weights[1]:.3f} | "
+            f"Tumor={weights[2]:.3f} | "
+            f"Boost={self.cla.tumor_boost:.2f}"
+        )
+
+        if combined_metric > self.best_val_combined:
+            self.best_val_combined = combined_metric
+
+
+# ====================================================
+# Standard Callbacks
+# ====================================================
+
+early_stopping = callbacks.EarlyStopping(
+    monitor='val_dice_tumor',
+    patience=20,
+    min_delta=0.001,
+    restore_best_weights=True,
+    mode='max'
+)
+
+reduce_lr = callbacks.ReduceLROnPlateau(
+    monitor='val_dice_tumor',
+    factor=0.5,
+    patience=5,
+    min_lr=1e-6,
+    mode='max'
+)
+
+checkpoint_best = callbacks.ModelCheckpoint(
+    '/content/drive/MyDrive/LITS/resunet_dynamic_cla_best.keras',
+    monitor='val_dice_tumor',
+    save_best_only=True,
+    mode='max'
+)
+
+history_saver = callbacks.CSVLogger(
+    '/content/drive/MyDrive/LITS/history_dynamic_cla.csv',
+    append=True
+)
+# ====================== Training ======================
+cla_callback = ContinuousLearningAutomataCallback(
+    cla,
+    reward_type="proposed"
+)
+
+history = model.fit(
+    train_gen,
+    steps_per_epoch=len(train_pairs)//8,
+    validation_data=val_gen,
+    validation_steps=len(val_pairs)//8,
+    epochs=100,
+    callbacks=[
+        early_stopping,
+        reduce_lr,
+        checkpoint_best,
+        history_saver,
+        cla_callback
+    ]
+)
+print("Training completed.")
+
+print("Training completed.")
+
+# ====================== Plot Weight Convergence ======================
+# استفاده از history که در Callback ذخیره شده
+if hasattr(cla_callback, 'weight_history') and len(cla_callback.weight_history) > 0:
+    history_df = pd.DataFrame(cla_callback.weight_history)
+    
+    epochs = history_df['epoch']
+    bg = history_df['background']
+    liver = history_df['liver']
+    tumor = history_df['tumor']
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(epochs, bg, linewidth=2.5, label='Background')
+    plt.plot(epochs, liver, linewidth=2.5, label='Liver')
+    plt.plot(epochs, tumor, linewidth=2.5, label='Tumor')
+    
+    plt.xlabel("Epoch", fontsize=12)
+    plt.ylabel("Adaptive Class Weight", fontsize=12)
+    plt.title(f"Class Weight Convergence - Reward Type: {cla_callback.reward_type}", fontsize=13)
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=11)
+    plt.tight_layout()
+    
+    plt.savefig("/content/drive/MyDrive/LITS/CLA_Weight_Convergence.png", dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    print("Weight convergence plot saved successfully.")
+else:
+    print("Warning: No weight history found!")
+# ====================== Final Metrics ======================
+def post_process_predictions(pred_probs, tumor_threshold=0.35, liver_min_size=30, tumor_min_size=3):
+    pred_labels = np.argmax(pred_probs, axis=-1).astype(np.uint8)
+    tumor_probs = pred_probs[..., 2]
+    pred_labels[(pred_labels == 2) & (tumor_probs < tumor_threshold)] = 0
+    for i in range(pred_labels.shape[0]):
+        for mask, min_size, class_id in [(pred_labels[i] == 1, liver_min_size, 1), (pred_labels[i] == 2, tumor_min_size, 2)]:
+            labeled, num = measure.label(mask.astype(np.uint8), return_num=True)
+            for label in range(1, num + 1):
+                if np.sum(labeled == label) < min_size:
+                    pred_labels[i][labeled == label] = 0
+    return pred_labels
+
+def calculate_metrics(model, val_gen, num_samples):
+    def compute_metrics(gt, pred):
+        gt = gt.astype(np.uint8)
+        pred = pred.astype(np.uint8)
+        metrics = {}
+        for cls, name in [(1, "Liver"), (2, "Tumor")]:
+            gt_bin = (gt == cls).astype(np.float32)
+            pred_bin = (pred == cls).astype(np.float32)
+            tp = np.sum(gt_bin * pred_bin)
+            fp = np.sum(pred_bin) - tp
+            fn = np.sum(gt_bin) - tp
+
+            dice = (2 * tp + 1e-5) / (np.sum(gt_bin) + np.sum(pred_bin) + 1e-5)
+            iou = (tp + 1e-5) / (tp + fp + fn + 1e-5)
+            precision = tp / (tp + fp + 1e-5)
+            recall = tp / (tp + fn + 1e-5)
+            voe = 1 - iou
+            rvd = (np.sum(pred_bin) - np.sum(gt_bin)) / (np.sum(gt_bin) + 1e-5)
+
+            icc_value = icc(gt_bin, pred_bin)
+
+            gt_pts = np.argwhere(gt_bin > 0)
+            pred_pts = np.argwhere(pred_bin > 0)
+            if len(gt_pts) > 0 and len(pred_pts) > 0:
+                d1 = cdist(gt_pts, pred_pts)
+                assd = (np.mean(np.min(d1, axis=1)) + np.mean(np.min(d1, axis=0))) / 2
+                msd = np.max(np.min(d1, axis=1))
+            else:
+                assd = 0.0
+                msd = 0.0
+
+            metrics[f"{name}_DSC"] = dice
+            metrics[f"{name}_IoU"] = iou
+            metrics[f"{name}_Precision"] = precision
+            metrics[f"{name}_Recall"] = recall
+            metrics[f"{name}_VOE"] = voe
+            metrics[f"{name}_RVD"] = rvd
+            metrics[f"{name}_ASSD"] = assd
+            metrics[f"{name}_MSD"] = msd
+            metrics[f"{name}_ICC"] = icc_value
+
+        return metrics
+
+    all_metrics = []
+    for i in range(num_samples):
+        try:
+            images, true_labels = next(val_gen)
+            pred_probs = model.predict(images, verbose=0)
+            pred_labels = post_process_predictions(pred_probs)
+            for j in range(len(true_labels)):
+                m = compute_metrics(true_labels[j], pred_labels[j])
+                all_metrics.append(m)
+        except Exception as e:
+            print(f"Error batch {i}: {e}")
+
+    df = pd.DataFrame(all_metrics)
+
+    print("\n========== Final Metrics (Mean ± SD) ==========")
+    for col in sorted(df.columns):
+        mean_val = df[col].mean()
+        std_val = df[col].std()
+        ci_low, ci_high = bootstrap_ci(df[col].values)
+        print(f"{col}: {mean_val:.4f} ± {std_val:.4f} | 95% CI: [{ci_low:.4f}, {ci_high:.4f}]")
+
+    df.to_csv("/content/drive/MyDrive/LITS/cla_per_slice_metrics.csv", index=False)
+    print("\nMetrics saved successfully.")
+
+    return df
+
+# Run
+final_df = calculate_metrics(model, val_gen, num_samples=len(val_pairs)//8)
+
+# Save model
+model.save('/content/resunet_dynamic_cla_final.keras')
+!cp /content/resunet_dynamic_cla_final.keras /content/drive/MyDrive/LITS/
+print("Model saved and copied.")
