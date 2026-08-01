@@ -1,0 +1,824 @@
+GPU Available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+TensorFlow Version: 2.18.0
+Mounted at /content/drive
+تعداد train: 800، تعداد validation: 200، اسلایس‌های تومور: 500
+Epoch 1/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 266ms/step - accuracy: 0.8623 - dice_avg: 0.3366 - dice_liver: 0.6652 - dice_tumor: 0.0080 - iou_liver: 0.5410 - iou_tumor: 0.0044 - loss: 0.4692 - precision_liver: 0.5988 - precision_tumor: 0.0469 - recall_liver: 0.8395 - recall_tumor: 0.0374Epoch 1 زمان: 86.80 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.9, کبد=0.9, تومور=0.9, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.88, کبد=0.88, تومور=0.79, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 7.057000160217285, 7.0]
+پارامترهای بتا: [1.0, 1.0, 1.8550000190734863]
+معیارها: Dice کبد=0.2561, Dice تومور=0.0000, Precision کبد=0.1523, Dice متوسط=0.1281
+100/100 ━━━━━━━━━━━━━━━━━━━━ 87s 380ms/step - accuracy: 0.8632 - dice_avg: 0.3375 - dice_liver: 0.6666 - dice_tumor: 0.0083 - iou_liver: 0.5426 - iou_tumor: 0.0046 - loss: 0.4686 - precision_liver: 0.6005 - precision_tumor: 0.0480 - recall_liver: 0.8399 - recall_tumor: 0.0374 - val_accuracy: 0.6508 - val_dice_avg: 0.1281 - val_dice_liver: 0.2561 - val_dice_tumor: 9.5927e-08 - val_iou_liver: 0.1475 - val_iou_tumor: 9.5927e-08 - val_loss: 0.6193 - val_precision_liver: 0.1523 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 0.8319 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 2/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 272ms/step - accuracy: 0.9863 - dice_avg: 0.6217 - dice_liver: 0.9087 - dice_tumor: 0.3347 - iou_liver: 0.8341 - iou_tumor: 0.2362 - loss: 0.3598 - precision_liver: 0.8833 - precision_tumor: 0.5241 - recall_liver: 0.9409 - recall_tumor: 0.2709Epoch 2 زمان: 34.93 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.9, کبد=0.9, تومور=0.8, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.88, کبد=0.88, تومور=0.73, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 7.112930774688721, 7.0]
+پارامترهای بتا: [1.0, 1.0, 2.614259719848633]
+معیارها: Dice کبد=0.3597, Dice تومور=0.0000, Precision کبد=0.3162, Dice متوسط=0.1798
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 350ms/step - accuracy: 0.9863 - dice_avg: 0.6223 - dice_liver: 0.9088 - dice_tumor: 0.3358 - iou_liver: 0.8343 - iou_tumor: 0.2371 - loss: 0.3598 - precision_liver: 0.8835 - precision_tumor: 0.5247 - recall_liver: 0.9409 - recall_tumor: 0.2721 - val_accuracy: 0.8889 - val_dice_avg: 0.1798 - val_dice_liver: 0.3597 - val_dice_tumor: 6.8931e-08 - val_iou_liver: 0.2201 - val_iou_tumor: 6.8931e-08 - val_loss: 0.4778 - val_precision_liver: 0.3162 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 0.4275 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 3/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 274ms/step - accuracy: 0.9915 - dice_avg: 0.7821 - dice_liver: 0.9435 - dice_tumor: 0.6208 - iou_liver: 0.8933 - iou_tumor: 0.4891 - loss: 0.3511 - precision_liver: 0.9314 - precision_tumor: 0.6964 - recall_liver: 0.9575 - recall_tumor: 0.5989Epoch 3 زمان: 41.29 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.9, کبد=0.9, تومور=0.7, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.88, کبد=0.88, تومور=0.68, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 7.167813301086426, 7.0]
+پارامترهای بتا: [1.0, 1.0, 3.2898411750793457]
+معیارها: Dice کبد=0.4786, Dice تومور=0.0000, Precision کبد=0.4714, Dice متوسط=0.2393
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 415ms/step - accuracy: 0.9915 - dice_avg: 0.7821 - dice_liver: 0.9435 - dice_tumor: 0.6208 - iou_liver: 0.8933 - iou_tumor: 0.4892 - loss: 0.3511 - precision_liver: 0.9314 - precision_tumor: 0.6963 - recall_liver: 0.9575 - recall_tumor: 0.5991 - val_accuracy: 0.9211 - val_dice_avg: 0.2393 - val_dice_liver: 0.4786 - val_dice_tumor: 8.0527e-08 - val_iou_liver: 0.3157 - val_iou_tumor: 8.0527e-08 - val_loss: 0.4276 - val_precision_liver: 0.4714 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 0.4969 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 4/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 270ms/step - accuracy: 0.9930 - dice_avg: 0.8311 - dice_liver: 0.9548 - dice_tumor: 0.7074 - iou_liver: 0.9137 - iou_tumor: 0.5819 - loss: 0.3475 - precision_liver: 0.9419 - precision_tumor: 0.7378 - recall_liver: 0.9691 - recall_tumor: 0.6990Epoch 4 زمان: 43.83 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.9, کبد=0.9, تومور=0.7, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.88, کبد=0.88, تومور=0.64, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 7.221668720245361, 7.0]
+پارامترهای بتا: [1.0, 1.0, 3.892137050628662]
+معیارها: Dice کبد=0.5439, Dice تومور=0.0000, Precision کبد=0.5509, Dice متوسط=0.2719
+100/100 ━━━━━━━━━━━━━━━━━━━━ 44s 441ms/step - accuracy: 0.9930 - dice_avg: 0.8311 - dice_liver: 0.9548 - dice_tumor: 0.7074 - iou_liver: 0.9137 - iou_tumor: 0.5818 - loss: 0.3475 - precision_liver: 0.9420 - precision_tumor: 0.7378 - recall_liver: 0.9691 - recall_tumor: 0.6990 - val_accuracy: 0.9337 - val_dice_avg: 0.2719 - val_dice_liver: 0.5439 - val_dice_tumor: 2.8344e-07 - val_iou_liver: 0.3761 - val_iou_tumor: 2.8344e-07 - val_loss: 0.4079 - val_precision_liver: 0.5509 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 0.5475 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 5/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 339ms/step - accuracy: 0.9943 - dice_avg: 0.8567 - dice_liver: 0.9621 - dice_tumor: 0.7514 - iou_liver: 0.9270 - iou_tumor: 0.6247 - loss: 0.3462 - precision_liver: 0.9522 - precision_tumor: 0.7793 - recall_liver: 0.9730 - recall_tumor: 0.7563Epoch 5 زمان: 42.04 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.9, کبد=0.9, تومور=0.6, ضریب تقویت تومور=1.10
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.65, ضریب تقویت تومور=1.10
+پارامترهای آلفا: [7.0, 7.274517059326172, 7.096888542175293]
+پارامترهای بتا: [1.7927242517471313, 1.0, 3.892137050628662]
+معیارها: Dice کبد=0.7482, Dice تومور=0.0294, Precision کبد=0.7671, Dice متوسط=0.3888
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 422ms/step - accuracy: 0.9943 - dice_avg: 0.8567 - dice_liver: 0.9621 - dice_tumor: 0.7514 - iou_liver: 0.9270 - iou_tumor: 0.6247 - loss: 0.3462 - precision_liver: 0.9522 - precision_tumor: 0.7794 - recall_liver: 0.9729 - recall_tumor: 0.7562 - val_accuracy: 0.9643 - val_dice_avg: 0.3888 - val_dice_liver: 0.7482 - val_dice_tumor: 0.0294 - val_iou_liver: 0.6006 - val_iou_tumor: 0.0179 - val_loss: 0.3786 - val_precision_liver: 0.7671 - val_precision_tumor: 0.1590 - val_recall_liver: 0.7346 - val_recall_tumor: 0.0180 - learning_rate: 4.2000e-05
+Epoch 6/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 316ms/step - accuracy: 0.9938 - dice_avg: 0.8603 - dice_liver: 0.9585 - dice_tumor: 0.7622 - iou_liver: 0.9209 - iou_tumor: 0.6419 - loss: 0.3456 - precision_liver: 0.9500 - precision_tumor: 0.8096 - recall_liver: 0.9692 - recall_tumor: 0.7617Epoch 6 زمان: 40.24 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.8, کبد=0.9, تومور=0.6, ضریب تقویت تومور=1.20
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.67, ضریب تقویت تومور=1.20
+پارامترهای آلفا: [7.0, 7.274517059326172, 7.909918785095215]
+پارامترهای بتا: [1.7927242517471313, 1.0, 3.892137050628662]
+معیارها: Dice کبد=0.9262, Dice تومور=0.4760, Precision کبد=0.9239, Dice متوسط=0.7011
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 404ms/step - accuracy: 0.9938 - dice_avg: 0.8605 - dice_liver: 0.9586 - dice_tumor: 0.7624 - iou_liver: 0.9209 - iou_tumor: 0.6421 - loss: 0.3456 - precision_liver: 0.9500 - precision_tumor: 0.8097 - recall_liver: 0.9692 - recall_tumor: 0.7619 - val_accuracy: 0.9893 - val_dice_avg: 0.7011 - val_dice_liver: 0.9262 - val_dice_tumor: 0.4760 - val_iou_liver: 0.8628 - val_iou_tumor: 0.3503 - val_loss: 0.3523 - val_precision_liver: 0.9239 - val_precision_tumor: 0.8143 - val_recall_liver: 0.9290 - val_recall_tumor: 0.3653 - learning_rate: 4.2000e-05
+Epoch 7/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 294ms/step - accuracy: 0.9958 - dice_avg: 0.8722 - dice_liver: 0.9721 - dice_tumor: 0.7724 - iou_liver: 0.9458 - iou_tumor: 0.6618 - loss: 0.3429 - precision_liver: 0.9651 - precision_tumor: 0.7759 - recall_liver: 0.9795 - recall_tumor: 0.7816Epoch 7 زمان: 38.64 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.8, کبد=0.9, تومور=0.7, ضریب تقویت تومور=1.30
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.69, ضریب تقویت تومور=1.30
+پارامترهای آلفا: [7.0, 7.274517059326172, 8.595300674438477]
+پارامترهای بتا: [1.7927242517471313, 1.0, 3.892137050628662]
+معیارها: Dice کبد=0.9670, Dice تومور=0.7868, Precision کبد=0.9674, Dice متوسط=0.8769
+100/100 ━━━━━━━━━━━━━━━━━━━━ 39s 388ms/step - accuracy: 0.9958 - dice_avg: 0.8722 - dice_liver: 0.9721 - dice_tumor: 0.7724 - iou_liver: 0.9458 - iou_tumor: 0.6619 - loss: 0.3429 - precision_liver: 0.9651 - precision_tumor: 0.7760 - recall_liver: 0.9795 - recall_tumor: 0.7816 - val_accuracy: 0.9952 - val_dice_avg: 0.8769 - val_dice_liver: 0.9670 - val_dice_tumor: 0.7868 - val_iou_liver: 0.9362 - val_iou_tumor: 0.6762 - val_loss: 0.3444 - val_precision_liver: 0.9674 - val_precision_tumor: 0.8965 - val_recall_liver: 0.9667 - val_recall_tumor: 0.7451 - learning_rate: 4.2000e-05
+Epoch 8/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 294ms/step - accuracy: 0.9960 - dice_avg: 0.8606 - dice_liver: 0.9741 - dice_tumor: 0.7470 - iou_liver: 0.9497 - iou_tumor: 0.6417 - loss: 0.3424 - precision_liver: 0.9676 - precision_tumor: 0.7447 - recall_liver: 0.9810 - recall_tumor: 0.7605Epoch 8 زمان: 40.52 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.8, کبد=0.9, تومور=0.7, ضریب تقویت تومور=1.40
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.69, ضریب تقویت تومور=1.40
+پارامترهای آلفا: [7.0, 7.274517059326172, 8.829161643981934]
+پارامترهای بتا: [1.7927242517471313, 1.0, 3.892137050628662]
+معیارها: Dice کبد=0.9740, Dice تومور=0.8096, Precision کبد=0.9769, Dice متوسط=0.8918
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 407ms/step - accuracy: 0.9960 - dice_avg: 0.8607 - dice_liver: 0.9741 - dice_tumor: 0.7473 - iou_liver: 0.9497 - iou_tumor: 0.6420 - loss: 0.3424 - precision_liver: 0.9676 - precision_tumor: 0.7452 - recall_liver: 0.9810 - recall_tumor: 0.7607 - val_accuracy: 0.9962 - val_dice_avg: 0.8918 - val_dice_liver: 0.9740 - val_dice_tumor: 0.8096 - val_iou_liver: 0.9494 - val_iou_tumor: 0.7081 - val_loss: 0.3430 - val_precision_liver: 0.9769 - val_precision_tumor: 0.7875 - val_recall_liver: 0.9712 - val_recall_tumor: 0.8453 - learning_rate: 4.2000e-05
+Epoch 9/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 292ms/step - accuracy: 0.9964 - dice_avg: 0.9054 - dice_liver: 0.9764 - dice_tumor: 0.8344 - iou_liver: 0.9539 - iou_tumor: 0.7306 - loss: 0.3421 - precision_liver: 0.9729 - precision_tumor: 0.8215 - recall_liver: 0.9801 - recall_tumor: 0.8615Epoch 9 زمان: 41.07 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.8, کبد=0.9, تومور=0.7, ضریب تقویت تومور=1.50
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.70, ضریب تقویت تومور=1.50
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.02046012878418]
+پارامترهای بتا: [1.7927242517471313, 1.0, 3.892137050628662]
+معیارها: Dice کبد=0.9789, Dice تومور=0.8294, Precision کبد=0.9829, Dice متوسط=0.9042
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 412ms/step - accuracy: 0.9964 - dice_avg: 0.9054 - dice_liver: 0.9764 - dice_tumor: 0.8344 - iou_liver: 0.9539 - iou_tumor: 0.7306 - loss: 0.3421 - precision_liver: 0.9729 - precision_tumor: 0.8216 - recall_liver: 0.9802 - recall_tumor: 0.8614 - val_accuracy: 0.9968 - val_dice_avg: 0.9042 - val_dice_liver: 0.9789 - val_dice_tumor: 0.8294 - val_iou_liver: 0.9587 - val_iou_tumor: 0.7202 - val_loss: 0.3422 - val_precision_liver: 0.9829 - val_precision_tumor: 0.7960 - val_recall_liver: 0.9750 - val_recall_tumor: 0.8725 - learning_rate: 4.2000e-05
+Epoch 10/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 272ms/step - accuracy: 0.9967 - dice_avg: 0.8863 - dice_liver: 0.9789 - dice_tumor: 0.7938 - iou_liver: 0.9587 - iou_tumor: 0.6896 - loss: 0.3413 - precision_liver: 0.9747 - precision_tumor: 0.8182 - recall_liver: 0.9833 - recall_tumor: 0.7981Epoch 10 زمان: 36.43 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.8, کبد=0.9, تومور=0.7, ضریب تقویت تومور=1.60
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.70, ضریب تقویت تومور=1.60
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.177528381347656]
+پارامترهای بتا: [1.7927242517471313, 1.0, 3.892137050628662]
+معیارها: Dice کبد=0.9791, Dice تومور=0.8525, Precision کبد=0.9851, Dice متوسط=0.9158
+100/100 ━━━━━━━━━━━━━━━━━━━━ 36s 365ms/step - accuracy: 0.9967 - dice_avg: 0.8865 - dice_liver: 0.9789 - dice_tumor: 0.7941 - iou_liver: 0.9587 - iou_tumor: 0.6899 - loss: 0.3413 - precision_liver: 0.9747 - precision_tumor: 0.8184 - recall_liver: 0.9833 - recall_tumor: 0.7984 - val_accuracy: 0.9969 - val_dice_avg: 0.9158 - val_dice_liver: 0.9791 - val_dice_tumor: 0.8525 - val_iou_liver: 0.9591 - val_iou_tumor: 0.7520 - val_loss: 0.3417 - val_precision_liver: 0.9851 - val_precision_tumor: 0.8239 - val_recall_liver: 0.9732 - val_recall_tumor: 0.8982 - learning_rate: 4.2000e-05
+Epoch 11/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 303ms/step - accuracy: 0.9969 - dice_avg: 0.9273 - dice_liver: 0.9798 - dice_tumor: 0.8747 - iou_liver: 0.9605 - iou_tumor: 0.7847 - loss: 0.3409 - precision_liver: 0.9765 - precision_tumor: 0.8623 - recall_liver: 0.9835 - recall_tumor: 0.8955Epoch 11 زمان: 36.07 ثانیه
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.68, ضریب تقویت تومور=1.55
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.177528381347656]
+پارامترهای بتا: [1.7927242517471313, 1.0, 4.372738838195801]
+معیارها: Dice کبد=0.9791, Dice تومور=0.7906, Precision کبد=0.9780, Dice متوسط=0.8848
+100/100 ━━━━━━━━━━━━━━━━━━━━ 36s 362ms/step - accuracy: 0.9969 - dice_avg: 0.9272 - dice_liver: 0.9798 - dice_tumor: 0.8745 - iou_liver: 0.9605 - iou_tumor: 0.7843 - loss: 0.3409 - precision_liver: 0.9764 - precision_tumor: 0.8622 - recall_liver: 0.9835 - recall_tumor: 0.8952 - val_accuracy: 0.9970 - val_dice_avg: 0.8848 - val_dice_liver: 0.9791 - val_dice_tumor: 0.7906 - val_iou_liver: 0.9590 - val_iou_tumor: 0.6942 - val_loss: 0.3420 - val_precision_liver: 0.9780 - val_precision_tumor: 0.8680 - val_recall_liver: 0.9801 - val_recall_tumor: 0.7433 - learning_rate: 4.2000e-05
+Epoch 12/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 236ms/step - accuracy: 0.9972 - dice_avg: 0.9167 - dice_liver: 0.9812 - dice_tumor: 0.8521 - iou_liver: 0.9632 - iou_tumor: 0.7600 - loss: 0.3410 - precision_liver: 0.9776 - precision_tumor: 0.8507 - recall_liver: 0.9850 - recall_tumor: 0.8642Epoch 12 زمان: 28.23 ثانیه
+وزن‌ها: پس‌زمینه=0.80, کبد=0.88, تومور=0.66, ضریب تقویت تومور=1.50
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.177528381347656]
+پارامترهای بتا: [1.7927242517471313, 1.0, 4.807313442230225]
+معیارها: Dice کبد=0.9811, Dice تومور=0.8282, Precision کبد=0.9858, Dice متوسط=0.9046
+100/100 ━━━━━━━━━━━━━━━━━━━━ 28s 283ms/step - accuracy: 0.9972 - dice_avg: 0.9167 - dice_liver: 0.9812 - dice_tumor: 0.8521 - iou_liver: 0.9632 - iou_tumor: 0.7601 - loss: 0.3410 - precision_liver: 0.9776 - precision_tumor: 0.8506 - recall_liver: 0.9850 - recall_tumor: 0.8643 - val_accuracy: 0.9972 - val_dice_avg: 0.9046 - val_dice_liver: 0.9811 - val_dice_tumor: 0.8282 - val_iou_liver: 0.9628 - val_iou_tumor: 0.7409 - val_loss: 0.3414 - val_precision_liver: 0.9858 - val_precision_tumor: 0.8885 - val_recall_liver: 0.9764 - val_recall_tumor: 0.7875 - learning_rate: 4.2000e-05
+Epoch 13/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 250ms/step - accuracy: 0.9974 - dice_avg: 0.9249 - dice_liver: 0.9829 - dice_tumor: 0.8669 - iou_liver: 0.9664 - iou_tumor: 0.7821 - loss: 0.3406 - precision_liver: 0.9786 - precision_tumor: 0.8689 - recall_liver: 0.9873 - recall_tumor: 0.8750Epoch 13 زمان: 30.14 ثانیه
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.66, ضریب تقویت تومور=1.45
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.177528381347656]
+پارامترهای بتا: [2.414807081222534, 1.0, 4.807313442230225]
+معیارها: Dice کبد=0.9800, Dice تومور=0.8144, Precision کبد=0.9701, Dice متوسط=0.8972
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 302ms/step - accuracy: 0.9974 - dice_avg: 0.9249 - dice_liver: 0.9829 - dice_tumor: 0.8668 - iou_liver: 0.9664 - iou_tumor: 0.7821 - loss: 0.3406 - precision_liver: 0.9787 - precision_tumor: 0.8687 - recall_liver: 0.9873 - recall_tumor: 0.8749 - val_accuracy: 0.9971 - val_dice_avg: 0.8972 - val_dice_liver: 0.9800 - val_dice_tumor: 0.8144 - val_iou_liver: 0.9608 - val_iou_tumor: 0.7355 - val_loss: 0.3414 - val_precision_liver: 0.9701 - val_precision_tumor: 0.8343 - val_recall_liver: 0.9902 - val_recall_tumor: 0.8008 - learning_rate: 4.2000e-05
+Epoch 14/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 261ms/step - accuracy: 0.9974 - dice_avg: 0.9359 - dice_liver: 0.9830 - dice_tumor: 0.8888 - iou_liver: 0.9666 - iou_tumor: 0.8050 - loss: 0.3404 - precision_liver: 0.9788 - precision_tumor: 0.8807 - recall_liver: 0.9874 - recall_tumor: 0.9069Epoch 14 زمان: 41.91 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.9, تومور=0.7, ضریب تقویت تومور=1.40
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.66, ضریب تقویت تومور=1.40
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.29990291595459]
+پارامترهای بتا: [2.414807081222534, 1.0, 4.807313442230225]
+معیارها: Dice کبد=0.9820, Dice تومور=0.8739, Precision کبد=0.9851, Dice متوسط=0.9280
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 421ms/step - accuracy: 0.9974 - dice_avg: 0.9359 - dice_liver: 0.9830 - dice_tumor: 0.8888 - iou_liver: 0.9666 - iou_tumor: 0.8049 - loss: 0.3404 - precision_liver: 0.9788 - precision_tumor: 0.8806 - recall_liver: 0.9874 - recall_tumor: 0.9068 - val_accuracy: 0.9974 - val_dice_avg: 0.9280 - val_dice_liver: 0.9820 - val_dice_tumor: 0.8739 - val_iou_liver: 0.9646 - val_iou_tumor: 0.7884 - val_loss: 0.3415 - val_precision_liver: 0.9851 - val_precision_tumor: 0.8767 - val_recall_liver: 0.9789 - val_recall_tumor: 0.8880 - learning_rate: 4.2000e-05
+Epoch 15/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9974 - dice_avg: 0.9390 - dice_liver: 0.9825 - dice_tumor: 0.8955 - iou_liver: 0.9657 - iou_tumor: 0.8143 - loss: 0.3407 - precision_liver: 0.9782 - precision_tumor: 0.8837 - recall_liver: 0.9872 - recall_tumor: 0.9129Epoch 15 زمان: 39.94 ثانیه
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.64, ضریب تقویت تومور=1.35
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.29990291595459]
+پارامترهای بتا: [2.414807081222534, 1.0, 5.18648624420166]
+معیارها: Dice کبد=0.9824, Dice تومور=0.7963, Precision کبد=0.9814, Dice متوسط=0.8894
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 401ms/step - accuracy: 0.9974 - dice_avg: 0.9390 - dice_liver: 0.9826 - dice_tumor: 0.8955 - iou_liver: 0.9657 - iou_tumor: 0.8143 - loss: 0.3407 - precision_liver: 0.9782 - precision_tumor: 0.8836 - recall_liver: 0.9872 - recall_tumor: 0.9128 - val_accuracy: 0.9974 - val_dice_avg: 0.8894 - val_dice_liver: 0.9824 - val_dice_tumor: 0.7963 - val_iou_liver: 0.9654 - val_iou_tumor: 0.7104 - val_loss: 0.3413 - val_precision_liver: 0.9814 - val_precision_tumor: 0.8208 - val_recall_liver: 0.9834 - val_recall_tumor: 0.7882 - learning_rate: 4.2000e-05
+Epoch 16/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 206ms/step - accuracy: 0.9977 - dice_avg: 0.9151 - dice_liver: 0.9847 - dice_tumor: 0.8456 - iou_liver: 0.9698 - iou_tumor: 0.7627 - loss: 0.3401 - precision_liver: 0.9819 - precision_tumor: 0.8609 - recall_liver: 0.9876 - recall_tumor: 0.8716Epoch 16 زمان: 25.11 ثانیه
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.63, ضریب تقویت تومور=1.30
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.29990291595459]
+پارامترهای بتا: [2.414807081222534, 1.0, 5.531488418579102]
+معیارها: Dice کبد=0.9834, Dice تومور=0.8734, Precision کبد=0.9824, Dice متوسط=0.9284
+100/100 ━━━━━━━━━━━━━━━━━━━━ 25s 251ms/step - accuracy: 0.9977 - dice_avg: 0.9152 - dice_liver: 0.9847 - dice_tumor: 0.8457 - iou_liver: 0.9698 - iou_tumor: 0.7628 - loss: 0.3401 - precision_liver: 0.9819 - precision_tumor: 0.8609 - recall_liver: 0.9876 - recall_tumor: 0.8718 - val_accuracy: 0.9976 - val_dice_avg: 0.9284 - val_dice_liver: 0.9834 - val_dice_tumor: 0.8734 - val_iou_liver: 0.9673 - val_iou_tumor: 0.7847 - val_loss: 0.3408 - val_precision_liver: 0.9824 - val_precision_tumor: 0.8783 - val_recall_liver: 0.9844 - val_recall_tumor: 0.8739 - learning_rate: 4.2000e-05
+Epoch 17/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 222ms/step - accuracy: 0.9977 - dice_avg: 0.9224 - dice_liver: 0.9844 - dice_tumor: 0.8605 - iou_liver: 0.9692 - iou_tumor: 0.7905 - loss: 0.3414 - precision_liver: 0.9802 - precision_tumor: 0.8474 - recall_liver: 0.9887 - recall_tumor: 0.8776Epoch 17 زمان: 39.49 ثانیه
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.61, ضریب تقویت تومور=1.25
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.29990291595459]
+پارامترهای بتا: [2.414807081222534, 1.0, 5.845863342285156]
+معیارها: Dice کبد=0.9834, Dice تومور=0.8605, Precision کبد=0.9805, Dice متوسط=0.9219
+100/100 ━━━━━━━━━━━━━━━━━━━━ 39s 397ms/step - accuracy: 0.9977 - dice_avg: 0.9226 - dice_liver: 0.9844 - dice_tumor: 0.8608 - iou_liver: 0.9692 - iou_tumor: 0.7907 - loss: 0.3414 - precision_liver: 0.9802 - precision_tumor: 0.8477 - recall_liver: 0.9887 - recall_tumor: 0.8779 - val_accuracy: 0.9976 - val_dice_avg: 0.9219 - val_dice_liver: 0.9834 - val_dice_tumor: 0.8605 - val_iou_liver: 0.9674 - val_iou_tumor: 0.7791 - val_loss: 0.3407 - val_precision_liver: 0.9805 - val_precision_tumor: 0.8409 - val_recall_liver: 0.9864 - val_recall_tumor: 0.8921 - learning_rate: 4.2000e-05
+Epoch 18/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 214ms/step - accuracy: 0.9979 - dice_avg: 0.9372 - dice_liver: 0.9858 - dice_tumor: 0.8886 - iou_liver: 0.9720 - iou_tumor: 0.8110 - loss: 0.3396 - precision_liver: 0.9824 - precision_tumor: 0.8773 - recall_liver: 0.9894 - recall_tumor: 0.9085Epoch 18 زمان: 25.51 ثانیه
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.60, ضریب تقویت تومور=1.20
+پارامترهای آلفا: [7.0, 7.274517059326172, 9.29990291595459]
+پارامترهای بتا: [2.414807081222534, 1.0, 6.132745265960693]
+معیارها: Dice کبد=0.9832, Dice تومور=0.8405, Precision کبد=0.9775, Dice متوسط=0.9118
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 256ms/step - accuracy: 0.9979 - dice_avg: 0.9372 - dice_liver: 0.9858 - dice_tumor: 0.8886 - iou_liver: 0.9720 - iou_tumor: 0.8110 - loss: 0.3396 - precision_liver: 0.9824 - precision_tumor: 0.8773 - recall_liver: 0.9894 - recall_tumor: 0.9085 - val_accuracy: 0.9976 - val_dice_avg: 0.9118 - val_dice_liver: 0.9832 - val_dice_tumor: 0.8405 - val_iou_liver: 0.9670 - val_iou_tumor: 0.7559 - val_loss: 0.3408 - val_precision_liver: 0.9775 - val_precision_tumor: 0.8377 - val_recall_liver: 0.9890 - val_recall_tumor: 0.8518 - learning_rate: 4.2000e-05
+Epoch 19/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 213ms/step - accuracy: 0.9981 - dice_avg: 0.9185 - dice_liver: 0.9871 - dice_tumor: 0.8500 - iou_liver: 0.9745 - iou_tumor: 0.7681 - loss: 0.3402 - precision_liver: 0.9842 - precision_tumor: 0.8475 - recall_liver: 0.9900 - recall_tumor: 0.8579Epoch 19 زمان: 44.55 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.9, تومور=0.6, ضریب تقویت تومور=1.15
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.60, ضریب تقویت تومور=1.15
+پارامترهای آلفا: [7.0, 7.64404296875, 9.29990291595459]
+پارامترهای بتا: [2.45548152923584, 1.0, 6.132745265960693]
+معیارها: Dice کبد=0.9845, Dice تومور=0.8749, Precision کبد=0.9834, Dice متوسط=0.9297
+100/100 ━━━━━━━━━━━━━━━━━━━━ 45s 448ms/step - accuracy: 0.9981 - dice_avg: 0.9187 - dice_liver: 0.9871 - dice_tumor: 0.8503 - iou_liver: 0.9745 - iou_tumor: 0.7685 - loss: 0.3402 - precision_liver: 0.9842 - precision_tumor: 0.8478 - recall_liver: 0.9900 - recall_tumor: 0.8583 - val_accuracy: 0.9977 - val_dice_avg: 0.9297 - val_dice_liver: 0.9845 - val_dice_tumor: 0.8749 - val_iou_liver: 0.9696 - val_iou_tumor: 0.7866 - val_loss: 0.3408 - val_precision_liver: 0.9834 - val_precision_tumor: 0.8440 - val_recall_liver: 0.9857 - val_recall_tumor: 0.9201 - learning_rate: 4.2000e-05
+Epoch 20/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 211ms/step - accuracy: 0.9980 - dice_avg: 0.9448 - dice_liver: 0.9870 - dice_tumor: 0.9027 - iou_liver: 0.9743 - iou_tumor: 0.8301 - loss: 0.3393 - precision_liver: 0.9842 - precision_tumor: 0.8948 - recall_liver: 0.9898 - recall_tumor: 0.9148Epoch 20 زمان: 25.91 ثانیه
+وزن‌ها: پس‌زمینه=0.74, کبد=0.88, تومور=0.59, ضریب تقویت تومور=1.10
+پارامترهای آلفا: [7.0, 7.64404296875, 9.29990291595459]
+پارامترهای بتا: [2.45548152923584, 1.0, 6.390101432800293]
+معیارها: Dice کبد=0.9834, Dice تومور=0.8476, Precision کبد=0.9892, Dice متوسط=0.9155
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 259ms/step - accuracy: 0.9980 - dice_avg: 0.9447 - dice_liver: 0.9870 - dice_tumor: 0.9025 - iou_liver: 0.9743 - iou_tumor: 0.8300 - loss: 0.3393 - precision_liver: 0.9842 - precision_tumor: 0.8946 - recall_liver: 0.9898 - recall_tumor: 0.9147 - val_accuracy: 0.9976 - val_dice_avg: 0.9155 - val_dice_liver: 0.9834 - val_dice_tumor: 0.8476 - val_iou_liver: 0.9674 - val_iou_tumor: 0.7739 - val_loss: 0.3399 - val_precision_liver: 0.9892 - val_precision_tumor: 0.8907 - val_recall_liver: 0.9778 - val_recall_tumor: 0.8177 - learning_rate: 4.2000e-05
+Epoch 21/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 228ms/step - accuracy: 0.9982 - dice_avg: 0.9277 - dice_liver: 0.9877 - dice_tumor: 0.8677 - iou_liver: 0.9757 - iou_tumor: 0.7999 - loss: 0.3390 - precision_liver: 0.9854 - precision_tumor: 0.8589 - recall_liver: 0.9901 - recall_tumor: 0.8838Epoch 21 زمان: 43.91 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.9, تومور=0.6, ضریب تقویت تومور=1.05
+وزن‌ها: پس‌زمینه=0.74, کبد=0.89, تومور=0.59, ضریب تقویت تومور=1.05
+پارامترهای آلفا: [7.0, 7.951866626739502, 9.29990291595459]
+پارامترهای بتا: [2.4946787357330322, 1.0, 6.390101432800293]
+معیارها: Dice کبد=0.9833, Dice تومور=0.8806, Precision کبد=0.9828, Dice متوسط=0.9320
+100/100 ━━━━━━━━━━━━━━━━━━━━ 44s 441ms/step - accuracy: 0.9982 - dice_avg: 0.9277 - dice_liver: 0.9877 - dice_tumor: 0.8677 - iou_liver: 0.9757 - iou_tumor: 0.7999 - loss: 0.3390 - precision_liver: 0.9854 - precision_tumor: 0.8589 - recall_liver: 0.9901 - recall_tumor: 0.8839 - val_accuracy: 0.9976 - val_dice_avg: 0.9320 - val_dice_liver: 0.9833 - val_dice_tumor: 0.8806 - val_iou_liver: 0.9673 - val_iou_tumor: 0.8038 - val_loss: 0.3407 - val_precision_liver: 0.9828 - val_precision_tumor: 0.9233 - val_recall_liver: 0.9839 - val_recall_tumor: 0.8589 - learning_rate: 4.2000e-05
+Epoch 22/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 208ms/step - accuracy: 0.9979 - dice_avg: 0.9398 - dice_liver: 0.9860 - dice_tumor: 0.8937 - iou_liver: 0.9724 - iou_tumor: 0.8259 - loss: 0.3400 - precision_liver: 0.9840 - precision_tumor: 0.8923 - recall_liver: 0.9881 - recall_tumor: 0.9000Epoch 22 زمان: 39.39 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.9, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.74, کبد=0.89, تومور=0.60, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 7.951866626739502, 9.389702796936035]
+پارامترهای بتا: [2.4946787357330322, 1.0, 6.390101432800293]
+معیارها: Dice کبد=0.9844, Dice تومور=0.8846, Precision کبد=0.9839, Dice متوسط=0.9345
+100/100 ━━━━━━━━━━━━━━━━━━━━ 39s 395ms/step - accuracy: 0.9979 - dice_avg: 0.9398 - dice_liver: 0.9860 - dice_tumor: 0.8937 - iou_liver: 0.9724 - iou_tumor: 0.8259 - loss: 0.3400 - precision_liver: 0.9840 - precision_tumor: 0.8923 - recall_liver: 0.9881 - recall_tumor: 0.9001 - val_accuracy: 0.9978 - val_dice_avg: 0.9345 - val_dice_liver: 0.9844 - val_dice_tumor: 0.8846 - val_iou_liver: 0.9693 - val_iou_tumor: 0.8016 - val_loss: 0.3410 - val_precision_liver: 0.9839 - val_precision_tumor: 0.8997 - val_recall_liver: 0.9849 - val_recall_tumor: 0.8761 - learning_rate: 4.2000e-05
+Epoch 23/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 216ms/step - accuracy: 0.9981 - dice_avg: 0.9441 - dice_liver: 0.9871 - dice_tumor: 0.9012 - iou_liver: 0.9745 - iou_tumor: 0.8297 - loss: 0.3404 - precision_liver: 0.9839 - precision_tumor: 0.8893 - recall_liver: 0.9903 - recall_tumor: 0.9226Epoch 23 زمان: 26.47 ثانیه
+وزن‌ها: پس‌زمینه=0.70, کبد=0.89, تومور=0.60, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 7.951866626739502, 9.389702796936035]
+پارامترهای بتا: [2.967238426208496, 1.0, 6.390101432800293]
+معیارها: Dice کبد=0.9838, Dice تومور=0.8771, Precision کبد=0.9866, Dice متوسط=0.9305
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 265ms/step - accuracy: 0.9981 - dice_avg: 0.9441 - dice_liver: 0.9871 - dice_tumor: 0.9012 - iou_liver: 0.9745 - iou_tumor: 0.8298 - loss: 0.3404 - precision_liver: 0.9839 - precision_tumor: 0.8893 - recall_liver: 0.9903 - recall_tumor: 0.9226 - val_accuracy: 0.9976 - val_dice_avg: 0.9305 - val_dice_liver: 0.9838 - val_dice_tumor: 0.8771 - val_iou_liver: 0.9681 - val_iou_tumor: 0.7932 - val_loss: 0.3406 - val_precision_liver: 0.9866 - val_precision_tumor: 0.8872 - val_recall_liver: 0.9811 - val_recall_tumor: 0.8750 - learning_rate: 4.2000e-05
+Epoch 24/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 221ms/step - accuracy: 0.9981 - dice_avg: 0.9187 - dice_liver: 0.9875 - dice_tumor: 0.8499 - iou_liver: 0.9753 - iou_tumor: 0.7811 - loss: 0.3399 - precision_liver: 0.9848 - precision_tumor: 0.8467 - recall_liver: 0.9902 - recall_tumor: 0.8581Epoch 24 زمان: 42.57 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.9, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.70, کبد=0.89, تومور=0.60, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 7.951866626739502, 9.465154647827148]
+پارامترهای بتا: [2.967238426208496, 1.0, 6.390101432800293]
+معیارها: Dice کبد=0.9866, Dice تومور=0.8876, Precision کبد=0.9842, Dice متوسط=0.9371
+100/100 ━━━━━━━━━━━━━━━━━━━━ 43s 428ms/step - accuracy: 0.9981 - dice_avg: 0.9189 - dice_liver: 0.9875 - dice_tumor: 0.8503 - iou_liver: 0.9753 - iou_tumor: 0.7816 - loss: 0.3399 - precision_liver: 0.9848 - precision_tumor: 0.8470 - recall_liver: 0.9902 - recall_tumor: 0.8586 - val_accuracy: 0.9980 - val_dice_avg: 0.9371 - val_dice_liver: 0.9866 - val_dice_tumor: 0.8876 - val_iou_liver: 0.9735 - val_iou_tumor: 0.8089 - val_loss: 0.3400 - val_precision_liver: 0.9842 - val_precision_tumor: 0.9185 - val_recall_liver: 0.9890 - val_recall_tumor: 0.8665 - learning_rate: 4.2000e-05
+Epoch 25/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 208ms/step - accuracy: 0.9985 - dice_avg: 0.9505 - dice_liver: 0.9903 - dice_tumor: 0.9107 - iou_liver: 0.9808 - iou_tumor: 0.8462 - loss: 0.3386 - precision_liver: 0.9880 - precision_tumor: 0.8966 - recall_liver: 0.9926 - recall_tumor: 0.9299Epoch 25 زمان: 31.10 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.9, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.70, کبد=0.89, تومور=0.60, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 8.200470924377441, 9.465154647827148]
+پارامترهای بتا: [3.003652811050415, 1.0, 6.390101432800293]
+معیارها: Dice کبد=0.9858, Dice تومور=0.8995, Precision کبد=0.9894, Dice متوسط=0.9427
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 311ms/step - accuracy: 0.9985 - dice_avg: 0.9505 - dice_liver: 0.9903 - dice_tumor: 0.9107 - iou_liver: 0.9808 - iou_tumor: 0.8463 - loss: 0.3386 - precision_liver: 0.9880 - precision_tumor: 0.8967 - recall_liver: 0.9926 - recall_tumor: 0.9300 - val_accuracy: 0.9979 - val_dice_avg: 0.9427 - val_dice_liver: 0.9858 - val_dice_tumor: 0.8995 - val_iou_liver: 0.9721 - val_iou_tumor: 0.8249 - val_loss: 0.3401 - val_precision_liver: 0.9894 - val_precision_tumor: 0.9019 - val_recall_liver: 0.9822 - val_recall_tumor: 0.8999 - learning_rate: 4.2000e-05
+Epoch 26/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 240ms/step - accuracy: 0.9984 - dice_avg: 0.9536 - dice_liver: 0.9895 - dice_tumor: 0.9177 - iou_liver: 0.9793 - iou_tumor: 0.8526 - loss: 0.3394 - precision_liver: 0.9877 - precision_tumor: 0.9071 - recall_liver: 0.9914 - recall_tumor: 0.9314Epoch 26 زمان: 28.49 ثانیه
+وزن‌ها: پس‌زمینه=0.70, کبد=0.89, تومور=0.59, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 8.200470924377441, 9.465154647827148]
+پارامترهای بتا: [3.003652811050415, 1.0, 6.6052069664001465]
+معیارها: Dice کبد=0.9853, Dice تومور=0.8872, Precision کبد=0.9789, Dice متوسط=0.9362
+100/100 ━━━━━━━━━━━━━━━━━━━━ 28s 285ms/step - accuracy: 0.9984 - dice_avg: 0.9536 - dice_liver: 0.9895 - dice_tumor: 0.9177 - iou_liver: 0.9793 - iou_tumor: 0.8527 - loss: 0.3394 - precision_liver: 0.9877 - precision_tumor: 0.9071 - recall_liver: 0.9914 - recall_tumor: 0.9314 - val_accuracy: 0.9978 - val_dice_avg: 0.9362 - val_dice_liver: 0.9853 - val_dice_tumor: 0.8872 - val_iou_liver: 0.9710 - val_iou_tumor: 0.8053 - val_loss: 0.3397 - val_precision_liver: 0.9789 - val_precision_tumor: 0.8881 - val_recall_liver: 0.9918 - val_recall_tumor: 0.8896 - learning_rate: 4.2000e-05
+Epoch 27/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 273ms/step - accuracy: 0.9985 - dice_avg: 0.9517 - dice_liver: 0.9901 - dice_tumor: 0.9133 - iou_liver: 0.9804 - iou_tumor: 0.8517 - loss: 0.3392 - precision_liver: 0.9880 - precision_tumor: 0.8995 - recall_liver: 0.9922 - recall_tumor: 0.9299Epoch 27 زمان: 32.15 ثانیه
+وزن‌ها: پس‌زمینه=0.70, کبد=0.84, تومور=0.59, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 8.200470924377441, 9.465154647827148]
+پارامترهای بتا: [3.003652811050415, 1.5265616178512573, 6.6052069664001465]
+معیارها: Dice کبد=0.9860, Dice تومور=0.8607, Precision کبد=0.9864, Dice متوسط=0.9233
+100/100 ━━━━━━━━━━━━━━━━━━━━ 32s 322ms/step - accuracy: 0.9985 - dice_avg: 0.9517 - dice_liver: 0.9901 - dice_tumor: 0.9133 - iou_liver: 0.9804 - iou_tumor: 0.8518 - loss: 0.3392 - precision_liver: 0.9880 - precision_tumor: 0.8995 - recall_liver: 0.9922 - recall_tumor: 0.9299 - val_accuracy: 0.9980 - val_dice_avg: 0.9233 - val_dice_liver: 0.9860 - val_dice_tumor: 0.8607 - val_iou_liver: 0.9723 - val_iou_tumor: 0.7878 - val_loss: 0.3400 - val_precision_liver: 0.9864 - val_precision_tumor: 0.8681 - val_recall_liver: 0.9855 - val_recall_tumor: 0.8673 - learning_rate: 4.2000e-05
+Epoch 28/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 255ms/step - accuracy: 0.9986 - dice_avg: 0.9549 - dice_liver: 0.9903 - dice_tumor: 0.9194 - iou_liver: 0.9809 - iou_tumor: 0.8675 - loss: 0.3384 - precision_liver: 0.9886 - precision_tumor: 0.9043 - recall_liver: 0.9921 - recall_tumor: 0.9384Epoch 28 زمان: 40.11 ثانیه
+وزن‌ها: پس‌زمینه=0.70, کبد=0.84, تومور=0.58, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 8.200470924377441, 9.465154647827148]
+پارامترهای بتا: [3.003652811050415, 1.5265616178512573, 6.800228595733643]
+معیارها: Dice کبد=0.9863, Dice تومور=0.8823, Precision کبد=0.9859, Dice متوسط=0.9343
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 403ms/step - accuracy: 0.9986 - dice_avg: 0.9549 - dice_liver: 0.9903 - dice_tumor: 0.9194 - iou_liver: 0.9809 - iou_tumor: 0.8674 - loss: 0.3384 - precision_liver: 0.9886 - precision_tumor: 0.9043 - recall_liver: 0.9921 - recall_tumor: 0.9384 - val_accuracy: 0.9980 - val_dice_avg: 0.9343 - val_dice_liver: 0.9863 - val_dice_tumor: 0.8823 - val_iou_liver: 0.9730 - val_iou_tumor: 0.8038 - val_loss: 0.3403 - val_precision_liver: 0.9859 - val_precision_tumor: 0.9402 - val_recall_liver: 0.9867 - val_recall_tumor: 0.8512 - learning_rate: 4.2000e-05
+Epoch 29/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 209ms/step - accuracy: 0.9987 - dice_avg: 0.9619 - dice_liver: 0.9910 - dice_tumor: 0.9328 - iou_liver: 0.9821 - iou_tumor: 0.8765 - loss: 0.3397 - precision_liver: 0.9892 - precision_tumor: 0.9212 - recall_liver: 0.9927 - recall_tumor: 0.9484Epoch 29 زمان: 42.89 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.8, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.70, کبد=0.84, تومور=0.58, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.0, 8.200470924377441, 9.525494575500488]
+پارامترهای بتا: [3.003652811050415, 1.5265616178512573, 6.800228595733643]
+معیارها: Dice کبد=0.9869, Dice تومور=0.9024, Precision کبد=0.9843, Dice متوسط=0.9447
+100/100 ━━━━━━━━━━━━━━━━━━━━ 43s 431ms/step - accuracy: 0.9987 - dice_avg: 0.9619 - dice_liver: 0.9910 - dice_tumor: 0.9328 - iou_liver: 0.9821 - iou_tumor: 0.8765 - loss: 0.3397 - precision_liver: 0.9892 - precision_tumor: 0.9211 - recall_liver: 0.9927 - recall_tumor: 0.9484 - val_accuracy: 0.9981 - val_dice_avg: 0.9447 - val_dice_liver: 0.9869 - val_dice_tumor: 0.9024 - val_iou_liver: 0.9742 - val_iou_tumor: 0.8308 - val_loss: 0.3394 - val_precision_liver: 0.9843 - val_precision_tumor: 0.9284 - val_recall_liver: 0.9896 - val_recall_tumor: 0.8836 - learning_rate: 4.2000e-05
+Epoch 30/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 204ms/step - accuracy: 0.9988 - dice_avg: 0.9573 - dice_liver: 0.9918 - dice_tumor: 0.9227 - iou_liver: 0.9837 - iou_tumor: 0.8620 - loss: 0.3389 - precision_liver: 0.9903 - precision_tumor: 0.8967 - recall_liver: 0.9933 - recall_tumor: 0.9595Epoch 30 زمان: 29.15 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.8, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.71, کبد=0.84, تومور=0.58, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.200470924377441, 9.525494575500488]
+پارامترهای بتا: [3.003652811050415, 1.5265616178512573, 6.800228595733643]
+معیارها: Dice کبد=0.9867, Dice تومور=0.9030, Precision کبد=0.9834, Dice متوسط=0.9449
+100/100 ━━━━━━━━━━━━━━━━━━━━ 29s 292ms/step - accuracy: 0.9988 - dice_avg: 0.9573 - dice_liver: 0.9918 - dice_tumor: 0.9228 - iou_liver: 0.9837 - iou_tumor: 0.8622 - loss: 0.3389 - precision_liver: 0.9903 - precision_tumor: 0.8969 - recall_liver: 0.9933 - recall_tumor: 0.9595 - val_accuracy: 0.9981 - val_dice_avg: 0.9449 - val_dice_liver: 0.9867 - val_dice_tumor: 0.9030 - val_iou_liver: 0.9738 - val_iou_tumor: 0.8327 - val_loss: 0.3400 - val_precision_liver: 0.9834 - val_precision_tumor: 0.8959 - val_recall_liver: 0.9901 - val_recall_tumor: 0.9167 - learning_rate: 4.2000e-05
+Epoch 31/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 226ms/step - accuracy: 0.9988 - dice_avg: 0.9680 - dice_liver: 0.9921 - dice_tumor: 0.9439 - iou_liver: 0.9843 - iou_tumor: 0.8953 - loss: 0.3375 - precision_liver: 0.9904 - precision_tumor: 0.9330 - recall_liver: 0.9938 - recall_tumor: 0.9571Epoch 31 زمان: 26.97 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.80, تومور=0.58, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.200470924377441, 9.525494575500488]
+پارامترهای بتا: [3.003652811050415, 1.9874577522277832, 6.800228595733643]
+معیارها: Dice کبد=0.9873, Dice تومور=0.8881, Precision کبد=0.9863, Dice متوسط=0.9377
+100/100 ━━━━━━━━━━━━━━━━━━━━ 27s 270ms/step - accuracy: 0.9988 - dice_avg: 0.9679 - dice_liver: 0.9921 - dice_tumor: 0.9438 - iou_liver: 0.9843 - iou_tumor: 0.8952 - loss: 0.3375 - precision_liver: 0.9904 - precision_tumor: 0.9329 - recall_liver: 0.9938 - recall_tumor: 0.9570 - val_accuracy: 0.9981 - val_dice_avg: 0.9377 - val_dice_liver: 0.9873 - val_dice_tumor: 0.8881 - val_iou_liver: 0.9749 - val_iou_tumor: 0.8122 - val_loss: 0.3387 - val_precision_liver: 0.9863 - val_precision_tumor: 0.9294 - val_recall_liver: 0.9884 - val_recall_tumor: 0.8654 - learning_rate: 4.2000e-05
+Epoch 32/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 286ms/step - accuracy: 0.9988 - dice_avg: 0.9635 - dice_liver: 0.9925 - dice_tumor: 0.9344 - iou_liver: 0.9851 - iou_tumor: 0.8793 - loss: 0.3372 - precision_liver: 0.9911 - precision_tumor: 0.9162 - recall_liver: 0.9939 - recall_tumor: 0.9560Epoch 32 زمان: 40.81 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.8, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.71, کبد=0.81, تومور=0.58, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.392714500427246, 9.525494575500488]
+پارامترهای بتا: [3.0357017517089844, 1.9874577522277832, 6.800228595733643]
+معیارها: Dice کبد=0.9868, Dice تومور=0.9128, Precision کبد=0.9920, Dice متوسط=0.9498
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 410ms/step - accuracy: 0.9988 - dice_avg: 0.9635 - dice_liver: 0.9925 - dice_tumor: 0.9344 - iou_liver: 0.9851 - iou_tumor: 0.8794 - loss: 0.3372 - precision_liver: 0.9911 - precision_tumor: 0.9163 - recall_liver: 0.9939 - recall_tumor: 0.9559 - val_accuracy: 0.9981 - val_dice_avg: 0.9498 - val_dice_liver: 0.9868 - val_dice_tumor: 0.9128 - val_iou_liver: 0.9740 - val_iou_tumor: 0.8483 - val_loss: 0.3403 - val_precision_liver: 0.9920 - val_precision_tumor: 0.9044 - val_recall_liver: 0.9818 - val_recall_tumor: 0.9292 - learning_rate: 4.2000e-05
+Epoch 33/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 304ms/step - accuracy: 0.9988 - dice_avg: 0.9575 - dice_liver: 0.9923 - dice_tumor: 0.9227 - iou_liver: 0.9847 - iou_tumor: 0.8672 - loss: 0.3386 - precision_liver: 0.9913 - precision_tumor: 0.8998 - recall_liver: 0.9933 - recall_tumor: 0.9607Epoch 33 زمان: 72.72 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.81, تومور=0.58, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.392714500427246, 9.525494575500488]
+پارامترهای بتا: [3.0357017517089844, 1.9874577522277832, 6.968076705932617]
+معیارها: Dice کبد=0.9870, Dice تومور=0.9056, Precision کبد=0.9920, Dice متوسط=0.9463
+100/100 ━━━━━━━━━━━━━━━━━━━━ 73s 732ms/step - accuracy: 0.9988 - dice_avg: 0.9576 - dice_liver: 0.9923 - dice_tumor: 0.9229 - iou_liver: 0.9846 - iou_tumor: 0.8674 - loss: 0.3386 - precision_liver: 0.9913 - precision_tumor: 0.9001 - recall_liver: 0.9933 - recall_tumor: 0.9607 - val_accuracy: 0.9981 - val_dice_avg: 0.9463 - val_dice_liver: 0.9870 - val_dice_tumor: 0.9056 - val_iou_liver: 0.9744 - val_iou_tumor: 0.8328 - val_loss: 0.3398 - val_precision_liver: 0.9920 - val_precision_tumor: 0.9118 - val_recall_liver: 0.9820 - val_recall_tumor: 0.9060 - learning_rate: 4.2000e-05
+Epoch 34/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 216ms/step - accuracy: 0.9989 - dice_avg: 0.9622 - dice_liver: 0.9920 - dice_tumor: 0.9324 - iou_liver: 0.9841 - iou_tumor: 0.8818 - loss: 0.3394 - precision_liver: 0.9906 - precision_tumor: 0.9172 - recall_liver: 0.9933 - recall_tumor: 0.9508Epoch 34 زمان: 40.82 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.81, تومور=0.57, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.392714500427246, 9.525494575500488]
+پارامترهای بتا: [3.0357017517089844, 1.9874577522277832, 7.124270915985107]
+معیارها: Dice کبد=0.9873, Dice تومور=0.9057, Precision کبد=0.9902, Dice متوسط=0.9465
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 410ms/step - accuracy: 0.9989 - dice_avg: 0.9621 - dice_liver: 0.9920 - dice_tumor: 0.9323 - iou_liver: 0.9841 - iou_tumor: 0.8817 - loss: 0.3394 - precision_liver: 0.9906 - precision_tumor: 0.9172 - recall_liver: 0.9933 - recall_tumor: 0.9508 - val_accuracy: 0.9982 - val_dice_avg: 0.9465 - val_dice_liver: 0.9873 - val_dice_tumor: 0.9057 - val_iou_liver: 0.9750 - val_iou_tumor: 0.8368 - val_loss: 0.3395 - val_precision_liver: 0.9902 - val_precision_tumor: 0.9114 - val_recall_liver: 0.9845 - val_recall_tumor: 0.9113 - learning_rate: 4.2000e-05
+Epoch 35/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 212ms/step - accuracy: 0.9989 - dice_avg: 0.9445 - dice_liver: 0.9926 - dice_tumor: 0.8964 - iou_liver: 0.9853 - iou_tumor: 0.8493 - loss: 0.3384 - precision_liver: 0.9912 - precision_tumor: 0.8821 - recall_liver: 0.9940 - recall_tumor: 0.9146Epoch 35 زمان: 40.93 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.57, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.392714500427246, 9.525494575500488]
+پارامترهای بتا: [3.0357017517089844, 2.3928565979003906, 7.124270915985107]
+معیارها: Dice کبد=0.9858, Dice تومور=0.8910, Precision کبد=0.9929, Dice متوسط=0.9384
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 412ms/step - accuracy: 0.9989 - dice_avg: 0.9446 - dice_liver: 0.9926 - dice_tumor: 0.8966 - iou_liver: 0.9853 - iou_tumor: 0.8495 - loss: 0.3384 - precision_liver: 0.9912 - precision_tumor: 0.8824 - recall_liver: 0.9940 - recall_tumor: 0.9147 - val_accuracy: 0.9979 - val_dice_avg: 0.9384 - val_dice_liver: 0.9858 - val_dice_tumor: 0.8910 - val_iou_liver: 0.9720 - val_iou_tumor: 0.8139 - val_loss: 0.3403 - val_precision_liver: 0.9929 - val_precision_tumor: 0.8771 - val_recall_liver: 0.9788 - val_recall_tumor: 0.9096 - learning_rate: 4.2000e-05
+Epoch 36/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 209ms/step - accuracy: 0.9989 - dice_avg: 0.9652 - dice_liver: 0.9923 - dice_tumor: 0.9382 - iou_liver: 0.9847 - iou_tumor: 0.8871 - loss: 0.3386 - precision_liver: 0.9914 - precision_tumor: 0.9266 - recall_liver: 0.9932 - recall_tumor: 0.9535Epoch 36 زمان: 25.07 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.57, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.392714500427246, 9.525494575500488]
+پارامترهای بتا: [3.0357017517089844, 2.3928565979003906, 7.267173767089844]
+معیارها: Dice کبد=0.9870, Dice تومور=0.8780, Precision کبد=0.9912, Dice متوسط=0.9325
+100/100 ━━━━━━━━━━━━━━━━━━━━ 25s 251ms/step - accuracy: 0.9989 - dice_avg: 0.9652 - dice_liver: 0.9923 - dice_tumor: 0.9382 - iou_liver: 0.9847 - iou_tumor: 0.8871 - loss: 0.3386 - precision_liver: 0.9914 - precision_tumor: 0.9266 - recall_liver: 0.9932 - recall_tumor: 0.9535 - val_accuracy: 0.9981 - val_dice_avg: 0.9325 - val_dice_liver: 0.9870 - val_dice_tumor: 0.8780 - val_iou_liver: 0.9743 - val_iou_tumor: 0.7953 - val_loss: 0.3396 - val_precision_liver: 0.9912 - val_precision_tumor: 0.8526 - val_recall_liver: 0.9828 - val_recall_tumor: 0.9158 - learning_rate: 4.2000e-05
+Epoch 37/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 209ms/step - accuracy: 0.9989 - dice_avg: 0.9676 - dice_liver: 0.9926 - dice_tumor: 0.9426 - iou_liver: 0.9853 - iou_tumor: 0.8935 - loss: 0.3382 - precision_liver: 0.9913 - precision_tumor: 0.9283 - recall_liver: 0.9940 - recall_tumor: 0.9605Epoch 37 زمان: 25.02 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.56, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.392714500427246, 9.525494575500488]
+پارامترهای بتا: [3.0357017517089844, 2.3928565979003906, 7.400556564331055]
+معیارها: Dice کبد=0.9877, Dice تومور=0.9027, Precision کبد=0.9842, Dice متوسط=0.9452
+100/100 ━━━━━━━━━━━━━━━━━━━━ 25s 251ms/step - accuracy: 0.9989 - dice_avg: 0.9676 - dice_liver: 0.9926 - dice_tumor: 0.9426 - iou_liver: 0.9853 - iou_tumor: 0.8935 - loss: 0.3382 - precision_liver: 0.9913 - precision_tumor: 0.9283 - recall_liver: 0.9940 - recall_tumor: 0.9604 - val_accuracy: 0.9982 - val_dice_avg: 0.9452 - val_dice_liver: 0.9877 - val_dice_tumor: 0.9027 - val_iou_liver: 0.9757 - val_iou_tumor: 0.8295 - val_loss: 0.3396 - val_precision_liver: 0.9842 - val_precision_tumor: 0.9068 - val_recall_liver: 0.9912 - val_recall_tumor: 0.9039 - learning_rate: 4.2000e-05
+Epoch 38/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 254ms/step - accuracy: 0.9991 - dice_avg: 0.9666 - dice_liver: 0.9941 - dice_tumor: 0.9391 - iou_liver: 0.9883 - iou_tumor: 0.8956 - loss: 0.3380 - precision_liver: 0.9930 - precision_tumor: 0.9275 - recall_liver: 0.9953 - recall_tumor: 0.9528Epoch 38 زمان: 34.81 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.8, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.56, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.392714500427246, 9.570990562438965]
+پارامترهای بتا: [3.0357017517089844, 2.3928565979003906, 7.400556564331055]
+معیارها: Dice کبد=0.9896, Dice تومور=0.9260, Precision کبد=0.9879, Dice متوسط=0.9578
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 350ms/step - accuracy: 0.9991 - dice_avg: 0.9666 - dice_liver: 0.9941 - dice_tumor: 0.9391 - iou_liver: 0.9883 - iou_tumor: 0.8956 - loss: 0.3380 - precision_liver: 0.9930 - precision_tumor: 0.9275 - recall_liver: 0.9953 - recall_tumor: 0.9528 - val_accuracy: 0.9985 - val_dice_avg: 0.9578 - val_dice_liver: 0.9896 - val_dice_tumor: 0.9260 - val_iou_liver: 0.9794 - val_iou_tumor: 0.8671 - val_loss: 0.3395 - val_precision_liver: 0.9879 - val_precision_tumor: 0.9457 - val_recall_liver: 0.9912 - val_recall_tumor: 0.9110 - learning_rate: 2.1000e-05
+Epoch 39/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 285ms/step - accuracy: 0.9994 - dice_avg: 0.9706 - dice_liver: 0.9960 - dice_tumor: 0.9452 - iou_liver: 0.9921 - iou_tumor: 0.9149 - loss: 0.3375 - precision_liver: 0.9953 - precision_tumor: 0.9338 - recall_liver: 0.9968 - recall_tumor: 0.9574Epoch 39 زمان: 42.77 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.8, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.56, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.544088363647461, 9.570990562438965]
+پارامترهای بتا: [3.063955783843994, 2.3928565979003906, 7.400556564331055]
+معیارها: Dice کبد=0.9897, Dice تومور=0.9280, Precision کبد=0.9889, Dice متوسط=0.9588
+100/100 ━━━━━━━━━━━━━━━━━━━━ 43s 430ms/step - accuracy: 0.9994 - dice_avg: 0.9707 - dice_liver: 0.9960 - dice_tumor: 0.9453 - iou_liver: 0.9921 - iou_tumor: 0.9150 - loss: 0.3375 - precision_liver: 0.9953 - precision_tumor: 0.9339 - recall_liver: 0.9968 - recall_tumor: 0.9575 - val_accuracy: 0.9985 - val_dice_avg: 0.9588 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9280 - val_iou_liver: 0.9796 - val_iou_tumor: 0.8701 - val_loss: 0.3392 - val_precision_liver: 0.9889 - val_precision_tumor: 0.9211 - val_recall_liver: 0.9905 - val_recall_tumor: 0.9368 - learning_rate: 2.1000e-05
+Epoch 40/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 217ms/step - accuracy: 0.9995 - dice_avg: 0.9737 - dice_liver: 0.9962 - dice_tumor: 0.9512 - iou_liver: 0.9924 - iou_tumor: 0.9240 - loss: 0.3395 - precision_liver: 0.9953 - precision_tumor: 0.9403 - recall_liver: 0.9971 - recall_tumor: 0.9632Epoch 40 زمان: 34.88 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.56, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.332345008850098, 8.544088363647461, 9.570990562438965]
+پارامترهای بتا: [3.063955783843994, 2.3928565979003906, 7.5207977294921875]
+معیارها: Dice کبد=0.9897, Dice تومور=0.9047, Precision کبد=0.9892, Dice متوسط=0.9472
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 350ms/step - accuracy: 0.9995 - dice_avg: 0.9737 - dice_liver: 0.9962 - dice_tumor: 0.9512 - iou_liver: 0.9924 - iou_tumor: 0.9240 - loss: 0.3395 - precision_liver: 0.9953 - precision_tumor: 0.9403 - recall_liver: 0.9971 - recall_tumor: 0.9632 - val_accuracy: 0.9985 - val_dice_avg: 0.9472 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9047 - val_iou_liver: 0.9796 - val_iou_tumor: 0.8388 - val_loss: 0.3391 - val_precision_liver: 0.9892 - val_precision_tumor: 0.9024 - val_recall_liver: 0.9902 - val_recall_tumor: 0.9165 - learning_rate: 2.1000e-05
+Epoch 41/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 206ms/step - accuracy: 0.9995 - dice_avg: 0.9828 - dice_liver: 0.9964 - dice_tumor: 0.9691 - iou_liver: 0.9928 - iou_tumor: 0.9413 - loss: 0.3384 - precision_liver: 0.9955 - precision_tumor: 0.9632 - recall_liver: 0.9973 - recall_tumor: 0.9767Epoch 41 زمان: 34.84 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.8, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.56, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.544088363647461, 9.570990562438965]
+پارامترهای بتا: [3.063955783843994, 2.3928565979003906, 7.5207977294921875]
+معیارها: Dice کبد=0.9896, Dice تومور=0.9302, Precision کبد=0.9899, Dice متوسط=0.9599
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 349ms/step - accuracy: 0.9995 - dice_avg: 0.9828 - dice_liver: 0.9964 - dice_tumor: 0.9691 - iou_liver: 0.9928 - iou_tumor: 0.9413 - loss: 0.3384 - precision_liver: 0.9955 - precision_tumor: 0.9632 - recall_liver: 0.9973 - recall_tumor: 0.9768 - val_accuracy: 0.9985 - val_dice_avg: 0.9599 - val_dice_liver: 0.9896 - val_dice_tumor: 0.9302 - val_iou_liver: 0.9794 - val_iou_tumor: 0.8730 - val_loss: 0.3396 - val_precision_liver: 0.9899 - val_precision_tumor: 0.9229 - val_recall_liver: 0.9893 - val_recall_tumor: 0.9402 - learning_rate: 2.1000e-05
+Epoch 42/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 230ms/step - accuracy: 0.9995 - dice_avg: 0.9811 - dice_liver: 0.9967 - dice_tumor: 0.9655 - iou_liver: 0.9934 - iou_tumor: 0.9371 - loss: 0.3366 - precision_liver: 0.9961 - precision_tumor: 0.9543 - recall_liver: 0.9972 - recall_tumor: 0.9774Epoch 42 زمان: 32.81 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.56, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.544088363647461, 9.570990562438965]
+پارامترهای بتا: [3.063955783843994, 2.3928565979003906, 7.631466388702393]
+معیارها: Dice کبد=0.9897, Dice تومور=0.9269, Precision کبد=0.9893, Dice متوسط=0.9583
+100/100 ━━━━━━━━━━━━━━━━━━━━ 33s 329ms/step - accuracy: 0.9995 - dice_avg: 0.9810 - dice_liver: 0.9967 - dice_tumor: 0.9654 - iou_liver: 0.9934 - iou_tumor: 0.9369 - loss: 0.3366 - precision_liver: 0.9961 - precision_tumor: 0.9542 - recall_liver: 0.9972 - recall_tumor: 0.9773 - val_accuracy: 0.9985 - val_dice_avg: 0.9583 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9269 - val_iou_liver: 0.9796 - val_iou_tumor: 0.8689 - val_loss: 0.3388 - val_precision_liver: 0.9893 - val_precision_tumor: 0.9171 - val_recall_liver: 0.9901 - val_recall_tumor: 0.9423 - learning_rate: 2.1000e-05
+Epoch 43/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 218ms/step - accuracy: 0.9995 - dice_avg: 0.9821 - dice_liver: 0.9968 - dice_tumor: 0.9675 - iou_liver: 0.9935 - iou_tumor: 0.9391 - loss: 0.3383 - precision_liver: 0.9960 - precision_tumor: 0.9581 - recall_liver: 0.9975 - recall_tumor: 0.9779Epoch 43 زمان: 31.46 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.8, تومور=0.6, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.56, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.090268135070801, 2.3928565979003906, 7.631466388702393]
+معیارها: Dice کبد=0.9896, Dice تومور=0.9370, Precision کبد=0.9893, Dice متوسط=0.9633
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 315ms/step - accuracy: 0.9995 - dice_avg: 0.9821 - dice_liver: 0.9968 - dice_tumor: 0.9674 - iou_liver: 0.9935 - iou_tumor: 0.9390 - loss: 0.3383 - precision_liver: 0.9960 - precision_tumor: 0.9580 - recall_liver: 0.9975 - recall_tumor: 0.9778 - val_accuracy: 0.9985 - val_dice_avg: 0.9633 - val_dice_liver: 0.9896 - val_dice_tumor: 0.9370 - val_iou_liver: 0.9795 - val_iou_tumor: 0.8837 - val_loss: 0.3389 - val_precision_liver: 0.9893 - val_precision_tumor: 0.9331 - val_recall_liver: 0.9900 - val_recall_tumor: 0.9426 - learning_rate: 2.1000e-05
+Epoch 44/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 309ms/step - accuracy: 0.9995 - dice_avg: 0.9726 - dice_liver: 0.9969 - dice_tumor: 0.9483 - iou_liver: 0.9938 - iou_tumor: 0.9210 - loss: 0.3376 - precision_liver: 0.9962 - precision_tumor: 0.9408 - recall_liver: 0.9977 - recall_tumor: 0.9579Epoch 44 زمان: 36.56 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.55, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.090268135070801, 2.3928565979003906, 7.733513832092285]
+معیارها: Dice کبد=0.9898, Dice تومور=0.9187, Precision کبد=0.9898, Dice متوسط=0.9543
+100/100 ━━━━━━━━━━━━━━━━━━━━ 37s 367ms/step - accuracy: 0.9995 - dice_avg: 0.9726 - dice_liver: 0.9969 - dice_tumor: 0.9483 - iou_liver: 0.9938 - iou_tumor: 0.9209 - loss: 0.3376 - precision_liver: 0.9962 - precision_tumor: 0.9407 - recall_liver: 0.9977 - recall_tumor: 0.9579 - val_accuracy: 0.9985 - val_dice_avg: 0.9543 - val_dice_liver: 0.9898 - val_dice_tumor: 0.9187 - val_iou_liver: 0.9799 - val_iou_tumor: 0.8567 - val_loss: 0.3396 - val_precision_liver: 0.9898 - val_precision_tumor: 0.9273 - val_recall_liver: 0.9899 - val_recall_tumor: 0.9146 - learning_rate: 2.1000e-05
+Epoch 45/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9995 - dice_avg: 0.9814 - dice_liver: 0.9967 - dice_tumor: 0.9662 - iou_liver: 0.9934 - iou_tumor: 0.9384 - loss: 0.3371 - precision_liver: 0.9959 - precision_tumor: 0.9543 - recall_liver: 0.9974 - recall_tumor: 0.9804Epoch 45 زمان: 40.07 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.55, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.090268135070801, 2.3928565979003906, 7.829455375671387]
+معیارها: Dice کبد=0.9895, Dice تومور=0.9209, Precision کبد=0.9898, Dice متوسط=0.9552
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 402ms/step - accuracy: 0.9995 - dice_avg: 0.9814 - dice_liver: 0.9967 - dice_tumor: 0.9662 - iou_liver: 0.9934 - iou_tumor: 0.9384 - loss: 0.3371 - precision_liver: 0.9959 - precision_tumor: 0.9543 - recall_liver: 0.9974 - recall_tumor: 0.9804 - val_accuracy: 0.9985 - val_dice_avg: 0.9552 - val_dice_liver: 0.9895 - val_dice_tumor: 0.9209 - val_iou_liver: 0.9791 - val_iou_tumor: 0.8583 - val_loss: 0.3391 - val_precision_liver: 0.9898 - val_precision_tumor: 0.9002 - val_recall_liver: 0.9891 - val_recall_tumor: 0.9457 - learning_rate: 2.1000e-05
+Epoch 46/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 212ms/step - accuracy: 0.9995 - dice_avg: 0.9809 - dice_liver: 0.9967 - dice_tumor: 0.9652 - iou_liver: 0.9934 - iou_tumor: 0.9345 - loss: 0.3373 - precision_liver: 0.9960 - precision_tumor: 0.9588 - recall_liver: 0.9974 - recall_tumor: 0.9729Epoch 46 زمان: 39.69 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.78, تومور=0.55, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.090268135070801, 2.3928565979003906, 7.919731140136719]
+معیارها: Dice کبد=0.9898, Dice تومور=0.9265, Precision کبد=0.9910, Dice متوسط=0.9581
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 399ms/step - accuracy: 0.9995 - dice_avg: 0.9809 - dice_liver: 0.9967 - dice_tumor: 0.9652 - iou_liver: 0.9934 - iou_tumor: 0.9345 - loss: 0.3373 - precision_liver: 0.9960 - precision_tumor: 0.9588 - recall_liver: 0.9974 - recall_tumor: 0.9730 - val_accuracy: 0.9985 - val_dice_avg: 0.9581 - val_dice_liver: 0.9898 - val_dice_tumor: 0.9265 - val_iou_liver: 0.9798 - val_iou_tumor: 0.8673 - val_loss: 0.3398 - val_precision_liver: 0.9910 - val_precision_tumor: 0.9238 - val_recall_liver: 0.9885 - val_recall_tumor: 0.9330 - learning_rate: 2.1000e-05
+Epoch 47/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 218ms/step - accuracy: 0.9995 - dice_avg: 0.9788 - dice_liver: 0.9968 - dice_tumor: 0.9608 - iou_liver: 0.9937 - iou_tumor: 0.9386 - loss: 0.3368 - precision_liver: 0.9961 - precision_tumor: 0.9534 - recall_liver: 0.9975 - recall_tumor: 0.9687Epoch 47 زمان: 40.88 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.76, تومور=0.55, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.090268135070801, 2.703735589981079, 7.919731140136719]
+معیارها: Dice کبد=0.9894, Dice تومور=0.9189, Precision کبد=0.9888, Dice متوسط=0.9541
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 411ms/step - accuracy: 0.9995 - dice_avg: 0.9788 - dice_liver: 0.9968 - dice_tumor: 0.9608 - iou_liver: 0.9937 - iou_tumor: 0.9386 - loss: 0.3368 - precision_liver: 0.9961 - precision_tumor: 0.9535 - recall_liver: 0.9975 - recall_tumor: 0.9687 - val_accuracy: 0.9984 - val_dice_avg: 0.9541 - val_dice_liver: 0.9894 - val_dice_tumor: 0.9189 - val_iou_liver: 0.9790 - val_iou_tumor: 0.8538 - val_loss: 0.3389 - val_precision_liver: 0.9888 - val_precision_tumor: 0.9042 - val_recall_liver: 0.9899 - val_recall_tumor: 0.9363 - learning_rate: 2.1000e-05
+Epoch 48/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 213ms/step - accuracy: 0.9995 - dice_avg: 0.9849 - dice_liver: 0.9967 - dice_tumor: 0.9731 - iou_liver: 0.9935 - iou_tumor: 0.9484 - loss: 0.3378 - precision_liver: 0.9962 - precision_tumor: 0.9627 - recall_liver: 0.9973 - recall_tumor: 0.9845Epoch 48 زمان: 25.44 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.76, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.090268135070801, 2.703735589981079, 8.003267288208008]
+معیارها: Dice کبد=0.9897, Dice تومور=0.9276, Precision کبد=0.9896, Dice متوسط=0.9587
+100/100 ━━━━━━━━━━━━━━━━━━━━ 25s 255ms/step - accuracy: 0.9995 - dice_avg: 0.9849 - dice_liver: 0.9967 - dice_tumor: 0.9731 - iou_liver: 0.9935 - iou_tumor: 0.9483 - loss: 0.3378 - precision_liver: 0.9962 - precision_tumor: 0.9626 - recall_liver: 0.9973 - recall_tumor: 0.9844 - val_accuracy: 0.9985 - val_dice_avg: 0.9587 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9276 - val_iou_liver: 0.9796 - val_iou_tumor: 0.8679 - val_loss: 0.3392 - val_precision_liver: 0.9896 - val_precision_tumor: 0.9102 - val_recall_liver: 0.9898 - val_recall_tumor: 0.9469 - learning_rate: 2.1000e-05
+Epoch 49/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 217ms/step - accuracy: 0.9996 - dice_avg: 0.9835 - dice_liver: 0.9974 - dice_tumor: 0.9695 - iou_liver: 0.9948 - iou_tumor: 0.9433 - loss: 0.3356 - precision_liver: 0.9970 - precision_tumor: 0.9647 - recall_liver: 0.9978 - recall_tumor: 0.9776Epoch 49 زمان: 39.97 ثانیه
+وزن‌ها: پس‌زمینه=0.71, کبد=0.74, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.090268135070801, 2.9916489124298096, 8.003267288208008]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9180, Precision کبد=0.9896, Dice متوسط=0.9541
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 402ms/step - accuracy: 0.9996 - dice_avg: 0.9835 - dice_liver: 0.9974 - dice_tumor: 0.9696 - iou_liver: 0.9948 - iou_tumor: 0.9434 - loss: 0.3356 - precision_liver: 0.9970 - precision_tumor: 0.9647 - recall_liver: 0.9978 - recall_tumor: 0.9777 - val_accuracy: 0.9986 - val_dice_avg: 0.9541 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9180 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8554 - val_loss: 0.3385 - val_precision_liver: 0.9896 - val_precision_tumor: 0.9229 - val_recall_liver: 0.9910 - val_recall_tumor: 0.9219 - learning_rate: 1.0500e-05
+Epoch 50/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 214ms/step - accuracy: 0.9997 - dice_avg: 0.9809 - dice_liver: 0.9983 - dice_tumor: 0.9636 - iou_liver: 0.9965 - iou_tumor: 0.9480 - loss: 0.3373 - precision_liver: 0.9978 - precision_tumor: 0.9591 - recall_liver: 0.9987 - recall_tumor: 0.9683Epoch 50 زمان: 25.64 ثانیه
+وزن‌ها: پس‌زمینه=0.69, کبد=0.74, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.570990562438965]
+پارامترهای بتا: [3.3582136631011963, 2.9916489124298096, 8.003267288208008]
+معیارها: Dice کبد=0.9899, Dice تومور=0.9338, Precision کبد=0.9873, Dice متوسط=0.9619
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 257ms/step - accuracy: 0.9997 - dice_avg: 0.9810 - dice_liver: 0.9983 - dice_tumor: 0.9637 - iou_liver: 0.9965 - iou_tumor: 0.9481 - loss: 0.3373 - precision_liver: 0.9978 - precision_tumor: 0.9592 - recall_liver: 0.9987 - recall_tumor: 0.9684 - val_accuracy: 0.9985 - val_dice_avg: 0.9619 - val_dice_liver: 0.9899 - val_dice_tumor: 0.9338 - val_iou_liver: 0.9801 - val_iou_tumor: 0.8791 - val_loss: 0.3386 - val_precision_liver: 0.9873 - val_precision_tumor: 0.9432 - val_recall_liver: 0.9926 - val_recall_tumor: 0.9275 - learning_rate: 1.0500e-05
+Epoch 51/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 219ms/step - accuracy: 0.9998 - dice_avg: 0.9886 - dice_liver: 0.9985 - dice_tumor: 0.9787 - iou_liver: 0.9969 - iou_tumor: 0.9596 - loss: 0.3367 - precision_liver: 0.9981 - precision_tumor: 0.9744 - recall_liver: 0.9989 - recall_tumor: 0.9838Epoch 51 زمان: 42.40 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.7, کبد=0.7, تومور=0.5, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.69, کبد=0.74, تومور=0.55, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [3.3582136631011963, 2.9916489124298096, 8.003267288208008]
+معیارها: Dice کبد=0.9902, Dice تومور=0.9409, Precision کبد=0.9901, Dice متوسط=0.9655
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 426ms/step - accuracy: 0.9998 - dice_avg: 0.9886 - dice_liver: 0.9985 - dice_tumor: 0.9787 - iou_liver: 0.9969 - iou_tumor: 0.9596 - loss: 0.3367 - precision_liver: 0.9981 - precision_tumor: 0.9744 - recall_liver: 0.9989 - recall_tumor: 0.9839 - val_accuracy: 0.9986 - val_dice_avg: 0.9655 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9409 - val_iou_liver: 0.9806 - val_iou_tumor: 0.8905 - val_loss: 0.3393 - val_precision_liver: 0.9901 - val_precision_tumor: 0.9375 - val_recall_liver: 0.9903 - val_recall_tumor: 0.9462 - learning_rate: 1.0500e-05
+Epoch 52/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 213ms/step - accuracy: 0.9998 - dice_avg: 0.9826 - dice_liver: 0.9985 - dice_tumor: 0.9666 - iou_liver: 0.9970 - iou_tumor: 0.9488 - loss: 0.3374 - precision_liver: 0.9983 - precision_tumor: 0.9584 - recall_liver: 0.9988 - recall_tumor: 0.9755Epoch 52 زمان: 25.84 ثانیه
+وزن‌ها: پس‌زمینه=0.69, کبد=0.73, تومور=0.55, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [3.3582136631011963, 3.254136562347412, 8.003267288208008]
+معیارها: Dice کبد=0.9900, Dice تومور=0.9219, Precision کبد=0.9890, Dice متوسط=0.9559
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 258ms/step - accuracy: 0.9998 - dice_avg: 0.9825 - dice_liver: 0.9985 - dice_tumor: 0.9666 - iou_liver: 0.9970 - iou_tumor: 0.9487 - loss: 0.3374 - precision_liver: 0.9983 - precision_tumor: 0.9583 - recall_liver: 0.9988 - recall_tumor: 0.9755 - val_accuracy: 0.9986 - val_dice_avg: 0.9559 - val_dice_liver: 0.9900 - val_dice_tumor: 0.9219 - val_iou_liver: 0.9801 - val_iou_tumor: 0.8636 - val_loss: 0.3390 - val_precision_liver: 0.9890 - val_precision_tumor: 0.9071 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9456 - learning_rate: 1.0500e-05
+Epoch 53/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 233ms/step - accuracy: 0.9998 - dice_avg: 0.9901 - dice_liver: 0.9985 - dice_tumor: 0.9817 - iou_liver: 0.9971 - iou_tumor: 0.9646 - loss: 0.3374 - precision_liver: 0.9983 - precision_tumor: 0.9732 - recall_liver: 0.9988 - recall_tumor: 0.9909Epoch 53 زمان: 27.43 ثانیه
+وزن‌ها: پس‌زمینه=0.69, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [3.3582136631011963, 3.254136562347412, 8.07676887512207]
+معیارها: Dice کبد=0.9902, Dice تومور=0.9289, Precision کبد=0.9890, Dice متوسط=0.9595
+100/100 ━━━━━━━━━━━━━━━━━━━━ 27s 275ms/step - accuracy: 0.9998 - dice_avg: 0.9901 - dice_liver: 0.9985 - dice_tumor: 0.9817 - iou_liver: 0.9971 - iou_tumor: 0.9646 - loss: 0.3374 - precision_liver: 0.9983 - precision_tumor: 0.9732 - recall_liver: 0.9988 - recall_tumor: 0.9909 - val_accuracy: 0.9986 - val_dice_avg: 0.9595 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9289 - val_iou_liver: 0.9805 - val_iou_tumor: 0.8712 - val_loss: 0.3392 - val_precision_liver: 0.9890 - val_precision_tumor: 0.9375 - val_recall_liver: 0.9913 - val_recall_tumor: 0.9233 - learning_rate: 1.0500e-05
+Epoch 54/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 254ms/step - accuracy: 0.9998 - dice_avg: 0.9895 - dice_liver: 0.9986 - dice_tumor: 0.9803 - iou_liver: 0.9973 - iou_tumor: 0.9626 - loss: 0.3364 - precision_liver: 0.9984 - precision_tumor: 0.9707 - recall_liver: 0.9989 - recall_tumor: 0.9908Epoch 54 زمان: 29.79 ثانیه
+وزن‌ها: پس‌زمینه=0.69, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [3.3582136631011963, 3.254136562347412, 8.146353721618652]
+معیارها: Dice کبد=0.9900, Dice تومور=0.9275, Precision کبد=0.9897, Dice متوسط=0.9587
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 299ms/step - accuracy: 0.9998 - dice_avg: 0.9895 - dice_liver: 0.9986 - dice_tumor: 0.9803 - iou_liver: 0.9973 - iou_tumor: 0.9626 - loss: 0.3364 - precision_liver: 0.9984 - precision_tumor: 0.9707 - recall_liver: 0.9989 - recall_tumor: 0.9908 - val_accuracy: 0.9986 - val_dice_avg: 0.9587 - val_dice_liver: 0.9900 - val_dice_tumor: 0.9275 - val_iou_liver: 0.9803 - val_iou_tumor: 0.8703 - val_loss: 0.3392 - val_precision_liver: 0.9897 - val_precision_tumor: 0.9421 - val_recall_liver: 0.9904 - val_recall_tumor: 0.9187 - learning_rate: 1.0500e-05
+Epoch 55/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9998 - dice_avg: 0.9878 - dice_liver: 0.9986 - dice_tumor: 0.9770 - iou_liver: 0.9973 - iou_tumor: 0.9584 - loss: 0.3371 - precision_liver: 0.9984 - precision_tumor: 0.9702 - recall_liver: 0.9989 - recall_tumor: 0.9845Epoch 55 زمان: 30.70 ثانیه
+وزن‌ها: پس‌زمینه=0.68, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [3.594419479370117, 3.254136562347412, 8.146353721618652]
+معیارها: Dice کبد=0.9898, Dice تومور=0.9274, Precision کبد=0.9878, Dice متوسط=0.9586
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 308ms/step - accuracy: 0.9998 - dice_avg: 0.9878 - dice_liver: 0.9986 - dice_tumor: 0.9769 - iou_liver: 0.9973 - iou_tumor: 0.9584 - loss: 0.3371 - precision_liver: 0.9984 - precision_tumor: 0.9701 - recall_liver: 0.9989 - recall_tumor: 0.9844 - val_accuracy: 0.9985 - val_dice_avg: 0.9586 - val_dice_liver: 0.9898 - val_dice_tumor: 0.9274 - val_iou_liver: 0.9798 - val_iou_tumor: 0.8694 - val_loss: 0.3391 - val_precision_liver: 0.9878 - val_precision_tumor: 0.9419 - val_recall_liver: 0.9918 - val_recall_tumor: 0.9178 - learning_rate: 1.0500e-05
+Epoch 56/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 262ms/step - accuracy: 0.9998 - dice_avg: 0.9909 - dice_liver: 0.9987 - dice_tumor: 0.9832 - iou_liver: 0.9973 - iou_tumor: 0.9678 - loss: 0.3371 - precision_liver: 0.9984 - precision_tumor: 0.9756 - recall_liver: 0.9990 - recall_tumor: 0.9919Epoch 56 زمان: 30.33 ثانیه
+وزن‌ها: پس‌زمینه=0.66, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [3.8183484077453613, 3.254136562347412, 8.146353721618652]
+معیارها: Dice کبد=0.9901, Dice تومور=0.8712, Precision کبد=0.9892, Dice متوسط=0.9306
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 304ms/step - accuracy: 0.9998 - dice_avg: 0.9909 - dice_liver: 0.9987 - dice_tumor: 0.9832 - iou_liver: 0.9973 - iou_tumor: 0.9678 - loss: 0.3371 - precision_liver: 0.9984 - precision_tumor: 0.9756 - recall_liver: 0.9990 - recall_tumor: 0.9919 - val_accuracy: 0.9986 - val_dice_avg: 0.9306 - val_dice_liver: 0.9901 - val_dice_tumor: 0.8712 - val_iou_liver: 0.9803 - val_iou_tumor: 0.8165 - val_loss: 0.3389 - val_precision_liver: 0.9892 - val_precision_tumor: 0.8686 - val_recall_liver: 0.9909 - val_recall_tumor: 0.8996 - learning_rate: 1.0500e-05
+Epoch 57/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9998 - dice_avg: 0.9891 - dice_liver: 0.9988 - dice_tumor: 0.9793 - iou_liver: 0.9975 - iou_tumor: 0.9684 - loss: 0.3366 - precision_liver: 0.9985 - precision_tumor: 0.9735 - recall_liver: 0.9991 - recall_tumor: 0.9854Epoch 57 زمان: 29.77 ثانیه
+وزن‌ها: پس‌زمینه=0.65, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.030782222747803, 3.254136562347412, 8.146353721618652]
+معیارها: Dice کبد=0.9902, Dice تومور=0.9395, Precision کبد=0.9892, Dice متوسط=0.9648
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 299ms/step - accuracy: 0.9998 - dice_avg: 0.9890 - dice_liver: 0.9988 - dice_tumor: 0.9793 - iou_liver: 0.9976 - iou_tumor: 0.9684 - loss: 0.3366 - precision_liver: 0.9985 - precision_tumor: 0.9735 - recall_liver: 0.9991 - recall_tumor: 0.9854 - val_accuracy: 0.9986 - val_dice_avg: 0.9648 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9395 - val_iou_liver: 0.9805 - val_iou_tumor: 0.8886 - val_loss: 0.3389 - val_precision_liver: 0.9892 - val_precision_tumor: 0.9394 - val_recall_liver: 0.9912 - val_recall_tumor: 0.9410 - learning_rate: 5.2500e-06
+Epoch 58/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9934 - dice_liver: 0.9990 - dice_tumor: 0.9879 - iou_liver: 0.9980 - iou_tumor: 0.9763 - loss: 0.3381 - precision_liver: 0.9988 - precision_tumor: 0.9826 - recall_liver: 0.9992 - recall_tumor: 0.9934Epoch 58 زمان: 39.88 ثانیه
+وزن‌ها: پس‌زمینه=0.65, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.030782222747803, 3.254136562347412, 8.208976745605469]
+معیارها: Dice کبد=0.9899, Dice تومور=0.9357, Precision کبد=0.9890, Dice متوسط=0.9628
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 401ms/step - accuracy: 0.9999 - dice_avg: 0.9934 - dice_liver: 0.9990 - dice_tumor: 0.9879 - iou_liver: 0.9980 - iou_tumor: 0.9763 - loss: 0.3381 - precision_liver: 0.9988 - precision_tumor: 0.9826 - recall_liver: 0.9992 - recall_tumor: 0.9934 - val_accuracy: 0.9986 - val_dice_avg: 0.9628 - val_dice_liver: 0.9899 - val_dice_tumor: 0.9357 - val_iou_liver: 0.9801 - val_iou_tumor: 0.8828 - val_loss: 0.3391 - val_precision_liver: 0.9890 - val_precision_tumor: 0.9332 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9403 - learning_rate: 5.2500e-06
+Epoch 59/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 216ms/step - accuracy: 0.9999 - dice_avg: 0.9934 - dice_liver: 0.9991 - dice_tumor: 0.9877 - iou_liver: 0.9982 - iou_tumor: 0.9760 - loss: 0.3376 - precision_liver: 0.9988 - precision_tumor: 0.9826 - recall_liver: 0.9994 - recall_tumor: 0.9931Epoch 59 زمان: 25.76 ثانیه
+وزن‌ها: پس‌زمینه=0.65, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.030782222747803, 3.254136562347412, 8.268463134765625]
+معیارها: Dice کبد=0.9901, Dice تومور=0.8900, Precision کبد=0.9891, Dice متوسط=0.9401
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 258ms/step - accuracy: 0.9999 - dice_avg: 0.9934 - dice_liver: 0.9991 - dice_tumor: 0.9877 - iou_liver: 0.9982 - iou_tumor: 0.9760 - loss: 0.3376 - precision_liver: 0.9988 - precision_tumor: 0.9826 - recall_liver: 0.9994 - recall_tumor: 0.9931 - val_accuracy: 0.9986 - val_dice_avg: 0.9401 - val_dice_liver: 0.9901 - val_dice_tumor: 0.8900 - val_iou_liver: 0.9805 - val_iou_tumor: 0.8370 - val_loss: 0.3391 - val_precision_liver: 0.9891 - val_precision_tumor: 0.8906 - val_recall_liver: 0.9912 - val_recall_tumor: 0.8938 - learning_rate: 5.2500e-06
+Epoch 60/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 219ms/step - accuracy: 0.9999 - dice_avg: 0.9889 - dice_liver: 0.9992 - dice_tumor: 0.9786 - iou_liver: 0.9985 - iou_tumor: 0.9636 - loss: 0.3355 - precision_liver: 0.9990 - precision_tumor: 0.9702 - recall_liver: 0.9994 - recall_tumor: 0.9883Epoch 60 زمان: 39.75 ثانیه
+وزن‌ها: پس‌زمینه=0.65, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.030782222747803, 3.254136562347412, 8.325006484985352]
+معیارها: Dice کبد=0.9900, Dice تومور=0.9330, Precision کبد=0.9894, Dice متوسط=0.9615
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 399ms/step - accuracy: 0.9999 - dice_avg: 0.9889 - dice_liver: 0.9992 - dice_tumor: 0.9786 - iou_liver: 0.9985 - iou_tumor: 0.9636 - loss: 0.3355 - precision_liver: 0.9990 - precision_tumor: 0.9702 - recall_liver: 0.9994 - recall_tumor: 0.9882 - val_accuracy: 0.9986 - val_dice_avg: 0.9615 - val_dice_liver: 0.9900 - val_dice_tumor: 0.9330 - val_iou_liver: 0.9802 - val_iou_tumor: 0.8780 - val_loss: 0.3390 - val_precision_liver: 0.9894 - val_precision_tumor: 0.9261 - val_recall_liver: 0.9906 - val_recall_tumor: 0.9423 - learning_rate: 5.2500e-06
+Epoch 61/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 212ms/step - accuracy: 0.9999 - dice_avg: 0.9925 - dice_liver: 0.9992 - dice_tumor: 0.9858 - iou_liver: 0.9984 - iou_tumor: 0.9753 - loss: 0.3364 - precision_liver: 0.9990 - precision_tumor: 0.9793 - recall_liver: 0.9994 - recall_tumor: 0.9925Epoch 61 زمان: 41.45 ثانیه
+وزن‌ها: پس‌زمینه=0.64, کبد=0.73, تومور=0.54, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.222438812255859, 3.254136562347412, 8.325006484985352]
+معیارها: Dice کبد=0.9904, Dice تومور=0.8956, Precision کبد=0.9907, Dice متوسط=0.9430
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 417ms/step - accuracy: 0.9999 - dice_avg: 0.9925 - dice_liver: 0.9992 - dice_tumor: 0.9857 - iou_liver: 0.9984 - iou_tumor: 0.9752 - loss: 0.3364 - precision_liver: 0.9990 - precision_tumor: 0.9793 - recall_liver: 0.9994 - recall_tumor: 0.9924 - val_accuracy: 0.9986 - val_dice_avg: 0.9430 - val_dice_liver: 0.9904 - val_dice_tumor: 0.8956 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8429 - val_loss: 0.3390 - val_precision_liver: 0.9907 - val_precision_tumor: 0.8877 - val_recall_liver: 0.9900 - val_recall_tumor: 0.9048 - learning_rate: 5.2500e-06
+Epoch 62/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 217ms/step - accuracy: 0.9999 - dice_avg: 0.9950 - dice_liver: 0.9993 - dice_tumor: 0.9907 - iou_liver: 0.9985 - iou_tumor: 0.9818 - loss: 0.3376 - precision_liver: 0.9991 - precision_tumor: 0.9854 - recall_liver: 0.9994 - recall_tumor: 0.9962Epoch 62 زمان: 40.56 ثانیه
+وزن‌ها: پس‌زمینه=0.64, کبد=0.73, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.222438812255859, 3.254136562347412, 8.377886772155762]
+معیارها: Dice کبد=0.9905, Dice تومور=0.9384, Precision کبد=0.9900, Dice متوسط=0.9644
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 408ms/step - accuracy: 0.9999 - dice_avg: 0.9950 - dice_liver: 0.9993 - dice_tumor: 0.9907 - iou_liver: 0.9985 - iou_tumor: 0.9818 - loss: 0.3376 - precision_liver: 0.9991 - precision_tumor: 0.9854 - recall_liver: 0.9994 - recall_tumor: 0.9962 - val_accuracy: 0.9986 - val_dice_avg: 0.9644 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9384 - val_iou_liver: 0.9811 - val_iou_tumor: 0.8876 - val_loss: 0.3389 - val_precision_liver: 0.9900 - val_precision_tumor: 0.9409 - val_recall_liver: 0.9910 - val_recall_tumor: 0.9379 - learning_rate: 2.6250e-06
+Epoch 63/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 211ms/step - accuracy: 0.9999 - dice_avg: 0.9948 - dice_liver: 0.9993 - dice_tumor: 0.9903 - iou_liver: 0.9985 - iou_tumor: 0.9811 - loss: 0.3375 - precision_liver: 0.9991 - precision_tumor: 0.9852 - recall_liver: 0.9995 - recall_tumor: 0.9957Epoch 63 زمان: 40.62 ثانیه
+وزن‌ها: پس‌زمینه=0.64, کبد=0.71, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.222438812255859, 3.463559150695801, 8.377886772155762]
+معیارها: Dice کبد=0.9901, Dice تومور=0.9218, Precision کبد=0.9889, Dice متوسط=0.9560
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 408ms/step - accuracy: 0.9999 - dice_avg: 0.9948 - dice_liver: 0.9993 - dice_tumor: 0.9903 - iou_liver: 0.9985 - iou_tumor: 0.9811 - loss: 0.3375 - precision_liver: 0.9991 - precision_tumor: 0.9852 - recall_liver: 0.9995 - recall_tumor: 0.9957 - val_accuracy: 0.9986 - val_dice_avg: 0.9560 - val_dice_liver: 0.9901 - val_dice_tumor: 0.9218 - val_iou_liver: 0.9804 - val_iou_tumor: 0.8630 - val_loss: 0.3387 - val_precision_liver: 0.9889 - val_precision_tumor: 0.9340 - val_recall_liver: 0.9913 - val_recall_tumor: 0.9199 - learning_rate: 2.6250e-06
+Epoch 64/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 217ms/step - accuracy: 0.9999 - dice_avg: 0.9960 - dice_liver: 0.9994 - dice_tumor: 0.9926 - iou_liver: 0.9987 - iou_tumor: 0.9854 - loss: 0.3370 - precision_liver: 0.9992 - precision_tumor: 0.9880 - recall_liver: 0.9995 - recall_tumor: 0.9973Epoch 64 زمان: 40.95 ثانیه
+وزن‌ها: پس‌زمینه=0.63, کبد=0.71, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.3988213539123535, 3.463559150695801, 8.377886772155762]
+معیارها: Dice کبد=0.9902, Dice تومور=0.9376, Precision کبد=0.9891, Dice متوسط=0.9639
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 412ms/step - accuracy: 0.9999 - dice_avg: 0.9960 - dice_liver: 0.9994 - dice_tumor: 0.9926 - iou_liver: 0.9987 - iou_tumor: 0.9854 - loss: 0.3370 - precision_liver: 0.9992 - precision_tumor: 0.9880 - recall_liver: 0.9995 - recall_tumor: 0.9973 - val_accuracy: 0.9986 - val_dice_avg: 0.9639 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9376 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8849 - val_loss: 0.3393 - val_precision_liver: 0.9891 - val_precision_tumor: 0.9349 - val_recall_liver: 0.9914 - val_recall_tumor: 0.9412 - learning_rate: 2.6250e-06
+Epoch 65/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 215ms/step - accuracy: 0.9999 - dice_avg: 0.9949 - dice_liver: 0.9994 - dice_tumor: 0.9904 - iou_liver: 0.9988 - iou_tumor: 0.9813 - loss: 0.3370 - precision_liver: 0.9993 - precision_tumor: 0.9840 - recall_liver: 0.9995 - recall_tumor: 0.9973Epoch 65 زمان: 25.59 ثانیه
+وزن‌ها: پس‌زمینه=0.63, کبد=0.71, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.3988213539123535, 3.463559150695801, 8.42658805847168]
+معیارها: Dice کبد=0.9904, Dice تومور=0.8889, Precision کبد=0.9906, Dice متوسط=0.9396
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9949 - dice_liver: 0.9994 - dice_tumor: 0.9904 - iou_liver: 0.9988 - iou_tumor: 0.9813 - loss: 0.3370 - precision_liver: 0.9993 - precision_tumor: 0.9840 - recall_liver: 0.9995 - recall_tumor: 0.9972 - val_accuracy: 0.9986 - val_dice_avg: 0.9396 - val_dice_liver: 0.9904 - val_dice_tumor: 0.8889 - val_iou_liver: 0.9810 - val_iou_tumor: 0.8314 - val_loss: 0.3393 - val_precision_liver: 0.9906 - val_precision_tumor: 0.8832 - val_recall_liver: 0.9903 - val_recall_tumor: 0.8999 - learning_rate: 2.6250e-06
+Epoch 66/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 218ms/step - accuracy: 0.9999 - dice_avg: 0.9946 - dice_liver: 0.9994 - dice_tumor: 0.9898 - iou_liver: 0.9989 - iou_tumor: 0.9816 - loss: 0.3369 - precision_liver: 0.9993 - precision_tumor: 0.9847 - recall_liver: 0.9995 - recall_tumor: 0.9967Epoch 66 زمان: 39.89 ثانیه
+وزن‌ها: پس‌زمینه=0.62, کبد=0.71, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.564212322235107, 3.463559150695801, 8.42658805847168]
+معیارها: Dice کبد=0.9899, Dice تومور=0.9371, Precision کبد=0.9887, Dice متوسط=0.9635
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 401ms/step - accuracy: 0.9999 - dice_avg: 0.9946 - dice_liver: 0.9994 - dice_tumor: 0.9898 - iou_liver: 0.9989 - iou_tumor: 0.9815 - loss: 0.3369 - precision_liver: 0.9993 - precision_tumor: 0.9847 - recall_liver: 0.9995 - recall_tumor: 0.9967 - val_accuracy: 0.9986 - val_dice_avg: 0.9635 - val_dice_liver: 0.9899 - val_dice_tumor: 0.9371 - val_iou_liver: 0.9801 - val_iou_tumor: 0.8851 - val_loss: 0.3390 - val_precision_liver: 0.9887 - val_precision_tumor: 0.9366 - val_recall_liver: 0.9912 - val_recall_tumor: 0.9399 - learning_rate: 2.6250e-06
+Epoch 67/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 214ms/step - accuracy: 0.9999 - dice_avg: 0.9958 - dice_liver: 0.9994 - dice_tumor: 0.9923 - iou_liver: 0.9988 - iou_tumor: 0.9848 - loss: 0.3363 - precision_liver: 0.9993 - precision_tumor: 0.9873 - recall_liver: 0.9995 - recall_tumor: 0.9974Epoch 67 زمان: 25.53 ثانیه
+وزن‌ها: پس‌زمینه=0.62, کبد=0.71, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.603689193725586]
+پارامترهای بتا: [4.722079277038574, 3.463559150695801, 8.42658805847168]
+معیارها: Dice کبد=0.9902, Dice تومور=0.9387, Precision کبد=0.9894, Dice متوسط=0.9644
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 256ms/step - accuracy: 0.9999 - dice_avg: 0.9958 - dice_liver: 0.9994 - dice_tumor: 0.9923 - iou_liver: 0.9988 - iou_tumor: 0.9848 - loss: 0.3363 - precision_liver: 0.9993 - precision_tumor: 0.9873 - recall_liver: 0.9995 - recall_tumor: 0.9974 - val_accuracy: 0.9986 - val_dice_avg: 0.9644 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9387 - val_iou_liver: 0.9806 - val_iou_tumor: 0.8875 - val_loss: 0.3390 - val_precision_liver: 0.9894 - val_precision_tumor: 0.9352 - val_recall_liver: 0.9911 - val_recall_tumor: 0.9439 - learning_rate: 1.3125e-06
+Epoch 68/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 221ms/step - accuracy: 0.9999 - dice_avg: 0.9873 - dice_liver: 0.9994 - dice_tumor: 0.9753 - iou_liver: 0.9989 - iou_tumor: 0.9672 - loss: 0.3372 - precision_liver: 0.9993 - precision_tumor: 0.9704 - recall_liver: 0.9996 - recall_tumor: 0.9803Epoch 68 زمان: 42.70 ثانیه
+بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه=0.6, کبد=0.7, تومور=0.5, ضریب تقویت تومور=1.00
+وزن‌ها: پس‌زمینه=0.62, کبد=0.71, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.722079277038574, 3.463559150695801, 8.42658805847168]
+معیارها: Dice کبد=0.9904, Dice تومور=0.9436, Precision کبد=0.9897, Dice متوسط=0.9670
+100/100 ━━━━━━━━━━━━━━━━━━━━ 43s 429ms/step - accuracy: 0.9999 - dice_avg: 0.9873 - dice_liver: 0.9994 - dice_tumor: 0.9752 - iou_liver: 0.9989 - iou_tumor: 0.9672 - loss: 0.3372 - precision_liver: 0.9993 - precision_tumor: 0.9704 - recall_liver: 0.9996 - recall_tumor: 0.9803 - val_accuracy: 0.9986 - val_dice_avg: 0.9670 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9436 - val_iou_liver: 0.9810 - val_iou_tumor: 0.8962 - val_loss: 0.3388 - val_precision_liver: 0.9897 - val_precision_tumor: 0.9406 - val_recall_liver: 0.9911 - val_recall_tumor: 0.9478 - learning_rate: 1.3125e-06
+Epoch 69/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 213ms/step - accuracy: 0.9999 - dice_avg: 0.9945 - dice_liver: 0.9995 - dice_tumor: 0.9895 - iou_liver: 0.9990 - iou_tumor: 0.9798 - loss: 0.3363 - precision_liver: 0.9994 - precision_tumor: 0.9823 - recall_liver: 0.9996 - recall_tumor: 0.9973Epoch 69 زمان: 37.93 ثانیه
+وزن‌ها: پس‌زمینه=0.62, کبد=0.70, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.722079277038574, 3.6472296714782715, 8.42658805847168]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9406, Precision کبد=0.9899, Dice متوسط=0.9655
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 381ms/step - accuracy: 0.9999 - dice_avg: 0.9945 - dice_liver: 0.9995 - dice_tumor: 0.9895 - iou_liver: 0.9990 - iou_tumor: 0.9798 - loss: 0.3363 - precision_liver: 0.9994 - precision_tumor: 0.9823 - recall_liver: 0.9996 - recall_tumor: 0.9973 - val_accuracy: 0.9986 - val_dice_avg: 0.9655 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9406 - val_iou_liver: 0.9808 - val_iou_tumor: 0.8909 - val_loss: 0.3386 - val_precision_liver: 0.9899 - val_precision_tumor: 0.9399 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9430 - learning_rate: 1.3125e-06
+Epoch 70/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 218ms/step - accuracy: 0.9999 - dice_avg: 0.9840 - dice_liver: 0.9994 - dice_tumor: 0.9686 - iou_liver: 0.9988 - iou_tumor: 0.9609 - loss: 0.3377 - precision_liver: 0.9993 - precision_tumor: 0.9640 - recall_liver: 0.9995 - recall_tumor: 0.9732Epoch 70 زمان: 26.11 ثانیه
+وزن‌ها: پس‌زمینه=0.62, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.722079277038574, 3.822833299636841, 8.42658805847168]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9386, Precision کبد=0.9898, Dice متوسط=0.9645
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 262ms/step - accuracy: 0.9999 - dice_avg: 0.9840 - dice_liver: 0.9994 - dice_tumor: 0.9687 - iou_liver: 0.9988 - iou_tumor: 0.9611 - loss: 0.3377 - precision_liver: 0.9993 - precision_tumor: 0.9642 - recall_liver: 0.9995 - recall_tumor: 0.9733 - val_accuracy: 0.9986 - val_dice_avg: 0.9645 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9386 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8869 - val_loss: 0.3390 - val_precision_liver: 0.9898 - val_precision_tumor: 0.9323 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9467 - learning_rate: 1.3125e-06
+Epoch 71/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 216ms/step - accuracy: 0.9999 - dice_avg: 0.9964 - dice_liver: 0.9995 - dice_tumor: 0.9933 - iou_liver: 0.9991 - iou_tumor: 0.9868 - loss: 0.3369 - precision_liver: 0.9994 - precision_tumor: 0.9889 - recall_liver: 0.9996 - recall_tumor: 0.9979Epoch 71 زمان: 25.72 ثانیه
+وزن‌ها: پس‌زمینه=0.62, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.722079277038574, 3.822833299636841, 8.469374656677246]
+معیارها: Dice کبد=0.9902, Dice تومور=0.9322, Precision کبد=0.9896, Dice متوسط=0.9612
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 258ms/step - accuracy: 0.9999 - dice_avg: 0.9964 - dice_liver: 0.9995 - dice_tumor: 0.9933 - iou_liver: 0.9991 - iou_tumor: 0.9868 - loss: 0.3369 - precision_liver: 0.9994 - precision_tumor: 0.9889 - recall_liver: 0.9996 - recall_tumor: 0.9979 - val_accuracy: 0.9986 - val_dice_avg: 0.9612 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9322 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8770 - val_loss: 0.3392 - val_precision_liver: 0.9896 - val_precision_tumor: 0.9319 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9337 - learning_rate: 1.3125e-06
+Epoch 72/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9967 - dice_liver: 0.9996 - dice_tumor: 0.9938 - iou_liver: 0.9991 - iou_tumor: 0.9877 - loss: 0.3371 - precision_liver: 0.9995 - precision_tumor: 0.9903 - recall_liver: 0.9997 - recall_tumor: 0.9974Epoch 72 زمان: 40.47 ثانیه
+وزن‌ها: پس‌زمینه=0.61, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.863286018371582, 3.822833299636841, 8.469374656677246]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9287, Precision کبد=0.9890, Dice متوسط=0.9595
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 407ms/step - accuracy: 0.9999 - dice_avg: 0.9967 - dice_liver: 0.9996 - dice_tumor: 0.9938 - iou_liver: 0.9991 - iou_tumor: 0.9877 - loss: 0.3371 - precision_liver: 0.9995 - precision_tumor: 0.9903 - recall_liver: 0.9997 - recall_tumor: 0.9974 - val_accuracy: 0.9986 - val_dice_avg: 0.9595 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9287 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8722 - val_loss: 0.3389 - val_precision_liver: 0.9890 - val_precision_tumor: 0.9277 - val_recall_liver: 0.9916 - val_recall_tumor: 0.9332 - learning_rate: 1.3125e-06
+Epoch 73/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 215ms/step - accuracy: 0.9999 - dice_avg: 0.9941 - dice_liver: 0.9995 - dice_tumor: 0.9887 - iou_liver: 0.9990 - iou_tumor: 0.9796 - loss: 0.3372 - precision_liver: 0.9994 - precision_tumor: 0.9830 - recall_liver: 0.9996 - recall_tumor: 0.9948Epoch 73 زمان: 40.36 ثانیه
+وزن‌ها: پس‌زمینه=0.61, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.863286018371582, 3.822833299636841, 8.509666442871094]
+معیارها: Dice کبد=0.9901, Dice تومور=0.9377, Precision کبد=0.9895, Dice متوسط=0.9639
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 406ms/step - accuracy: 0.9999 - dice_avg: 0.9941 - dice_liver: 0.9995 - dice_tumor: 0.9886 - iou_liver: 0.9990 - iou_tumor: 0.9796 - loss: 0.3372 - precision_liver: 0.9994 - precision_tumor: 0.9829 - recall_liver: 0.9996 - recall_tumor: 0.9948 - val_accuracy: 0.9986 - val_dice_avg: 0.9639 - val_dice_liver: 0.9901 - val_dice_tumor: 0.9377 - val_iou_liver: 0.9805 - val_iou_tumor: 0.8857 - val_loss: 0.3386 - val_precision_liver: 0.9895 - val_precision_tumor: 0.9325 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9447 - learning_rate: 1.3125e-06
+Epoch 74/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 215ms/step - accuracy: 0.9999 - dice_avg: 0.9964 - dice_liver: 0.9995 - dice_tumor: 0.9933 - iou_liver: 0.9989 - iou_tumor: 0.9868 - loss: 0.3366 - precision_liver: 0.9994 - precision_tumor: 0.9901 - recall_liver: 0.9996 - recall_tumor: 0.9965Epoch 74 زمان: 41.08 ثانیه
+وزن‌ها: پس‌زمینه=0.61, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.863286018371582, 3.9828298091888428, 8.509666442871094]
+معیارها: Dice کبد=0.9905, Dice تومور=0.9155, Precision کبد=0.9901, Dice متوسط=0.9530
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 413ms/step - accuracy: 0.9999 - dice_avg: 0.9964 - dice_liver: 0.9995 - dice_tumor: 0.9933 - iou_liver: 0.9989 - iou_tumor: 0.9868 - loss: 0.3366 - precision_liver: 0.9994 - precision_tumor: 0.9901 - recall_liver: 0.9996 - recall_tumor: 0.9965 - val_accuracy: 0.9986 - val_dice_avg: 0.9530 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9155 - val_iou_liver: 0.9812 - val_iou_tumor: 0.8632 - val_loss: 0.3393 - val_precision_liver: 0.9901 - val_precision_tumor: 0.9059 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9486 - learning_rate: 1.0000e-06
+Epoch 75/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 215ms/step - accuracy: 0.9999 - dice_avg: 0.9952 - dice_liver: 0.9995 - dice_tumor: 0.9909 - iou_liver: 0.9990 - iou_tumor: 0.9826 - loss: 0.3380 - precision_liver: 0.9994 - precision_tumor: 0.9867 - recall_liver: 0.9996 - recall_tumor: 0.9958Epoch 75 زمان: 25.88 ثانیه
+وزن‌ها: پس‌زمینه=0.61, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.863286018371582, 3.9828298091888428, 8.547651290893555]
+معیارها: Dice کبد=0.9904, Dice تومور=0.9354, Precision کبد=0.9900, Dice متوسط=0.9629
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 259ms/step - accuracy: 0.9999 - dice_avg: 0.9952 - dice_liver: 0.9995 - dice_tumor: 0.9909 - iou_liver: 0.9990 - iou_tumor: 0.9826 - loss: 0.3380 - precision_liver: 0.9994 - precision_tumor: 0.9867 - recall_liver: 0.9996 - recall_tumor: 0.9958 - val_accuracy: 0.9986 - val_dice_avg: 0.9629 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9354 - val_iou_liver: 0.9810 - val_iou_tumor: 0.8821 - val_loss: 0.3394 - val_precision_liver: 0.9900 - val_precision_tumor: 0.9286 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9437 - learning_rate: 1.0000e-06
+Epoch 76/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 218ms/step - accuracy: 0.9999 - dice_avg: 0.9968 - dice_liver: 0.9995 - dice_tumor: 0.9941 - iou_liver: 0.9991 - iou_tumor: 0.9883 - loss: 0.3373 - precision_liver: 0.9995 - precision_tumor: 0.9905 - recall_liver: 0.9996 - recall_tumor: 0.9978Epoch 76 زمان: 26.03 ثانیه
+وزن‌ها: پس‌زمینه=0.61, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.863286018371582, 3.9828298091888428, 8.584078788757324]
+معیارها: Dice کبد=0.9901, Dice تومور=0.9378, Precision کبد=0.9896, Dice متوسط=0.9640
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 260ms/step - accuracy: 0.9999 - dice_avg: 0.9968 - dice_liver: 0.9995 - dice_tumor: 0.9941 - iou_liver: 0.9991 - iou_tumor: 0.9883 - loss: 0.3373 - precision_liver: 0.9995 - precision_tumor: 0.9905 - recall_liver: 0.9996 - recall_tumor: 0.9978 - val_accuracy: 0.9986 - val_dice_avg: 0.9640 - val_dice_liver: 0.9901 - val_dice_tumor: 0.9378 - val_iou_liver: 0.9805 - val_iou_tumor: 0.8860 - val_loss: 0.3386 - val_precision_liver: 0.9896 - val_precision_tumor: 0.9334 - val_recall_liver: 0.9907 - val_recall_tumor: 0.9429 - learning_rate: 1.0000e-06
+Epoch 77/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9999 - dice_avg: 0.9971 - dice_liver: 0.9996 - dice_tumor: 0.9946 - iou_liver: 0.9992 - iou_tumor: 0.9894 - loss: 0.3374 - precision_liver: 0.9995 - precision_tumor: 0.9911 - recall_liver: 0.9997 - recall_tumor: 0.9982Epoch 77 زمان: 30.94 ثانیه
+وزن‌ها: پس‌زمینه=0.61, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.863286018371582, 3.9828298091888428, 8.61902904510498]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9277, Precision کبد=0.9899, Dice متوسط=0.9590
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 310ms/step - accuracy: 0.9999 - dice_avg: 0.9971 - dice_liver: 0.9996 - dice_tumor: 0.9946 - iou_liver: 0.9992 - iou_tumor: 0.9894 - loss: 0.3374 - precision_liver: 0.9995 - precision_tumor: 0.9911 - recall_liver: 0.9997 - recall_tumor: 0.9982 - val_accuracy: 0.9986 - val_dice_avg: 0.9590 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9277 - val_iou_liver: 0.9808 - val_iou_tumor: 0.8698 - val_loss: 0.3387 - val_precision_liver: 0.9899 - val_precision_tumor: 0.9208 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9383 - learning_rate: 1.0000e-06
+Epoch 78/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 263ms/step - accuracy: 0.9999 - dice_avg: 0.9964 - dice_liver: 0.9995 - dice_tumor: 0.9933 - iou_liver: 0.9990 - iou_tumor: 0.9869 - loss: 0.3373 - precision_liver: 0.9994 - precision_tumor: 0.9901 - recall_liver: 0.9996 - recall_tumor: 0.9966Epoch 78 زمان: 30.61 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.988079071044922, 3.9828298091888428, 8.61902904510498]
+معیارها: Dice کبد=0.9904, Dice تومور=0.9322, Precision کبد=0.9899, Dice متوسط=0.9613
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 307ms/step - accuracy: 0.9999 - dice_avg: 0.9964 - dice_liver: 0.9995 - dice_tumor: 0.9933 - iou_liver: 0.9990 - iou_tumor: 0.9869 - loss: 0.3373 - precision_liver: 0.9994 - precision_tumor: 0.9901 - recall_liver: 0.9996 - recall_tumor: 0.9966 - val_accuracy: 0.9986 - val_dice_avg: 0.9613 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9322 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8768 - val_loss: 0.3388 - val_precision_liver: 0.9899 - val_precision_tumor: 0.9303 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9377 - learning_rate: 1.0000e-06
+Epoch 79/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9999 - dice_avg: 0.9970 - dice_liver: 0.9995 - dice_tumor: 0.9944 - iou_liver: 0.9990 - iou_tumor: 0.9890 - loss: 0.3355 - precision_liver: 0.9994 - precision_tumor: 0.9920 - recall_liver: 0.9996 - recall_tumor: 0.9969Epoch 79 زمان: 30.01 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.69, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.988079071044922, 3.9828298091888428, 8.652050971984863]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9342, Precision کبد=0.9896, Dice متوسط=0.9622
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 301ms/step - accuracy: 0.9999 - dice_avg: 0.9970 - dice_liver: 0.9995 - dice_tumor: 0.9944 - iou_liver: 0.9990 - iou_tumor: 0.9890 - loss: 0.3355 - precision_liver: 0.9994 - precision_tumor: 0.9920 - recall_liver: 0.9996 - recall_tumor: 0.9969 - val_accuracy: 0.9986 - val_dice_avg: 0.9622 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9342 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8805 - val_loss: 0.3396 - val_precision_liver: 0.9896 - val_precision_tumor: 0.9297 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9421 - learning_rate: 1.0000e-06
+Epoch 80/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9999 - dice_avg: 0.9913 - dice_liver: 0.9995 - dice_tumor: 0.9830 - iou_liver: 0.9991 - iou_tumor: 0.9774 - loss: 0.3361 - precision_liver: 0.9995 - precision_tumor: 0.9801 - recall_liver: 0.9996 - recall_tumor: 0.9859Epoch 80 زمان: 39.66 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.68, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.988079071044922, 4.124460697174072, 8.652050971984863]
+معیارها: Dice کبد=0.9902, Dice تومور=0.9350, Precision کبد=0.9893, Dice متوسط=0.9626
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 398ms/step - accuracy: 0.9999 - dice_avg: 0.9913 - dice_liver: 0.9995 - dice_tumor: 0.9830 - iou_liver: 0.9991 - iou_tumor: 0.9774 - loss: 0.3362 - precision_liver: 0.9995 - precision_tumor: 0.9801 - recall_liver: 0.9996 - recall_tumor: 0.9859 - val_accuracy: 0.9986 - val_dice_avg: 0.9626 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9350 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8806 - val_loss: 0.3397 - val_precision_liver: 0.9893 - val_precision_tumor: 0.9351 - val_recall_liver: 0.9912 - val_recall_tumor: 0.9371 - learning_rate: 1.0000e-06
+Epoch 81/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 211ms/step - accuracy: 0.9999 - dice_avg: 0.9972 - dice_liver: 0.9996 - dice_tumor: 0.9948 - iou_liver: 0.9993 - iou_tumor: 0.9898 - loss: 0.3383 - precision_liver: 0.9995 - precision_tumor: 0.9925 - recall_liver: 0.9997 - recall_tumor: 0.9972Epoch 81 زمان: 25.27 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.67, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.988079071044922, 4.260601043701172, 8.652050971984863]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9290, Precision کبد=0.9900, Dice متوسط=0.9597
+100/100 ━━━━━━━━━━━━━━━━━━━━ 25s 253ms/step - accuracy: 0.9999 - dice_avg: 0.9972 - dice_liver: 0.9996 - dice_tumor: 0.9948 - iou_liver: 0.9993 - iou_tumor: 0.9897 - loss: 0.3383 - precision_liver: 0.9995 - precision_tumor: 0.9925 - recall_liver: 0.9997 - recall_tumor: 0.9972 - val_accuracy: 0.9986 - val_dice_avg: 0.9597 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9290 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8732 - val_loss: 0.3388 - val_precision_liver: 0.9900 - val_precision_tumor: 0.9194 - val_recall_liver: 0.9906 - val_recall_tumor: 0.9417 - learning_rate: 1.0000e-06
+Epoch 82/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 221ms/step - accuracy: 0.9999 - dice_avg: 0.9951 - dice_liver: 0.9995 - dice_tumor: 0.9908 - iou_liver: 0.9990 - iou_tumor: 0.9822 - loss: 0.3367 - precision_liver: 0.9995 - precision_tumor: 0.9853 - recall_liver: 0.9996 - recall_tumor: 0.9967Epoch 82 زمان: 39.81 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.67, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [4.988079071044922, 4.260601043701172, 8.682799339294434]
+معیارها: Dice کبد=0.9904, Dice تومور=0.9364, Precision کبد=0.9896, Dice متوسط=0.9634
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 400ms/step - accuracy: 0.9999 - dice_avg: 0.9952 - dice_liver: 0.9995 - dice_tumor: 0.9908 - iou_liver: 0.9990 - iou_tumor: 0.9822 - loss: 0.3367 - precision_liver: 0.9995 - precision_tumor: 0.9854 - recall_liver: 0.9996 - recall_tumor: 0.9967 - val_accuracy: 0.9986 - val_dice_avg: 0.9634 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9364 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8849 - val_loss: 0.3390 - val_precision_liver: 0.9896 - val_precision_tumor: 0.9305 - val_recall_liver: 0.9912 - val_recall_tumor: 0.9475 - learning_rate: 1.0000e-06
+Epoch 83/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 213ms/step - accuracy: 0.9999 - dice_avg: 0.9954 - dice_liver: 0.9994 - dice_tumor: 0.9915 - iou_liver: 0.9987 - iou_tumor: 0.9834 - loss: 0.3367 - precision_liver: 0.9992 - precision_tumor: 0.9866 - recall_liver: 0.9995 - recall_tumor: 0.9967Epoch 83 زمان: 25.41 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.67, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [5.100637912750244, 4.260601043701172, 8.682799339294434]
+معیارها: Dice کبد=0.9900, Dice تومور=0.9406, Precision کبد=0.9891, Dice متوسط=0.9653
+100/100 ━━━━━━━━━━━━━━━━━━━━ 25s 255ms/step - accuracy: 0.9999 - dice_avg: 0.9954 - dice_liver: 0.9994 - dice_tumor: 0.9915 - iou_liver: 0.9987 - iou_tumor: 0.9834 - loss: 0.3367 - precision_liver: 0.9992 - precision_tumor: 0.9866 - recall_liver: 0.9995 - recall_tumor: 0.9967 - val_accuracy: 0.9986 - val_dice_avg: 0.9653 - val_dice_liver: 0.9900 - val_dice_tumor: 0.9406 - val_iou_liver: 0.9802 - val_iou_tumor: 0.8901 - val_loss: 0.3391 - val_precision_liver: 0.9891 - val_precision_tumor: 0.9345 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9475 - learning_rate: 1.0000e-06
+Epoch 84/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 223ms/step - accuracy: 0.9999 - dice_avg: 0.9870 - dice_liver: 0.9995 - dice_tumor: 0.9744 - iou_liver: 0.9991 - iou_tumor: 0.9683 - loss: 0.3353 - precision_liver: 0.9994 - precision_tumor: 0.9713 - recall_liver: 0.9997 - recall_tumor: 0.9776Epoch 84 زمان: 26.87 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.66, تومور=0.53, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [5.100637912750244, 4.387513637542725, 8.682799339294434]
+معیارها: Dice کبد=0.9905, Dice تومور=0.9316, Precision کبد=0.9903, Dice متوسط=0.9610
+100/100 ━━━━━━━━━━━━━━━━━━━━ 27s 269ms/step - accuracy: 0.9999 - dice_avg: 0.9870 - dice_liver: 0.9995 - dice_tumor: 0.9745 - iou_liver: 0.9991 - iou_tumor: 0.9684 - loss: 0.3353 - precision_liver: 0.9994 - precision_tumor: 0.9713 - recall_liver: 0.9997 - recall_tumor: 0.9777 - val_accuracy: 0.9986 - val_dice_avg: 0.9610 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9316 - val_iou_liver: 0.9811 - val_iou_tumor: 0.8766 - val_loss: 0.3385 - val_precision_liver: 0.9903 - val_precision_tumor: 0.9276 - val_recall_liver: 0.9906 - val_recall_tumor: 0.9371 - learning_rate: 1.0000e-06
+Epoch 85/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9999 - dice_avg: 0.9963 - dice_liver: 0.9996 - dice_tumor: 0.9930 - iou_liver: 0.9993 - iou_tumor: 0.9866 - loss: 0.3369 - precision_liver: 0.9996 - precision_tumor: 0.9887 - recall_liver: 0.9997 - recall_tumor: 0.9979Epoch 85 زمان: 29.88 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.66, تومور=0.52, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [5.100637912750244, 4.387513637542725, 8.711479187011719]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9379, Precision کبد=0.9892, Dice متوسط=0.9641
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 300ms/step - accuracy: 0.9999 - dice_avg: 0.9963 - dice_liver: 0.9996 - dice_tumor: 0.9930 - iou_liver: 0.9993 - iou_tumor: 0.9866 - loss: 0.3369 - precision_liver: 0.9995 - precision_tumor: 0.9887 - recall_liver: 0.9997 - recall_tumor: 0.9979 - val_accuracy: 0.9986 - val_dice_avg: 0.9641 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9379 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8858 - val_loss: 0.3391 - val_precision_liver: 0.9892 - val_precision_tumor: 0.9390 - val_recall_liver: 0.9913 - val_recall_tumor: 0.9384 - learning_rate: 1.0000e-06
+Epoch 86/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 260ms/step - accuracy: 0.9999 - dice_avg: 0.9926 - dice_liver: 0.9995 - dice_tumor: 0.9858 - iou_liver: 0.9990 - iou_tumor: 0.9797 - loss: 0.3380 - precision_liver: 0.9994 - precision_tumor: 0.9817 - recall_liver: 0.9996 - recall_tumor: 0.9900Epoch 86 زمان: 39.98 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.66, تومور=0.52, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [5.100637912750244, 4.387513637542725, 8.739107131958008]
+معیارها: Dice کبد=0.9901, Dice تومور=0.9310, Precision کبد=0.9894, Dice متوسط=0.9606
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 402ms/step - accuracy: 0.9999 - dice_avg: 0.9926 - dice_liver: 0.9995 - dice_tumor: 0.9857 - iou_liver: 0.9990 - iou_tumor: 0.9796 - loss: 0.3380 - precision_liver: 0.9994 - precision_tumor: 0.9817 - recall_liver: 0.9996 - recall_tumor: 0.9900 - val_accuracy: 0.9986 - val_dice_avg: 0.9606 - val_dice_liver: 0.9901 - val_dice_tumor: 0.9310 - val_iou_liver: 0.9804 - val_iou_tumor: 0.8774 - val_loss: 0.3390 - val_precision_liver: 0.9894 - val_precision_tumor: 0.9162 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9530 - learning_rate: 1.0000e-06
+Epoch 87/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 218ms/step - accuracy: 0.9999 - dice_avg: 0.9740 - dice_liver: 0.9996 - dice_tumor: 0.9483 - iou_liver: 0.9992 - iou_tumor: 0.9417 - loss: 0.3355 - precision_liver: 0.9995 - precision_tumor: 0.9434 - recall_liver: 0.9997 - recall_tumor: 0.9550Epoch 87 زمان: 26.03 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.66, تومور=0.52, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [5.100637912750244, 4.387513637542725, 8.765731811523438]
+معیارها: Dice کبد=0.9901, Dice تومور=0.8948, Precision کبد=0.9893, Dice متوسط=0.9425
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 261ms/step - accuracy: 0.9999 - dice_avg: 0.9741 - dice_liver: 0.9996 - dice_tumor: 0.9485 - iou_liver: 0.9992 - iou_tumor: 0.9419 - loss: 0.3355 - precision_liver: 0.9995 - precision_tumor: 0.9436 - recall_liver: 0.9997 - recall_tumor: 0.9552 - val_accuracy: 0.9986 - val_dice_avg: 0.9425 - val_dice_liver: 0.9901 - val_dice_tumor: 0.8948 - val_iou_liver: 0.9805 - val_iou_tumor: 0.8410 - val_loss: 0.3388 - val_precision_liver: 0.9893 - val_precision_tumor: 0.8893 - val_recall_liver: 0.9910 - val_recall_tumor: 0.9029 - learning_rate: 1.0000e-06
+Epoch 88/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 220ms/step - accuracy: 0.9999 - dice_avg: 0.9966 - dice_liver: 0.9996 - dice_tumor: 0.9935 - iou_liver: 0.9992 - iou_tumor: 0.9873 - loss: 0.3370 - precision_liver: 0.9995 - precision_tumor: 0.9898 - recall_liver: 0.9997 - recall_tumor: 0.9973Epoch 88 زمان: 26.23 ثانیه
+وزن‌ها: پس‌زمینه=0.60, کبد=0.66, تومور=0.52, ضریب تقویت تومور=1.00
+پارامترهای آلفا: [7.574779510498047, 8.671783447265625, 9.626331329345703]
+پارامترهای بتا: [5.100637912750244, 4.387513637542725, 8.791400909423828]
+معیارها: Dice کبد=0.9903, Dice تومور=0.9376, Precision کبد=0.9896, Dice متوسط=0.9639
+100/100 ━━━━━━━━━━━━━━━━━━━━ 26s 263ms/step - accuracy: 0.9999 - dice_avg: 0.9966 - dice_liver: 0.9996 - dice_tumor: 0.9935 - iou_liver: 0.9992 - iou_tumor: 0.9873 - loss: 0.3370 - precision_liver: 0.9995 - precision_tumor: 0.9898 - recall_liver: 0.9997 - recall_tumor: 0.9973 - val_accuracy: 0.9986 - val_dice_avg: 0.9639 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9376 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8851 - val_loss: 0.3391 - val_precision_liver: 0.9896 - val_precision_tumor: 0.9389 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9371 - learning_rate: 1.0000e-06
+زمان کل آموزش: 52.18 دقیقه
+تاریخچه Bayesian Learning Automata ذخیره شد
+بچ 1 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [122038   8912    122]
+تعداد پیکسل‌های تومور قبل از آستانه: 122
+تعداد پیکسل‌های تومور بعد از آستانه: 122
+تعداد نواحی کوچک حذف‌شده (کبد): 1
+تعداد نواحی کوچک حذف‌شده (تومور): 3
+بچ 1 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [122043   8910    119]
+احتمال‌های اولیه (اولین نمونه): [0.57601476 0.21199428 0.21199098]
+برچسب پیش‌بینی‌شده: 0 برچسب واقعی: 0
+تعداد پیکسل‌های واقعی کبد: 840
+تعداد پیکسل‌های واقعی تومور: 93
+توزیع واقعی: [122080   8884    108]
+بچ 2 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [124147   6885     40]
+تعداد پیکسل‌های تومور قبل از آستانه: 40
+تعداد پیکسل‌های تومور بعد از آستانه: 40
+تعداد نواحی کوچک حذف‌شده (کبد): 3
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 2 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [124152   6881     39]
+بچ 3 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [122787   7332    953]
+تعداد پیکسل‌های تومور قبل از آستانه: 953
+تعداد پیکسل‌های تومور بعد از آستانه: 953
+تعداد نواحی کوچک حذف‌شده (کبد): 8
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 3 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [122852   7267    953]
+بچ 4 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [122415   8063    594]
+تعداد پیکسل‌های تومور قبل از آستانه: 594
+تعداد پیکسل‌های تومور بعد از آستانه: 594
+تعداد نواحی کوچک حذف‌شده (کبد): 5
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 4 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [122429   8051    592]
+بچ 5 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [120372  10456    244]
+تعداد پیکسل‌های تومور قبل از آستانه: 244
+تعداد پیکسل‌های تومور بعد از آستانه: 244
+تعداد نواحی کوچک حذف‌شده (کبد): 0
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 5 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [120372  10456    244]
+بچ 6 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [123554   7287    231]
+تعداد پیکسل‌های تومور قبل از آستانه: 231
+تعداد پیکسل‌های تومور بعد از آستانه: 231
+تعداد نواحی کوچک حذف‌شده (کبد): 2
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 6 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [123573   7268    231]
+بچ 7 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [123131   7833    108]
+تعداد پیکسل‌های تومور قبل از آستانه: 108
+تعداد پیکسل‌های تومور بعد از آستانه: 108
+تعداد نواحی کوچک حذف‌شده (کبد): 1
+تعداد نواحی کوچک حذف‌شده (تومور): 2
+بچ 7 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [123163   7804    105]
+بچ 8 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [124155   6837     80]
+تعداد پیکسل‌های تومور قبل از آستانه: 80
+تعداد پیکسل‌های تومور بعد از آستانه: 80
+تعداد نواحی کوچک حذف‌شده (کبد): 2
+تعداد نواحی کوچک حذف‌شده (تومور): 2
+بچ 8 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [124174   6820     78]
+بچ 9 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [119477  11383    212]
+تعداد پیکسل‌های تومور قبل از آستانه: 212
+تعداد پیکسل‌های تومور بعد از آستانه: 212
+تعداد نواحی کوچک حذف‌شده (کبد): 0
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 9 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [119477  11383    212]
+بچ 10 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [120525  10259    288]
+تعداد پیکسل‌های تومور قبل از آستانه: 288
+تعداد پیکسل‌های تومور بعد از آستانه: 288
+تعداد نواحی کوچک حذف‌شده (کبد): 2
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 10 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [120548  10236    288]
+بچ 11 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [119127  11232    713]
+تعداد پیکسل‌های تومور قبل از آستانه: 713
+تعداد پیکسل‌های تومور بعد از آستانه: 713
+تعداد نواحی کوچک حذف‌شده (کبد): 2
+تعداد نواحی کوچک حذف‌شده (تومور): 2
+بچ 11 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [119140  11222    710]
+بچ 12 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [116904  13829    339]
+تعداد پیکسل‌های تومور قبل از آستانه: 339
+تعداد پیکسل‌های تومور بعد از آستانه: 339
+تعداد نواحی کوچک حذف‌شده (کبد): 0
+تعداد نواحی کوچک حذف‌شده (تومور): 2
+بچ 12 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [116907  13829    336]
+بچ 13 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [121289   9633    150]
+تعداد پیکسل‌های تومور قبل از آستانه: 150
+تعداد پیکسل‌های تومور بعد از آستانه: 150
+تعداد نواحی کوچک حذف‌شده (کبد): 2
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 13 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [121312   9611    149]
+بچ 14 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [119609  11305    158]
+تعداد پیکسل‌های تومور قبل از آستانه: 158
+تعداد پیکسل‌های تومور بعد از آستانه: 158
+تعداد نواحی کوچک حذف‌شده (کبد): 0
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 14 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [119609  11305    158]
+بچ 15 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [121981   8966    125]
+تعداد پیکسل‌های تومور قبل از آستانه: 125
+تعداد پیکسل‌های تومور بعد از آستانه: 125
+تعداد نواحی کوچک حذف‌شده (کبد): 2
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 15 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [122009   8940    123]
+بچ 16 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [122884   8077    111]
+تعداد پیکسل‌های تومور قبل از آستانه: 111
+تعداد پیکسل‌های تومور بعد از آستانه: 111
+تعداد نواحی کوچک حذف‌شده (کبد): 1
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 16 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [122908   8053    111]
+بچ 17 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [123203   7807     62]
+تعداد پیکسل‌های تومور قبل از آستانه: 62
+تعداد پیکسل‌های تومور بعد از آستانه: 62
+تعداد نواحی کوچک حذف‌شده (کبد): 0
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 17 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [123203   7807     62]
+بچ 18 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [121309   9648    115]
+تعداد پیکسل‌های تومور قبل از آستانه: 115
+تعداد پیکسل‌های تومور بعد از آستانه: 115
+تعداد نواحی کوچک حذف‌شده (کبد): 1
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 18 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [121325   9632    115]
+بچ 19 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [121129   9602    341]
+تعداد پیکسل‌های تومور قبل از آستانه: 341
+تعداد پیکسل‌های تومور بعد از آستانه: 341
+تعداد نواحی کوچک حذف‌شده (کبد): 1
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 19 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [121146   9587    339]
+بچ 20 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [120362  10542    168]
+تعداد پیکسل‌های تومور قبل از آستانه: 168
+تعداد پیکسل‌های تومور بعد از آستانه: 168
+تعداد نواحی کوچک حذف‌شده (کبد): 1
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 20 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [120364  10541    167]
+بچ 21 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [121840   8966    266]
+تعداد پیکسل‌های تومور قبل از آستانه: 266
+تعداد پیکسل‌های تومور بعد از آستانه: 266
+تعداد نواحی کوچک حذف‌شده (کبد): 3
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 21 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [121865   8943    264]
+بچ 22 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [121031   9518    523]
+تعداد پیکسل‌های تومور قبل از آستانه: 523
+تعداد پیکسل‌های تومور بعد از آستانه: 523
+تعداد نواحی کوچک حذف‌شده (کبد): 5
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 22 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [121076   9473    523]
+بچ 23 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [120343  10214    515]
+تعداد پیکسل‌های تومور قبل از آستانه: 515
+تعداد پیکسل‌های تومور بعد از آستانه: 515
+تعداد نواحی کوچک حذف‌شده (کبد): 3
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 23 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [120347  10210    515]
+بچ 24 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [117561  13315    196]
+تعداد پیکسل‌های تومور قبل از آستانه: 196
+تعداد پیکسل‌های تومور بعد از آستانه: 196
+تعداد نواحی کوچک حذف‌شده (کبد): 1
+تعداد نواحی کوچک حذف‌شده (تومور): 0
+بچ 24 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [117567  13309    196]
+بچ 25 - توزیع پیش‌بینی‌ها (قبل از پس‌پردازش): [119370  10900    802]
+تعداد پیکسل‌های تومور قبل از آستانه: 802
+تعداد پیکسل‌های تومور بعد از آستانه: 802
+تعداد نواحی کوچک حذف‌شده (کبد): 5
+تعداد نواحی کوچک حذف‌شده (تومور): 1
+بچ 25 - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش): [119421  10851    800]
+تعداد نمونه‌های Liver: 200, Tumor: 91
+میانگین DSC کبد: 0.9725
+میانگین DSC تومور: 0.8603
+میانگین IoU کبد: 0.9604
+میانگین IoU تومور: 0.8112
+میانگین Precision کبد: 0.9725
+میانگین Precision تومور: 0.8537
+میانگین Recall کبد: 0.9725
+میانگین Recall تومور: 0.8812
+میانگین VOE کبد: 0.0396
+میانگین VOE تومور: 0.1888
+میانگین RVD کبد: 0.0238
+میانگین RVD تومور: 0.1899
+میانگین ASSD کبد: 0.2360
+میانگین ASSD تومور: 0.2135
+میانگین MSD کبد: 3.4262
+میانگین MSD تومور: 1.5704
+ICC کبد: 0.9997
+ICC تومور: 0.9967
+مدل نهایی ذخیره شد
+بهترین وزن‌ها: پس‌زمینه: 0.6, کبد: 0.7, تومور: 0.5
+وزن‌های BLA ذخیره شدند

@@ -1,0 +1,941 @@
+import os
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers, Model, callbacks
+from tensorflow.keras import ops as K
+from sklearn.model_selection import train_test_split
+from google.colab import drive
+import matplotlib.pyplot as plt
+import json
+import time
+import random
+from skimage import measure
+import scipy.ndimage as ndimage
+from scipy.spatial.distance import cdist
+from sklearn.metrics import r2_score
+
+print("GPU Available:", tf.config.list_physical_devices('GPU'))
+print("TensorFlow Version:", tf.__version__)
+drive.mount('/content/drive', force_remount=True)
+
+# محدود کردن حافظه GPU
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    try:
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+    except RuntimeError as e:
+        print(e)
+
+# توابع معیارها
+def dice_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    denominator = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f)
+    return tf.where(denominator > 0, (2. * intersection + 1e-5) / (denominator + 1e-5), 0.0)
+
+def iou_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    union = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) - intersection
+    return tf.where(union > 0, (intersection + 1e-5) / (union + 1e-5), 0.0)
+
+def precision_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    true_positives = tf.reduce_sum(y_true_f * y_pred_f)
+    predicted_positives = tf.reduce_sum(y_pred_f)
+    return tf.where(predicted_positives > 0, true_positives / (predicted_positives + 1e-5), 0.0)
+
+def recall_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    true_positives = tf.reduce_sum(y_true_f * y_pred_f)
+    actual_positives = tf.reduce_sum(y_true_f)
+    return tf.where(actual_positives > 0, true_positives / (actual_positives + 1e-5), 0.0)
+
+def dice_background(y_true, y_pred):
+    return dice_per_class(y_true, y_pred, 0)
+
+def dice_liver(y_true, y_pred):
+    return dice_per_class(y_true, y_pred, 1)
+
+def dice_tumor(y_true, y_pred):
+    return dice_per_class(y_true, y_pred, 2)
+
+def iou_liver(y_true, y_pred):
+    return iou_per_class(y_true, y_pred, 1)
+
+def iou_tumor(y_true, y_pred):
+    return iou_per_class(y_true, y_pred, 2)
+
+def precision_liver(y_true, y_pred):
+    return precision_per_class(y_true, y_pred, 1)
+
+def precision_tumor(y_true, y_pred):
+    return precision_per_class(y_true, y_pred, 2)
+
+def recall_liver(y_true, y_pred):
+    return recall_per_class(y_true, y_pred, 1)
+
+def recall_tumor(y_true, y_pred):
+    return recall_per_class(y_true, y_pred, 2)
+
+def dice_avg(y_true, y_pred):
+    dice_l = dice_liver(y_true, y_pred)
+    dice_t = dice_tumor(y_true, y_pred)
+    return (dice_l + dice_t) / 2
+
+def tversky_loss(y_true, y_pred, alpha=0.6, beta=0.4):
+    y_true_f = tf.one_hot(tf.cast(y_true, tf.int32), depth=3)
+    y_pred_f = tf.nn.softmax(y_pred, axis=-1)
+    numerator = tf.reduce_sum(y_true_f * y_pred_f, axis=[1, 2])
+    denominator = numerator + alpha * tf.reduce_sum(y_true_f * (1 - y_pred_f), axis=[1, 2]) + \
+                  beta * tf.reduce_sum((1 - y_true_f) * y_pred_f, axis=[1, 2])
+    tversky = numerator / (denominator + 1e-5)
+    return tf.where(denominator > 0, 1 - tf.reduce_mean(tversky), 0.0)
+
+def focal_loss(gamma=2., alpha=0.25):
+    def focal_loss_fixed(y_true, y_pred):
+        y_true = tf.one_hot(tf.cast(y_true, tf.int32), depth=3)
+        y_pred = tf.clip_by_value(y_pred, 1e-7, 1. - 1e-7)
+        ce = -y_true * tf.math.log(y_pred)
+        weight = y_true * tf.pow(1 - y_pred, gamma)
+        fl = alpha * weight * ce
+        return tf.reduce_mean(fl)
+    return focal_loss_fixed
+
+# Hierarchical Learning Automata
+class HierarchicalLearningAutomata:
+    def __init__(self, num_classes=3, initial_weights=None, alpha_high=0.2, beta_high=0.1, alpha_low=0.15, beta_low=0.08, liver_priority=1.5, tumor_priority=4.0):
+        self.num_classes = num_classes
+        self.alpha_high = alpha_high
+        self.beta_high = beta_high
+        self.alpha_low = alpha_low
+        self.beta_low = beta_low
+        self.liver_priority = liver_priority
+        self.tumor_priority = tumor_priority
+        self.weights = np.array(initial_weights) if initial_weights is not None else np.ones(num_classes) * 7.0
+        self.probabilities = self.weights / np.sum(self.weights)
+        self.tumor_boost = 3.0
+        self.history = []
+        self.best_weights = self.weights.copy()
+        self.best_metric = 0.0
+        self.moving_avg_dice_liver = []
+        self.moving_avg_dice_tumor = []
+        self.window_size = 5
+        # High-level automaton: Selects which class to prioritize
+        self.high_level_probs = np.ones(num_classes) / num_classes
+        # Low-level automata: One per class, actions = [increase, decrease, no change]
+        self.low_level_probs = [np.ones(3) / 3 for _ in range(num_classes)]
+        self.low_level_actions = {0: 0.5, 1: -0.5, 2: 0.0}  # Increase, decrease, no change
+
+    def select_action(self):
+        # High-level decision
+        if len(self.moving_avg_dice_tumor) >= self.window_size and np.mean(self.moving_avg_dice_tumor[-self.window_size:]) < 0.80:
+            selected_class = 2  # Prioritize tumor
+        elif len(self.moving_avg_dice_liver) >= self.window_size and np.mean(self.moving_avg_dice_liver[-self.window_size:]) < 0.90:
+            selected_class = 1  # Prioritize liver
+        else:
+            adjusted_probs = self.high_level_probs.copy()
+            adjusted_probs[1] *= self.liver_priority
+            adjusted_probs[2] *= self.tumor_priority * self.tumor_boost
+            adjusted_probs /= np.sum(adjusted_probs)
+            selected_class = np.random.choice(self.num_classes, p=adjusted_probs)
+        # Low-level decision for the selected class
+        low_level_action = np.random.choice(3, p=self.low_level_probs[selected_class])
+        return selected_class, low_level_action
+
+    def update_weights(self, selected_class, low_level_action, reward, metric, liver_metric, tumor_metric, precision_liver, epoch):
+        self.moving_avg_dice_liver.append(liver_metric)
+        self.moving_avg_dice_tumor.append(tumor_metric)
+        
+        if len(self.moving_avg_dice_tumor) >= self.window_size:
+            avg_dice_tumor = np.mean(self.moving_avg_dice_tumor[-self.window_size:])
+            if avg_dice_tumor < 0.80:
+                self.tumor_boost = min(self.tumor_boost + 0.1, 3.0)
+            else:
+                self.tumor_boost = max(self.tumor_boost - 0.05, 1.0)
+
+        combined_metric = 0.4 * liver_metric + 0.4 * tumor_metric + 0.2 * precision_liver
+        if combined_metric > self.best_metric:
+            self.best_metric = combined_metric
+            self.best_weights = self.weights.copy()
+            print(f"بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه={self.best_weights[0]:.1f}, "
+                  f"کبد={self.best_weights[1]:.1f}, تومور={self.best_weights[2]:.1f}, "
+                  f"ضریب تقویت تومور={self.tumor_boost:.2f}")
+
+        # Adaptive learning rates
+        alpha_high = self.alpha_high * np.exp(-epoch / 50) + 0.01
+        beta_high = self.beta_high * np.exp(-epoch / 50) + 0.005
+        alpha_low = self.alpha_low * np.exp(-epoch / 50) + 0.008
+        beta_low = self.beta_low * np.exp(-epoch / 50) + 0.004
+
+        # Update high-level probabilities
+        if reward > 0:
+            self.high_level_probs[selected_class] += alpha_high * (1 - self.high_level_probs[selected_class])
+            for i in range(self.num_classes):
+                if i != selected_class:
+                    self.high_level_probs[i] *= (1 - alpha_high)
+        else:
+            self.high_level_probs[selected_class] = max(0.01, self.high_level_probs[selected_class] - beta_high * self.high_level_probs[selected_class])
+            for i in range(self.num_classes):
+                if i != selected_class:
+                    self.high_level_probs[i] += beta_high * self.high_level_probs[selected_class] / (self.num_classes - 1)
+        self.high_level_probs /= np.sum(self.high_level_probs)
+
+        # Update low-level probabilities for the selected class
+        if reward > 0:
+            self.low_level_probs[selected_class][low_level_action] += alpha_low * (1 - self.low_level_probs[selected_class][low_level_action])
+            for i in range(3):
+                if i != low_level_action:
+                    self.low_level_probs[selected_class][i] *= (1 - alpha_low)
+        else:
+            self.low_level_probs[selected_class][low_level_action] = max(0.01, self.low_level_probs[selected_class][low_level_action] - beta_low * self.low_level_probs[selected_class][low_level_action])
+            for i in range(3):
+                if i != low_level_action:
+                    self.low_level_probs[selected_class][i] += beta_low * self.low_level_probs[selected_class][low_level_action] / 2
+        self.low_level_probs[selected_class] /= np.sum(self.low_level_probs[selected_class])
+
+        # Update weights based on low-level action
+        self.weights[selected_class] += self.low_level_actions[low_level_action]
+        if selected_class == 2 and tumor_metric < 0.80:
+            self.weights[2] += 0.5 * self.tumor_boost
+        if selected_class == 1 and liver_metric < 0.90:
+            self.weights[1] += 0.5
+        self.weights = np.clip(self.weights, 1.0, 10.0)
+        self.probabilities = self.weights / np.sum(self.weights)
+
+        # Store history
+        self.history.append({
+            'weights': self.weights.tolist(),
+            'probabilities': self.probabilities.tolist(),
+            'metric': float(metric),
+            'liver_metric': float(liver_metric),
+            'tumor_metric': float(tumor_metric),
+            'precision_liver': float(precision_liver),
+            'tumor_boost': float(self.tumor_boost),
+            'high_level_action': int(selected_class),
+            'low_level_action': int(low_level_action),
+            'high_level_probs': self.high_level_probs.tolist(),
+            'low_level_probs': [probs.tolist() for probs in self.low_level_probs]
+        })
+
+    def get_weights(self):
+        return self.weights
+
+    def get_best_weights(self):
+        return self.best_weights
+
+    def save_history(self, filepath):
+        with open(filepath, 'w') as f:
+            json.dump(self.history, f, indent=4)
+
+# تعریف تابع loss با HLA
+def combined_loss_with_hla(hla):
+    def loss(y_true, y_pred):
+        current_weights = hla.get_weights()
+        adjusted_weights = np.clip(current_weights, 1.0, 8.0)
+        adjusted_weights[2] *= hla.tumor_boost
+        ce_loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
+        weights = tf.cast(tf.gather(adjusted_weights, tf.cast(y_true, tf.int32)), tf.float32)
+        weighted_ce = tf.reduce_mean(ce_loss * weights)
+        focal = focal_loss(gamma=2., alpha=0.25)(y_true, y_pred)
+        tversky = tversky_loss(y_true, y_pred, alpha=0.6, beta=0.4)
+        return 0.25 * weighted_ce + 0.25 * focal + 0.5 * tversky
+    return loss
+
+# دیتاژنراتور بدون Data Augmentation
+def load_and_preprocess(vol_path, seg_path):
+    try:
+        vol_data = np.load(vol_path)
+        seg_data = np.load(seg_path)
+        if vol_data.size == 0 or seg_data.size == 0:
+            raise ValueError("فایل خالی است")
+        vol_resized = tf.image.resize(vol_data[..., np.newaxis], (128, 128)).numpy()
+        seg_resized = tf.image.resize(seg_data[..., np.newaxis], (128, 128), method='nearest').numpy()
+        vol_normalized = (vol_resized - vol_resized.min()) / (vol_resized.max() - vol_resized.min() + 1e-6)
+        seg_resized = np.round(seg_resized).astype(np.uint8)
+        seg_resized = np.clip(seg_resized[..., 0], 0, 2)
+        return vol_normalized, seg_resized
+    except Exception as e:
+        print(f"خطا در بارگذاری {vol_path}, {seg_path}: {e}")
+        return np.zeros((128, 128, 1)), np.zeros((128, 128))
+
+def data_generator(pairs, batch_size=8):
+    while True:
+        np.random.shuffle(pairs)
+        for i in range(0, len(pairs), batch_size):
+            batch_pairs = pairs[i:i + batch_size]
+            vol_batch = []
+            seg_batch = []
+            for vol_path, seg_path in batch_pairs:
+                vol_norm, seg = load_and_preprocess(vol_path, seg_path)
+                if np.any(seg > 2) or np.any(seg < 0):
+                    print(f"برچسب نامعتبر در {seg_path}")
+                    continue
+                vol_batch.append(vol_norm)
+                seg_batch.append(seg)
+            if len(vol_batch) == 0:
+                continue
+            yield (np.array(vol_batch), np.array(seg_batch))
+
+# تعریف بلوک‌های ResUNet و Swin Transformer
+def residual_block(x, filters, kernel_size=3, strides=1):
+    shortcut = x
+    x = layers.Conv2D(filters, kernel_size, strides=strides, padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.Conv2D(filters, kernel_size, padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    
+    if strides != 1 or shortcut.shape[-1] != filters:
+        shortcut = layers.Conv2D(filters, 1, strides=strides, padding='same')(shortcut)
+        shortcut = layers.BatchNormalization()(shortcut)
+    
+    x = layers.Add()([shortcut, x])
+    x = layers.Activation('relu')(x)
+    return x
+
+class WindowPartition(layers.Layer):
+    def __init__(self, window_size, **kwargs):
+        super().__init__(**kwargs)
+        self.window_size = window_size
+
+    def build(self, input_shape):
+        self.input_shape = input_shape
+        super().build(input_shape)
+
+    def call(self, x):
+        B, H, W, C = K.shape(x)
+        effective_window_size = min(self.window_size, H, W)
+        if effective_window_size == 0:
+            raise ValueError(f"Window size {self.window_size} برای ابعاد ورودی {H}x{W} معتبر نیست")
+        
+        num_windows_h = H // effective_window_size
+        num_windows_w = W // effective_window_size
+        
+        if num_windows_h == 0 or num_windows_w == 0:
+            windows = K.reshape(x, [-1, H, W, C])
+        else:
+            x = K.reshape(
+                x,
+                [B, num_windows_h, effective_window_size, num_windows_w, effective_window_size, C]
+            )
+            x = K.transpose(x, [0, 1, 3, 2, 4, 5])
+            windows = K.reshape(x, [-1, effective_window_size, effective_window_size, C])
+        return windows
+
+    def compute_output_shape(self, input_shape):
+        B, H, W, C = input_shape
+        effective_window_size = min(self.window_size, H, W)
+        if effective_window_size == 0:
+            return (None, H, W, C)
+        num_windows = (H // effective_window_size) * (W // effective_window_size)
+        return (None, effective_window_size, effective_window_size, C)
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({'window_size': self.window_size})
+        return config
+
+class WindowReverse(layers.Layer):
+    def __init__(self, window_size, H, W, **kwargs):
+        super().__init__(**kwargs)
+        self.window_size = window_size
+        self.H = H
+        self.W = W
+
+    def build(self, input_shape):
+        self.input_shape = input_shape
+        super().build(input_shape)
+
+    def call(self, windows):
+        effective_window_size = min(self.window_size, self.H, self.W)
+        if effective_window_size == 0:
+            return K.reshape(windows, [-1, self.H, self.W, K.shape(windows)[-1]])
+        
+        num_windows_h = self.H // effective_window_size
+        num_windows_w = self.W // effective_window_size
+        C = K.shape(windows)[-1]
+        
+        if num_windows_h == 0 or num_windows_w == 0:
+            x = K.reshape(windows, [-1, self.H, self.W, C])
+        else:
+            x = K.reshape(
+                windows,
+                [-1, num_windows_h, num_windows_w, effective_window_size, effective_window_size, C]
+            )
+            x = K.transpose(x, [0, 1, 3, 2, 4, 5])
+            x = K.reshape(x, [-1, self.H, self.W, C])
+        return x
+
+    def compute_output_shape(self, input_shape):
+        return (None, self.H, self.W, input_shape[-1])
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({'window_size': self.window_size, 'H': self.H, 'W': self.W})
+        return config
+
+class WindowAttention(layers.Layer):
+    def __init__(self, dim, window_size, num_heads, qkv_bias=True, **kwargs):
+        super().__init__(**kwargs)
+        self.dim = dim
+        self.window_size = window_size
+        self.num_heads = num_heads
+        self.head_dim = dim // num_heads
+        self.scale = self.head_dim ** -0.5
+
+        self.qkv = layers.Dense(dim * 3, use_bias=qkv_bias)
+        self.proj = layers.Dense(dim)
+
+    def build(self, input_shape):
+        effective_window_size = min(self.window_size, input_shape[1], input_shape[2])
+        self.qkv.build(input_shape)
+        self.proj.build((None, effective_window_size, effective_window_size, self.dim))
+        self.built = True
+
+    def call(self, x):
+        B, H, W, C = K.shape(x)
+        qkv = self.qkv(x)
+        qkv = K.reshape(qkv, [-1, H * W, 3, self.num_heads, self.head_dim])
+        qkv = K.transpose(qkv, [2, 0, 3, 1, 4])
+        q, k, v = qkv[0], qkv[1], qkv[2]
+
+        q = q * self.scale
+        k_transposed = K.transpose(k, [0, 1, 3, 2])
+        attn = K.matmul(q, k_transposed)
+        attn = K.softmax(attn, axis=-1)
+        x = K.matmul(attn, v)
+        x = K.transpose(x, [0, 2, 1, 3])
+        x = K.reshape(x, [-1, H, W, C])
+        x = self.proj(x)
+        return x
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'dim': self.dim,
+            'window_size': self.window_size,
+            'num_heads': self.num_heads,
+            'qkv_bias': self.qkv.use_bias
+        })
+        return config
+
+class SwinTransformerBlock(layers.Layer):
+    def __init__(self, dim, input_resolution, num_heads, window_size=8, shift_size=0, **kwargs):
+        super().__init__(**kwargs)
+        self.dim = dim
+        self.input_resolution = input_resolution
+        self.num_heads = num_heads
+        self.window_size = window_size
+        self.shift_size = shift_size
+
+        self.norm1 = layers.LayerNormalization(epsilon=1e-5)
+        self.attn = WindowAttention(
+            dim, window_size=window_size, num_heads=num_heads
+        )
+        self.norm2 = layers.LayerNormalization(epsilon=1e-5)
+        self.mlp = tf.keras.Sequential([
+            layers.Dense(dim * 4),
+            layers.Activation('gelu'),
+            layers.Dense(dim)
+        ])
+        self.window_partition = WindowPartition(window_size=window_size)
+        self.window_reverse = WindowReverse(window_size=window_size, H=input_resolution[0], W=input_resolution[1])
+
+    def build(self, input_shape):
+        self.norm1.build(input_shape)
+        effective_window_size = min(self.window_size, input_shape[1], input_shape[2])
+        self.attn.build((None, effective_window_size, effective_window_size, self.dim))
+        self.norm2.build(input_shape)
+        self.mlp.build(input_shape)
+        self.window_partition.build(input_shape)
+        self.window_reverse.build((None, effective_window_size, effective_window_size, self.dim))
+        self.built = True
+
+    def call(self, x):
+        H, W = self.input_resolution
+        B, H_, W_, C = K.shape(x)
+        H_, W_, C = K.cast(H_, tf.int32), K.cast(W_, tf.int32), K.cast(C, tf.int32)
+        tf.debugging.assert_equal(H_, H, message="ارتفاع ورودی نادرست است")
+        tf.debugging.assert_equal(W_, W, message="عرض ورودی نادرست است")
+
+        shortcut = x
+        x = self.norm1(x)
+
+        effective_window_size = min(self.window_size, H, W)
+        if effective_window_size == H and effective_window_size == W:
+            x = self.attn(x)
+        else:
+            if self.shift_size > 0:
+                shifted_x = K.roll(x, shift=[-self.shift_size, -self.shift_size], axis=[1, 2])
+            else:
+                shifted_x = x
+
+            x_windows = self.window_partition(shifted_x)
+            attn_windows = self.attn(x_windows)
+            shifted_x = self.window_reverse(attn_windows)
+
+            if self.shift_size > 0:
+                x = K.roll(shifted_x, shift=[self.shift_size, self.shift_size], axis=[1, 2])
+            else:
+                x = shifted_x
+
+        x = shortcut + x
+        x = x + self.mlp(self.norm2(x))
+        return x
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            'dim': self.dim,
+            'input_resolution': self.input_resolution,
+            'num_heads': self.num_heads,
+            'window_size': self.window_size,
+            'shift_size': self.shift_size
+        })
+        return config
+
+def swin_transformer_encoder(x, embed_dim, num_heads, window_size, depths, input_resolution):
+    features = []
+    x = layers.Conv2D(embed_dim, kernel_size=4, strides=4, padding='same')(x)
+    x = layers.LayerNormalization(epsilon=1e-5)(x)
+    H, W = input_resolution[0] // 4, input_resolution[1] // 4
+    x = layers.Reshape((H, W, embed_dim))(x)
+
+    for stage, depth in enumerate(depths):
+        for i in range(depth):
+            shift_size = window_size // 2 if i % 2 == 1 else 0
+            x = SwinTransformerBlock(
+                dim=embed_dim,
+                input_resolution=(H, W),
+                num_heads=num_heads[stage],
+                window_size=window_size,
+                shift_size=shift_size
+            )(x)
+        features.append(x)
+        if stage < len(depths) - 1:
+            x = layers.Conv2D(embed_dim * 2, kernel_size=2, strides=2, padding='same')(x)
+            x = layers.LayerNormalization(epsilon=1e-5)(x)
+            H, W = H // 2, W // 2
+            x = layers.Reshape((H, W, embed_dim * 2))(x)
+            embed_dim *= 2
+
+    return features
+
+# تعریف مدل ترکیبی ResUNet + Swin Transformer Encoder
+def resunet_swin(input_shape=(128, 128, 1), num_classes=3):
+    inputs = layers.Input(input_shape)
+    
+    embed_dim = 96
+    num_heads = [3, 6, 12, 24]
+    window_size = 8
+    depths = [2, 2, 6, 2]
+    features = swin_transformer_encoder(
+        inputs, embed_dim=embed_dim, num_heads=num_heads,
+        window_size=window_size, depths=depths, input_resolution=(128, 128)
+    )
+    
+    c1 = features[0]
+    c2 = features[1]
+    c3 = features[2]
+    c4 = features[3]
+    
+    bridge = residual_block(c4, 1024)
+    
+    u4 = layers.Conv2DTranspose(512, 2, strides=(2, 2), padding='same')(bridge)
+    c3 = layers.Conv2D(512, 1, padding='same')(c3)
+    u4 = layers.Concatenate()([u4, c3])
+    d4 = residual_block(u4, 512)
+    
+    u3 = layers.Conv2DTranspose(256, 2, strides=(2, 2), padding='same')(d4)
+    c2 = layers.Conv2D(256, 1, padding='same')(c2)
+    u3 = layers.Concatenate()([u3, c2])
+    d3 = residual_block(u3, 256)
+    
+    u2 = layers.Conv2DTranspose(128, 2, strides=(2, 2), padding='same')(d3)
+    c1 = layers.Conv2D(128, 1, padding='same')(c1)
+    u2 = layers.Concatenate()([u2, c1])
+    d2 = residual_block(u2, 128)
+    
+    u1 = layers.Conv2DTranspose(64, 4, strides=(4, 4), padding='same')(d2)
+    input_features = layers.Conv2D(64, 1, padding='same')(inputs)
+    u1 = layers.Concatenate()([u1, input_features])
+    d1 = residual_block(u1, 64)
+    
+    outputs = layers.Conv2D(num_classes, 1, activation='softmax')(d1)
+    
+    model = Model(inputs, outputs)
+    return model
+
+# بارگذاری داده‌ها
+base_path = "/content/drive/MyDrive/LITS/Preprocessed"
+seg_files = sorted([f for f in os.listdir(base_path) if f.startswith('seg_slice_')])
+vol_files = sorted([f for f in os.listdir(base_path) if f.startswith('vol_slice_')])
+tumor_pairs = []
+other_pairs = []
+for v, s in zip(vol_files, seg_files):
+    try:
+        seg_data = np.load(os.path.join(base_path, s))
+        if seg_data.size == 0:
+            continue
+        if np.any(seg_data == 2):
+            tumor_pairs.append((os.path.join(base_path, v), os.path.join(base_path, s)))
+        else:
+            other_pairs.append((os.path.join(base_path, v), os.path.join(base_path, s)))
+    except:
+        print(f"خطا در بررسی {s}")
+        continue
+
+tumor_pairs = tumor_pairs[:500]
+other_pairs = other_pairs[:500]
+pairs = tumor_pairs + other_pairs
+train_pairs, val_pairs = train_test_split(pairs, test_size=0.2, random_state=42)
+train_gen = data_generator(train_pairs, batch_size=8)
+val_gen = data_generator(val_pairs, batch_size=8)
+print(f"تعداد train: {len(train_pairs)}، تعداد validation: {len(val_pairs)}، اسلایس‌های تومور: {len(tumor_pairs)}")
+
+# ایجاد و کامپایل مدل
+hla = HierarchicalLearningAutomata(
+    num_classes=3,
+    initial_weights=[7.0, 7.0, 7.0],
+    alpha_high=0.2,
+    beta_high=0.1,
+    alpha_low=0.15,
+    beta_low=0.08,
+    liver_priority=1.5,
+    tumor_priority=4.0
+)
+
+model = resunet_swin(input_shape=(128, 128, 1), num_classes=3)
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=4.2e-5),
+    loss=combined_loss_with_hla(hla),
+    metrics=['accuracy', dice_liver, dice_tumor, iou_liver, iou_tumor,
+             precision_liver, precision_tumor, recall_liver, recall_tumor, dice_avg]
+)
+
+# Callback‌ها
+class HierarchicalLearningAutomataCallback(callbacks.Callback):
+    def __init__(self, hla):
+        super().__init__()
+        self.hla = hla
+        self.best_val_combined = -np.inf
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.epoch_start = time.time()
+
+    def on_epoch_end(self, epoch, logs=None):
+        print(f"Epoch {epoch+1} زمان: {(time.time() - self.epoch_start):.2f} ثانیه")
+        val_dice_liver = logs.get('val_dice_liver', 0.0)
+        val_dice_tumor = logs.get('val_dice_tumor', 0.0)
+        val_precision_liver = logs.get('val_precision_liver', 0.0)
+        val_dice_avg = logs.get('val_dice_avg', 0.0)
+        
+        combined_metric = 0.4 * val_dice_liver + 0.4 * val_dice_tumor + 0.2 * val_precision_liver
+        moving_avg_dice_liver = np.mean(self.hla.moving_avg_dice_liver[-self.hla.window_size:]) if len(self.hla.moving_avg_dice_liver) >= self.hla.window_size else 0.90
+        moving_avg_dice_tumor = np.mean(self.hla.moving_avg_dice_tumor[-self.hla.window_size:]) if len(self.hla.moving_avg_dice_tumor) >= self.hla.window_size else 0.80
+        improvement = combined_metric - self.best_val_combined
+        reward = min(max(improvement * 10, -1.0), 1.0) if val_dice_liver > moving_avg_dice_liver * 0.95 and val_dice_tumor > moving_avg_dice_tumor * 0.95 else -0.5
+        
+        selected_class, low_level_action = self.hla.select_action()
+        self.hla.update_weights(selected_class, low_level_action, reward, val_dice_avg, val_dice_liver, val_dice_tumor, val_precision_liver, epoch)
+        
+        weights = self.hla.get_weights()
+        print(f"وزن‌ها: پس‌زمینه={weights[0]:.2f}, کبد={weights[1]:.2f}, تومور={weights[2]:.2f}, "
+              f"ضریب تقویت تومور={self.hla.tumor_boost:.2f}")
+        print(f"عمل سطح بالا: {selected_class}, عمل سطح پایین: {low_level_action}")
+        print(f"احتمالات سطح بالا: {self.hla.high_level_probs.tolist()}")
+        print(f"احتمالات سطح پایین: {[probs.tolist() for probs in self.hla.low_level_probs]}")
+        print(f"معیارها: Dice کبد={val_dice_liver:.4f}, Dice تومور={val_dice_tumor:.4f}, "
+              f"Precision کبد={val_precision_liver:.4f}, Dice متوسط={val_dice_avg:.4f}")
+        
+        if combined_metric > self.best_val_combined:
+            self.best_val_combined = combined_metric
+
+early_stopping = callbacks.EarlyStopping(monitor='val_dice_tumor', patience=20, min_delta=0.001, restore_best_weights=True, mode='max')
+reduce_lr = callbacks.ReduceLROnPlateau(monitor='val_dice_tumor', factor=0.5, patience=5, min_lr=1e-6, mode='max')
+checkpoint_best = callbacks.ModelCheckpoint('/content/drive/MyDrive/LITS/resunet_swin_dynamic_hla_best.keras',
+                                           monitor='val_dice_tumor', save_best_only=True, mode='max')
+history_saver = callbacks.CSVLogger('/content/drive/MyDrive/LITS/history_dynamic_hla.csv', append=True)
+
+# آموزش
+start_time = time.time()
+try:
+    history = model.fit(
+        train_gen,
+        steps_per_epoch=len(train_pairs) // 8,
+        validation_data=val_gen,
+        validation_steps=len(val_pairs) // 8,
+        epochs=100,
+        callbacks=[early_stopping, reduce_lr, checkpoint_best, history_saver, HierarchicalLearningAutomataCallback(hla)]
+    )
+except Exception as e:
+    print(f"خطا در آموزش: {e}")
+
+print(f"زمان کل آموزش: {(time.time() - start_time) / 60:.2f} دقیقه")
+
+# ذخیره تاریخچه HLA
+try:
+    hla.save_history('/content/drive/MyDrive/LITS/hla_history_dynamic_hla.json')
+    print("تاریخچه Hierarchical Learning Automata ذخیره شد")
+except Exception as e:
+    print(f"خطا در ذخیره تاریخچه HLA: {e}")
+
+# پس‌پردازش
+def post_process_predictions(pred_probs, tumor_threshold=0.35, liver_min_size=30, tumor_min_size=3):
+    pred_labels = np.argmax(pred_probs, axis=-1).astype(np.uint8)
+    tumor_probs = pred_probs[..., 2]
+    tumor_pixels_before = np.sum(pred_labels == 2)
+    pred_labels[(pred_labels == 2) & (tumor_probs < tumor_threshold)] = 0
+    tumor_pixels_after_threshold = np.sum(pred_labels == 2)
+    num_small_liver = num_small_tumor = 0
+    for i in range(pred_labels.shape[0]):
+        liver_mask = (pred_labels[i] == 1).astype(np.uint8)
+        labeled_liver, num_features = measure.label(liver_mask, return_num=True)
+        for label in range(1, num_features + 1):
+            region_size = np.sum(labeled_liver == label)
+            if region_size < liver_min_size:
+                pred_labels[i][labeled_liver == label] = 0
+                num_small_liver += 1
+        tumor_mask = (pred_labels[i] == 2).astype(np.uint8)
+        labeled_tumor, num_features = measure.label(tumor_mask, return_num=True)
+        for label in range(1, num_features + 1):
+            region_size = np.sum(labeled_tumor == label)
+            if region_size < tumor_min_size:
+                pred_labels[i][labeled_tumor == label] = 0
+                num_small_tumor += 1
+    print(f"تعداد پیکسل‌های تومور قبل از آستانه: {tumor_pixels_before}")
+    print(f"تعداد پیکسل‌های تومور بعد از آستانه: {tumor_pixels_after_threshold}")
+    print(f"تعداد نواحی کوچک حذف‌شده (کبد): {num_small_liver}")
+    print(f"تعداد نواحی کوچک حذف‌شده (تومور): {num_small_tumor}")
+    return pred_labels
+
+# محاسبه معیارها
+def calculate_metrics(model, val_gen, num_samples):
+    liver_dice_sum = tumor_dice_sum = liver_iou_sum = tumor_iou_sum = 0
+    liver_precision_sum = tumor_precision_sum = liver_recall_sum = tumor_recall_sum = 0
+    liver_voe_sum = tumor_voe_sum = liver_rvd_sum = tumor_rvd_sum = 0
+    liver_assd_sum = tumor_assd_sum = liver_msd_sum = tumor_msd_sum = 0
+    liver_count = tumor_count = 0
+    liver_vols_true = []
+    liver_vols_pred = []
+    tumor_vols_true = []
+    tumor_vols_pred = []
+    last_val_batch = None
+    last_pred_labels = None
+
+    def volumetric_overlap_error(y_true, y_pred):
+        intersection = np.sum(y_true * y_pred)
+        union = np.sum(y_true) + np.sum(y_pred) - intersection
+        return 1 - (intersection / union) if union > 0 else 0
+
+    def relative_volume_difference(y_true, y_pred):
+        vol_true = np.sum(y_true)
+        vol_pred = np.sum(y_pred)
+        return abs(vol_pred - vol_true) / (vol_true + 1e-5) if vol_true > 0 else 0
+
+    def average_symmetric_surface_distance(y_true, y_pred):
+        true_border = np.array(np.where(np.abs(y_true - np.roll(y_true, 1, axis=0)) +
+                                       np.abs(y_true - np.roll(y_true, 1, axis=1)))).T
+        pred_border = np.array(np.where(np.abs(y_pred - np.roll(y_pred, 1, axis=0)) +
+                                       np.abs(y_pred - np.roll(y_pred, 1, axis=1)))).T
+        if true_border.size == 0 or pred_border.size == 0:
+            return 0
+        if len(true_border) > 1000:
+            indices = np.random.choice(len(true_border), 1000, replace=False)
+            true_border = true_border[indices]
+        if len(pred_border) > 1000:
+            indices = np.random.choice(len(pred_border), 1000, replace=False)
+            pred_border = pred_border[indices]
+        dist1 = np.mean(np.min(cdist(true_border, pred_border), axis=1))
+        dist2 = np.mean(np.min(cdist(pred_border, true_border), axis=1))
+        return (dist1 + dist2) / 2
+
+    def maximum_surface_distance(y_true, y_pred):
+        true_border = np.array(np.where(np.abs(y_true - np.roll(y_true, 1, axis=0)) +
+                                       np.abs(y_true - np.roll(y_true, 1, axis=1)))).T
+        pred_border = np.array(np.where(np.abs(y_pred - np.roll(y_pred, 1, axis=0)) +
+                                       np.abs(y_pred - np.roll(y_pred, 1, axis=1)))).T
+        if true_border.size == 0 or pred_border.size == 0:
+            return 0
+        if len(true_border) > 1000:
+            indices = np.random.choice(len(true_border), 1000, replace=False)
+            true_border = true_border[indices]
+        if len(pred_border) > 1000:
+            indices = np.random.choice(len(pred_border), 1000, replace=False)
+            pred_border = pred_border[indices]
+        dist1 = np.max(np.min(cdist(true_border, pred_border), axis=1))
+        dist2 = np.max(np.min(cdist(pred_border, true_border), axis=1))
+        return max(dist1, dist2)
+
+    for i in range(num_samples):
+        try:
+            val_batch = next(val_gen)
+            predictions = model.predict(val_batch[0], verbose=0)
+            pred_probs = tf.nn.softmax(predictions, axis=-1).numpy()
+            pred_labels = post_process_predictions(pred_probs)
+            true_labels = val_batch[1]
+            print(f"بچ {i+1} - توزیع پیش‌بینی‌ها (بعد از پس‌پردازش):", np.bincount(pred_labels.flatten(), minlength=3))
+            if i == 0:
+                print("احتمال‌های اولیه (اولین نمونه، وسط تصویر):", pred_probs[0, 64, 64])
+                print("برچسب پیش‌بینی‌شده:", pred_labels[0, 64, 64], "برچسب واقعی:", true_labels[0, 64, 64])
+                print("تعداد پیکسل‌های واقعی کبد:", np.sum(true_labels[0] == 1))
+                print("تعداد پیکسل‌های واقعی تومور:", np.sum(true_labels[0] == 2))
+                print("توزیع واقعی:", np.bincount(true_labels.flatten().astype(int), minlength=3))
+            for j in range(len(true_labels)):
+                true_liver = (true_labels[j] == 1).astype(float)
+                pred_liver = (pred_labels[j] == 1).astype(float)
+                intersection_liver = np.sum(true_liver * pred_liver)
+                denominator_liver = np.sum(true_liver) + np.sum(pred_liver)
+                union_liver = np.sum(true_liver) + np.sum(pred_liver) - intersection_liver
+                if denominator_liver > 0:
+                    liver_dice = (2. * intersection_liver + 1e-5) / (denominator_liver + 1e-5)
+                    liver_iou = (intersection_liver + 1e-5) / (union_liver + 1e-5)
+                    liver_precision = np.sum(true_liver * pred_liver) / (np.sum(pred_liver) + 1e-5)
+                    liver_recall = np.sum(true_liver * pred_liver) / (np.sum(true_liver) + 1e-5)
+                    liver_voe = volumetric_overlap_error(true_liver, pred_liver)
+                    liver_rvd = relative_volume_difference(true_liver, pred_liver)
+                    liver_assd = average_symmetric_surface_distance(true_liver, pred_liver)
+                    liver_msd = maximum_surface_distance(true_liver, pred_liver)
+                    liver_dice_sum += liver_dice
+                    liver_iou_sum += liver_iou
+                    liver_precision_sum += liver_precision
+                    liver_recall_sum += liver_recall
+                    liver_voe_sum += liver_voe
+                    liver_rvd_sum += liver_rvd
+                    liver_assd_sum += liver_assd
+                    liver_msd_sum += liver_msd
+                    liver_vols_true.append(np.sum(true_liver))
+                    liver_vols_pred.append(np.sum(pred_liver))
+                    liver_count += 1
+                true_tumor = (true_labels[j] == 2).astype(float)
+                pred_tumor = (pred_labels[j] == 2).astype(float)
+                intersection_tumor = np.sum(true_tumor * pred_tumor)
+                denominator_tumor = np.sum(true_tumor) + np.sum(pred_tumor)
+                union_tumor = np.sum(true_tumor) + np.sum(pred_tumor) - intersection_tumor
+                if denominator_tumor > 0:
+                    tumor_dice = (2. * intersection_tumor + 1e-5) / (denominator_tumor + 1e-5)
+                    tumor_iou = (intersection_tumor + 1e-5) / (union_tumor + 1e-5)
+                    tumor_precision = np.sum(true_tumor * pred_tumor) / (np.sum(pred_tumor) + 1e-5)
+                    tumor_recall = np.sum(true_tumor * pred_tumor) / (np.sum(true_tumor) + 1e-5)
+                    tumor_voe = volumetric_overlap_error(true_tumor, pred_tumor)
+                    tumor_rvd = relative_volume_difference(true_tumor, pred_tumor)
+                    tumor_assd = average_symmetric_surface_distance(true_tumor, pred_tumor)
+                    tumor_msd = maximum_surface_distance(true_tumor, pred_tumor)
+                    tumor_dice_sum += tumor_dice
+                    tumor_iou_sum += tumor_iou
+                    tumor_precision_sum += tumor_precision
+                    tumor_recall_sum += tumor_recall
+                    tumor_voe_sum += tumor_voe
+                    tumor_rvd_sum += tumor_rvd
+                    tumor_assd_sum += tumor_assd
+                    tumor_msd_sum += tumor_msd
+                    tumor_vols_true.append(np.sum(true_tumor))
+                    tumor_vols_pred.append(np.sum(pred_tumor))
+                    tumor_count += 1
+            last_val_batch = val_batch
+            last_pred_labels = pred_labels
+        except Exception as e:
+            print(f"خطا در بچ {i+1}: {e}")
+            continue
+    mean_dice_liver = liver_dice_sum / liver_count if liver_count > 0 else 0
+    mean_dice_tumor = tumor_dice_sum / tumor_count if tumor_count > 0 else 0
+    mean_iou_liver = liver_iou_sum / liver_count if liver_count > 0 else 0
+    mean_iou_tumor = tumor_iou_sum / tumor_count if tumor_count > 0 else 0
+    mean_precision_liver = liver_precision_sum / liver_count if liver_count > 0 else 0
+    mean_precision_tumor = tumor_precision_sum / tumor_count if tumor_count > 0 else 0
+    mean_recall_liver = liver_recall_sum / liver_count if liver_count > 0 else 0
+    mean_recall_tumor = tumor_recall_sum / tumor_count if tumor_count > 0 else 0
+    mean_voe_liver = liver_voe_sum / liver_count if liver_count > 0 else 0
+    mean_voe_tumor = tumor_voe_sum / tumor_count if tumor_count > 0 else 0
+    mean_rvd_liver = liver_rvd_sum / liver_count if liver_count > 0 else 0
+    mean_rvd_tumor = tumor_rvd_sum / tumor_count if tumor_count > 0 else 0
+    mean_assd_liver = liver_assd_sum / liver_count if liver_count > 0 else 0
+    mean_assd_tumor = tumor_assd_sum / tumor_count if tumor_count > 0 else 0
+    mean_msd_liver = liver_msd_sum / liver_count if liver_count > 0 else 0
+    mean_msd_tumor = tumor_msd_sum / tumor_count if tumor_count > 0 else 0
+    icc_liver = r2_score(liver_vols_true, liver_vols_pred) if liver_count > 0 and len(liver_vols_true) > 1 and np.var(liver_vols_true) > 0 else 0
+    icc_tumor = r2_score(tumor_vols_true, tumor_vols_pred) if tumor_count > 0 and len(tumor_vols_true) > 1 and np.var(tumor_vols_true) > 0 else 0
+    print(f"تعداد نمونه‌های Liver: {liver_count}, Tumor: {tumor_count}")
+    return (mean_dice_liver, mean_dice_tumor, mean_iou_liver, mean_iou_tumor,
+            mean_precision_liver, mean_precision_tumor, mean_recall_liver, mean_recall_tumor,
+            mean_voe_liver, mean_voe_tumor, mean_rvd_liver, mean_rvd_tumor,
+            mean_assd_liver, mean_assd_tumor, mean_msd_liver, mean_msd_tumor,
+            icc_liver, icc_tumor,
+            last_val_batch, last_pred_labels)
+
+# محاسبه معیارها
+try:
+    num_samples = len(val_pairs) // 8
+    metrics = calculate_metrics(model, val_gen, num_samples)
+    print(f"میانگین DSC کبد: {metrics[0]:.4f}")
+    print(f"میانگین DSC تومور: {metrics[1]:.4f}")
+    print(f"میانگین IoU کبد: {metrics[2]:.4f}")
+    print(f"میانگین IoU تومور: {metrics[3]:.4f}")
+    print(f"میانگین Precision کبد: {metrics[4]:.4f}")
+    print(f"میانگین Precision تومور: {metrics[5]:.4f}")
+    print(f"میانگین Recall کبد: {metrics[6]:.4f}")
+    print(f"میانگین Recall تومور: {metrics[7]:.4f}")
+    print(f"میانگین VOE کبد: {metrics[8]:.4f}")
+    print(f"میانگین VOE تومور: {metrics[9]:.4f}")
+    print(f"میانگین RVD کبد: {metrics[10]:.4f}")
+    print(f"میانگین RVD تومور: {metrics[11]:.4f}")
+    print(f"میانگین ASSD کبد: {metrics[12]:.4f}")
+    print(f"میانگین ASSD تومور: {metrics[13]:.4f}")
+    print(f"میانگین MSD کبد: {metrics[14]:.4f}")
+    print(f"میانگین MSD تومور: {metrics[15]:.4f}")
+    print(f"ICC کبد: {metrics[16]:.4f}")
+    print(f"ICC تومور: {metrics[17]:.4f}")
+except Exception as e:
+    print(f"خطا در محاسبه معیارها: {e}")
+
+# نمایش نمونه
+try:
+    if metrics[18] is not None and metrics[19] is not None:
+        plt.figure(figsize=(25, 5))
+        plt.subplot(1, 5, 1)
+        plt.title("Input")
+        plt.imshow(metrics[18][0][0, :, :, 0], cmap='gray')
+        plt.axis('off')
+        plt.subplot(1, 5, 2)
+        plt.title("Ground Truth Liver")
+        plt.imshow((metrics[18][1][0] == 1).astype(np.uint8), cmap='jet')
+        plt.axis('off')
+        plt.subplot(1, 5, 3)
+        plt.title("Predicted Liver")
+        plt.imshow((metrics[19][0] == 1).astype(np.uint8), cmap='jet')
+        plt.axis('off')
+        plt.subplot(1, 5, 4)
+        plt.title("Ground Truth Tumor")
+        plt.imshow((metrics[18][1][0] == 2).astype(np.uint8), cmap='jet')
+        plt.axis('off')
+        plt.subplot(1, 5, 5)
+        plt.title("Predicted Tumor")
+        plt.imshow((metrics[19][0] == 2).astype(np.uint8), cmap='jet')
+        plt.axis('off')
+        plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_hla.png')
+        plt.show()
+except NameError:
+    print("نمونه‌ها قابل نمایش نیستند، زیرا معیارها محاسبه نشده‌اند.")
+
+# ذخیره مدل و وزن‌ها
+try:
+    model.save('/content/drive/MyDrive/LITS/resunet_swin_dynamic_hla_final.keras')
+    print("مدل نهایی ذخیره شد")
+    best_weights = hla.get_best_weights()
+    print(f"بهترین وزن‌ها: پس‌زمینه={best_weights[0]:.1f}, کبد={best_weights[1]:.1f}, تومور={best_weights[2]:.1f}")
+    with open('/content/drive/MyDrive/LITS/best_weights_dynamic_hla.json', 'w') as f:
+        json.dump({'background': float(best_weights[0]), 'liver': float(best_weights[1]), 'tumor': float(best_weights[2]), 'tumor_boost': float(hla.tumor_boost)}, f)
+    print("وزن‌های HLA ذخیره شدند")
+except Exception as e:
+    print(f"خطا در ذخیره مدل یا وزن‌ها: {e}")
