@@ -1,0 +1,546 @@
+GPU Available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+TensorFlow Version: 2.20.0
+Mounted at /content/drive
+Train samples: 800, Val samples: 200, Tumor slices: 500
+
+Calculating approximate GFLOPs...
+Estimated GFLOPs : 35.15 GFLOPs
+Starting training...
+Epoch 1/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 300ms/step - accuracy: 0.8349 - dice_avg: 0.3338 - dice_liver: 0.6501 - dice_tumor: 0.0175 - iou_liver: 0.5275 - iou_tumor: 0.0096 - loss: 1.2286 - precision_liver: 0.5876 - precision_tumor: 0.0578 - recall_liver: 0.8403 - recall_tumor: 0.0464Epoch 1 | Reward=-0.500 | Metric=0.0838 | BG=3.905 | Liver=10.000 | Tumor=3.467 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 77s 422ms/step - accuracy: 0.9376 - dice_avg: 0.4178 - dice_liver: 0.7978 - dice_tumor: 0.0379 - iou_liver: 0.6880 - iou_tumor: 0.0224 - loss: 0.7855 - precision_liver: 0.7668 - precision_tumor: 0.1530 - recall_liver: 0.8741 - recall_tumor: 0.0377 - val_accuracy: 0.4313 - val_dice_avg: 0.1018 - val_dice_liver: 0.2036 - val_dice_tumor: 1.3227e-07 - val_iou_liver: 0.1136 - val_iou_tumor: 1.3227e-07 - val_loss: 2.3957 - val_precision_liver: 0.1136 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 1.0000 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 2/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 371ms/step - accuracy: 0.9871 - dice_avg: 0.6065 - dice_liver: 0.9164 - dice_tumor: 0.2966 - iou_liver: 0.8465 - iou_tumor: 0.2041 - loss: 0.4730 - precision_liver: 0.9102 - precision_tumor: 0.5595 - recall_liver: 0.9255 - recall_tumor: 0.2217Epoch 2 | Reward=-0.500 | Metric=0.1227 | BG=4.125 | Liver=10.000 | Tumor=2.687 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 40s 406ms/step - accuracy: 0.9881 - dice_avg: 0.6449 - dice_liver: 0.9216 - dice_tumor: 0.3681 - iou_liver: 0.8554 - iou_tumor: 0.2583 - loss: 0.4595 - precision_liver: 0.9158 - precision_tumor: 0.6069 - recall_liver: 0.9306 - recall_tumor: 0.2910 - val_accuracy: 0.6772 - val_dice_avg: 0.1461 - val_dice_liver: 0.2923 - val_dice_tumor: 1.3227e-07 - val_iou_liver: 0.1718 - val_iou_tumor: 1.3227e-07 - val_loss: 1.6840 - val_precision_liver: 0.1748 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 0.9154 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 3/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 272ms/step - accuracy: 0.9904 - dice_avg: 0.7482 - dice_liver: 0.9383 - dice_tumor: 0.5580 - iou_liver: 0.8841 - iou_tumor: 0.4290 - loss: 0.4277 - precision_liver: 0.9390 - precision_tumor: 0.6673 - recall_liver: 0.9395 - recall_tumor: 0.5163Epoch 3 | Reward=-0.500 | Metric=0.1652 | BG=4.041 | Liver=10.000 | Tumor=2.425 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 310ms/step - accuracy: 0.9913 - dice_avg: 0.7637 - dice_liver: 0.9425 - dice_tumor: 0.5849 - iou_liver: 0.8915 - iou_tumor: 0.4541 - loss: 0.4219 - precision_liver: 0.9401 - precision_tumor: 0.7104 - recall_liver: 0.9463 - recall_tumor: 0.5296 - val_accuracy: 0.7830 - val_dice_avg: 0.1933 - val_dice_liver: 0.3866 - val_dice_tumor: 1.3227e-07 - val_iou_liver: 0.2411 - val_iou_tumor: 1.3227e-07 - val_loss: 1.4694 - val_precision_liver: 0.2462 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 0.9299 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 4/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 265ms/step - accuracy: 0.9932 - dice_avg: 0.8090 - dice_liver: 0.9556 - dice_tumor: 0.6624 - iou_liver: 0.9150 - iou_tumor: 0.5310 - loss: 0.4044 - precision_liver: 0.9517 - precision_tumor: 0.7714 - recall_liver: 0.9601 - recall_tumor: 0.6073Epoch 4 | Reward=-0.500 | Metric=0.3101 | BG=4.674 | Liver=9.553 | Tumor=2.239 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 32s 320ms/step - accuracy: 0.9931 - dice_avg: 0.8071 - dice_liver: 0.9546 - dice_tumor: 0.6596 - iou_liver: 0.9133 - iou_tumor: 0.5312 - loss: 0.4028 - precision_liver: 0.9516 - precision_tumor: 0.7694 - recall_liver: 0.9586 - recall_tumor: 0.6063 - val_accuracy: 0.9413 - val_dice_avg: 0.3232 - val_dice_liver: 0.6463 - val_dice_tumor: 1.3227e-07 - val_iou_liver: 0.4814 - val_iou_tumor: 1.3227e-07 - val_loss: 0.7012 - val_precision_liver: 0.5810 - val_precision_tumor: 0.0000e+00 - val_recall_liver: 0.7403 - val_recall_tumor: 0.0000e+00 - learning_rate: 4.2000e-05
+Epoch 5/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 262ms/step - accuracy: 0.9927 - dice_avg: 0.8148 - dice_liver: 0.9536 - dice_tumor: 0.6759 - iou_liver: 0.9115 - iou_tumor: 0.5479 - loss: 0.3979 - precision_liver: 0.9555 - precision_tumor: 0.7754 - recall_liver: 0.9531 - recall_tumor: 0.6354Epoch 5 | Reward=-0.500 | Metric=0.4187 | BG=4.698 | Liver=9.517 | Tumor=2.251 | Boost=1.10
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 350ms/step - accuracy: 0.9933 - dice_avg: 0.8245 - dice_liver: 0.9559 - dice_tumor: 0.6931 - iou_liver: 0.9157 - iou_tumor: 0.5652 - loss: 0.3960 - precision_liver: 0.9548 - precision_tumor: 0.7776 - recall_liver: 0.9582 - recall_tumor: 0.6513 - val_accuracy: 0.9653 - val_dice_avg: 0.3989 - val_dice_liver: 0.7368 - val_dice_tumor: 0.0610 - val_iou_liver: 0.5859 - val_iou_tumor: 0.0395 - val_loss: 0.5468 - val_precision_liver: 0.8356 - val_precision_tumor: 0.1834 - val_recall_liver: 0.6645 - val_recall_tumor: 0.0404 - learning_rate: 4.2000e-05
+Epoch 6/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 327ms/step - accuracy: 0.9948 - dice_avg: 0.8436 - dice_liver: 0.9644 - dice_tumor: 0.7228 - iou_liver: 0.9314 - iou_tumor: 0.5971 - loss: 0.3866 - precision_liver: 0.9618 - precision_tumor: 0.7900 - recall_liver: 0.9676 - recall_tumor: 0.6979Epoch 6 | Reward=1.000 | Metric=0.5724 | BG=4.047 | Liver=8.198 | Tumor=4.220 | Boost=1.20
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 421ms/step - accuracy: 0.9949 - dice_avg: 0.8519 - dice_liver: 0.9663 - dice_tumor: 0.7375 - iou_liver: 0.9349 - iou_tumor: 0.6151 - loss: 0.3837 - precision_liver: 0.9641 - precision_tumor: 0.8004 - recall_liver: 0.9691 - recall_tumor: 0.7066 - val_accuracy: 0.9879 - val_dice_avg: 0.5687 - val_dice_liver: 0.9163 - val_dice_tumor: 0.2211 - val_iou_liver: 0.8460 - val_iou_tumor: 0.1514 - val_loss: 0.4241 - val_precision_liver: 0.9350 - val_precision_tumor: 0.7793 - val_recall_liver: 0.8989 - val_recall_tumor: 0.1525 - learning_rate: 4.2000e-05
+Epoch 7/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 315ms/step - accuracy: 0.9951 - dice_avg: 0.8610 - dice_liver: 0.9678 - dice_tumor: 0.7541 - iou_liver: 0.9378 - iou_tumor: 0.6319 - loss: 0.3802 - precision_liver: 0.9654 - precision_tumor: 0.8224 - recall_liver: 0.9709 - recall_tumor: 0.7251Epoch 7 | Reward=1.000 | Metric=0.7340 | BG=3.525 | Liver=7.140 | Tumor=5.801 | Boost=1.30
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 414ms/step - accuracy: 0.9945 - dice_avg: 0.8581 - dice_liver: 0.9637 - dice_tumor: 0.7525 - iou_liver: 0.9303 - iou_tumor: 0.6303 - loss: 0.3829 - precision_liver: 0.9632 - precision_tumor: 0.8213 - recall_liver: 0.9651 - recall_tumor: 0.7186 - val_accuracy: 0.9921 - val_dice_avg: 0.7291 - val_dice_liver: 0.9458 - val_dice_tumor: 0.5124 - val_iou_liver: 0.8975 - val_iou_tumor: 0.3959 - val_loss: 0.3957 - val_precision_liver: 0.9703 - val_precision_tumor: 0.7128 - val_recall_liver: 0.9230 - val_recall_tumor: 0.4239 - learning_rate: 4.2000e-05
+Epoch 8/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 314ms/step - accuracy: 0.9944 - dice_avg: 0.8618 - dice_liver: 0.9635 - dice_tumor: 0.7600 - iou_liver: 0.9298 - iou_tumor: 0.6391 - loss: 0.3807 - precision_liver: 0.9622 - precision_tumor: 0.8370 - recall_liver: 0.9656 - recall_tumor: 0.7254Epoch 8 | Reward=1.000 | Metric=0.8582 | BG=3.271 | Liver=6.626 | Tumor=6.568 | Boost=1.40
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 418ms/step - accuracy: 0.9949 - dice_avg: 0.8673 - dice_liver: 0.9663 - dice_tumor: 0.7683 - iou_liver: 0.9350 - iou_tumor: 0.6508 - loss: 0.3785 - precision_liver: 0.9653 - precision_tumor: 0.8319 - recall_liver: 0.9682 - recall_tumor: 0.7382 - val_accuracy: 0.9950 - val_dice_avg: 0.8609 - val_dice_liver: 0.9672 - val_dice_tumor: 0.7547 - val_iou_liver: 0.9365 - val_iou_tumor: 0.6336 - val_loss: 0.3782 - val_precision_liver: 0.9535 - val_precision_tumor: 0.7765 - val_recall_liver: 0.9814 - val_recall_tumor: 0.7790 - learning_rate: 4.2000e-05
+Epoch 9/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 318ms/step - accuracy: 0.9957 - dice_avg: 0.8933 - dice_liver: 0.9725 - dice_tumor: 0.8140 - iou_liver: 0.9466 - iou_tumor: 0.7008 - loss: 0.3713 - precision_liver: 0.9695 - precision_tumor: 0.8462 - recall_liver: 0.9761 - recall_tumor: 0.7949Epoch 9 | Reward=0.249 | Metric=0.8831 | BG=3.248 | Liver=6.579 | Tumor=6.638 | Boost=1.50
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 413ms/step - accuracy: 0.9960 - dice_avg: 0.8834 - dice_liver: 0.9735 - dice_tumor: 0.7933 - iou_liver: 0.9484 - iou_tumor: 0.6809 - loss: 0.3715 - precision_liver: 0.9717 - precision_tumor: 0.8456 - recall_liver: 0.9756 - recall_tumor: 0.7703 - val_accuracy: 0.9950 - val_dice_avg: 0.8785 - val_dice_liver: 0.9654 - val_dice_tumor: 0.7916 - val_iou_liver: 0.9332 - val_iou_tumor: 0.6702 - val_loss: 0.3742 - val_precision_liver: 0.9883 - val_precision_tumor: 0.7723 - val_recall_liver: 0.9436 - val_recall_tumor: 0.8233 - learning_rate: 4.2000e-05
+Epoch 10/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 324ms/step - accuracy: 0.9964 - dice_avg: 0.8935 - dice_liver: 0.9765 - dice_tumor: 0.8106 - iou_liver: 0.9541 - iou_tumor: 0.7037 - loss: 0.3684 - precision_liver: 0.9749 - precision_tumor: 0.8589 - recall_liver: 0.9783 - recall_tumor: 0.7886Epoch 10 | Reward=-0.053 | Metric=0.8778 | BG=3.294 | Liver=6.673 | Tumor=6.499 | Boost=1.60
+100/100 ━━━━━━━━━━━━━━━━━━━━ 76s 768ms/step - accuracy: 0.9964 - dice_avg: 0.8891 - dice_liver: 0.9760 - dice_tumor: 0.8021 - iou_liver: 0.9532 - iou_tumor: 0.6965 - loss: 0.3682 - precision_liver: 0.9744 - precision_tumor: 0.8443 - recall_liver: 0.9779 - recall_tumor: 0.7863 - val_accuracy: 0.9964 - val_dice_avg: 0.8757 - val_dice_liver: 0.9752 - val_dice_tumor: 0.7763 - val_iou_liver: 0.9516 - val_iou_tumor: 0.6629 - val_loss: 0.3675 - val_precision_liver: 0.9854 - val_precision_tumor: 0.7431 - val_recall_liver: 0.9652 - val_recall_tumor: 0.8245 - learning_rate: 4.2000e-05
+Epoch 11/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 212ms/step - accuracy: 0.9967 - dice_avg: 0.8872 - dice_liver: 0.9773 - dice_tumor: 0.7972 - iou_liver: 0.9557 - iou_tumor: 0.6956 - loss: 0.3666 - precision_liver: 0.9759 - precision_tumor: 0.8389 - recall_liver: 0.9790 - recall_tumor: 0.7751Epoch 11 | Reward=0.101 | Metric=0.8932 | BG=3.284 | Liver=6.651 | Tumor=6.531 | Boost=1.70
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 313ms/step - accuracy: 0.9967 - dice_avg: 0.8942 - dice_liver: 0.9778 - dice_tumor: 0.8106 - iou_liver: 0.9565 - iou_tumor: 0.7058 - loss: 0.3655 - precision_liver: 0.9769 - precision_tumor: 0.8530 - recall_liver: 0.9789 - recall_tumor: 0.7900 - val_accuracy: 0.9969 - val_dice_avg: 0.8940 - val_dice_liver: 0.9790 - val_dice_tumor: 0.8090 - val_iou_liver: 0.9589 - val_iou_tumor: 0.6946 - val_loss: 0.3641 - val_precision_liver: 0.9748 - val_precision_tumor: 0.8945 - val_recall_liver: 0.9834 - val_recall_tumor: 0.7559 - learning_rate: 4.2000e-05
+Epoch 12/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 326ms/step - accuracy: 0.9968 - dice_avg: 0.9099 - dice_liver: 0.9797 - dice_tumor: 0.8401 - iou_liver: 0.9603 - iou_tumor: 0.7385 - loss: 0.3623 - precision_liver: 0.9774 - precision_tumor: 0.8821 - recall_liver: 0.9823 - recall_tumor: 0.8223Epoch 12 | Reward=0.088 | Metric=0.9020 | BG=3.276 | Liver=6.635 | Tumor=6.555 | Boost=1.80
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 425ms/step - accuracy: 0.9970 - dice_avg: 0.9006 - dice_liver: 0.9798 - dice_tumor: 0.8215 - iou_liver: 0.9604 - iou_tumor: 0.7199 - loss: 0.3628 - precision_liver: 0.9784 - precision_tumor: 0.8741 - recall_liver: 0.9814 - recall_tumor: 0.8012 - val_accuracy: 0.9960 - val_dice_avg: 0.8986 - val_dice_liver: 0.9723 - val_dice_tumor: 0.8249 - val_iou_liver: 0.9462 - val_iou_tumor: 0.7146 - val_loss: 0.3665 - val_precision_liver: 0.9890 - val_precision_tumor: 0.7935 - val_recall_liver: 0.9563 - val_recall_tumor: 0.8758 - learning_rate: 4.2000e-05
+Epoch 13/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 325ms/step - accuracy: 0.9970 - dice_avg: 0.9020 - dice_liver: 0.9807 - dice_tumor: 0.8232 - iou_liver: 0.9622 - iou_tumor: 0.7158 - loss: 0.3609 - precision_liver: 0.9804 - precision_tumor: 0.8720 - recall_liver: 0.9812 - recall_tumor: 0.8064Epoch 13 | Reward=0.076 | Metric=0.9096 | BG=3.269 | Liver=6.623 | Tumor=6.573 | Boost=1.75
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 423ms/step - accuracy: 0.9970 - dice_avg: 0.9129 - dice_liver: 0.9802 - dice_tumor: 0.8456 - iou_liver: 0.9612 - iou_tumor: 0.7457 - loss: 0.3612 - precision_liver: 0.9794 - precision_tumor: 0.8851 - recall_liver: 0.9813 - recall_tumor: 0.8278 - val_accuracy: 0.9971 - val_dice_avg: 0.9094 - val_dice_liver: 0.9808 - val_dice_tumor: 0.8381 - val_iou_liver: 0.9623 - val_iou_tumor: 0.7349 - val_loss: 0.3606 - val_precision_liver: 0.9814 - val_precision_tumor: 0.8581 - val_recall_liver: 0.9801 - val_recall_tumor: 0.8375 - learning_rate: 4.2000e-05
+Epoch 14/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 327ms/step - accuracy: 0.9970 - dice_avg: 0.9164 - dice_liver: 0.9808 - dice_tumor: 0.8520 - iou_liver: 0.9624 - iou_tumor: 0.7574 - loss: 0.3595 - precision_liver: 0.9798 - precision_tumor: 0.8728 - recall_liver: 0.9820 - recall_tumor: 0.8421Epoch 14 | Reward=-0.102 | Metric=0.8994 | BG=3.368 | Liver=6.823 | Tumor=6.274 | Boost=1.70
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 383ms/step - accuracy: 0.9972 - dice_avg: 0.9098 - dice_liver: 0.9815 - dice_tumor: 0.8381 - iou_liver: 0.9637 - iou_tumor: 0.7448 - loss: 0.3596 - precision_liver: 0.9807 - precision_tumor: 0.8591 - recall_liver: 0.9824 - recall_tumor: 0.8321 - val_accuracy: 0.9970 - val_dice_avg: 0.8990 - val_dice_liver: 0.9795 - val_dice_tumor: 0.8185 - val_iou_liver: 0.9598 - val_iou_tumor: 0.7260 - val_loss: 0.3601 - val_precision_liver: 0.9815 - val_precision_tumor: 0.8928 - val_recall_liver: 0.9775 - val_recall_tumor: 0.7998 - learning_rate: 4.2000e-05
+Epoch 15/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 259ms/step - accuracy: 0.9973 - dice_avg: 0.9105 - dice_liver: 0.9824 - dice_tumor: 0.8386 - iou_liver: 0.9654 - iou_tumor: 0.7562 - loss: 0.3575 - precision_liver: 0.9814 - precision_tumor: 0.8456 - recall_liver: 0.9835 - recall_tumor: 0.8353Epoch 15 | Reward=0.007 | Metric=0.9103 | BG=3.343 | Liver=6.771 | Tumor=6.351 | Boost=1.65
+100/100 ━━━━━━━━━━━━━━━━━━━━ 32s 320ms/step - accuracy: 0.9973 - dice_avg: 0.9123 - dice_liver: 0.9820 - dice_tumor: 0.8427 - iou_liver: 0.9646 - iou_tumor: 0.7564 - loss: 0.3583 - precision_liver: 0.9815 - precision_tumor: 0.8520 - recall_liver: 0.9826 - recall_tumor: 0.8387 - val_accuracy: 0.9969 - val_dice_avg: 0.9077 - val_dice_liver: 0.9785 - val_dice_tumor: 0.8369 - val_iou_liver: 0.9579 - val_iou_tumor: 0.7358 - val_loss: 0.3597 - val_precision_liver: 0.9917 - val_precision_tumor: 0.7994 - val_recall_liver: 0.9656 - val_recall_tumor: 0.8953 - learning_rate: 4.2000e-05
+Epoch 16/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9976 - dice_avg: 0.8990 - dice_liver: 0.9843 - dice_tumor: 0.8137 - iou_liver: 0.9692 - iou_tumor: 0.7264 - loss: 0.3561 - precision_liver: 0.9837 - precision_tumor: 0.8433 - recall_liver: 0.9850 - recall_tumor: 0.7990Epoch 16 | Reward=0.059 | Metric=0.9162 | BG=3.338 | Liver=6.784 | Tumor=6.343 | Boost=1.60
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 346ms/step - accuracy: 0.9976 - dice_avg: 0.9100 - dice_liver: 0.9840 - dice_tumor: 0.8359 - iou_liver: 0.9685 - iou_tumor: 0.7513 - loss: 0.3563 - precision_liver: 0.9833 - precision_tumor: 0.8620 - recall_liver: 0.9848 - recall_tumor: 0.8251 - val_accuracy: 0.9970 - val_dice_avg: 0.9141 - val_dice_liver: 0.9800 - val_dice_tumor: 0.8482 - val_iou_liver: 0.9608 - val_iou_tumor: 0.7464 - val_loss: 0.3584 - val_precision_liver: 0.9906 - val_precision_tumor: 0.8878 - val_recall_liver: 0.9697 - val_recall_tumor: 0.8243 - learning_rate: 4.2000e-05
+Epoch 17/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 319ms/step - accuracy: 0.9976 - dice_avg: 0.9254 - dice_liver: 0.9841 - dice_tumor: 0.8666 - iou_liver: 0.9687 - iou_tumor: 0.7752 - loss: 0.3556 - precision_liver: 0.9843 - precision_tumor: 0.8824 - recall_liver: 0.9840 - recall_tumor: 0.8627Epoch 17 | Reward=-0.093 | Metric=0.9069 | BG=3.473 | Liver=7.058 | Tumor=5.935 | Boost=1.55
+100/100 ━━━━━━━━━━━━━━━━━━━━ 37s 376ms/step - accuracy: 0.9976 - dice_avg: 0.9257 - dice_liver: 0.9844 - dice_tumor: 0.8669 - iou_liver: 0.9694 - iou_tumor: 0.7767 - loss: 0.3555 - precision_liver: 0.9839 - precision_tumor: 0.8896 - recall_liver: 0.9851 - recall_tumor: 0.8608 - val_accuracy: 0.9974 - val_dice_avg: 0.9059 - val_dice_liver: 0.9822 - val_dice_tumor: 0.8296 - val_iou_liver: 0.9650 - val_iou_tumor: 0.7265 - val_loss: 0.3565 - val_precision_liver: 0.9874 - val_precision_tumor: 0.9212 - val_recall_liver: 0.9770 - val_recall_tumor: 0.7699 - learning_rate: 4.2000e-05
+Epoch 18/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9977 - dice_avg: 0.9284 - dice_liver: 0.9849 - dice_tumor: 0.8718 - iou_liver: 0.9703 - iou_tumor: 0.7818 - loss: 0.3542 - precision_liver: 0.9844 - precision_tumor: 0.8988 - recall_liver: 0.9855 - recall_tumor: 0.8556Epoch 18 | Reward=-0.047 | Metric=0.9115 | BG=3.627 | Liver=7.372 | Tumor=5.466 | Boost=1.50
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 306ms/step - accuracy: 0.9977 - dice_avg: 0.9216 - dice_liver: 0.9845 - dice_tumor: 0.8587 - iou_liver: 0.9695 - iou_tumor: 0.7684 - loss: 0.3548 - precision_liver: 0.9842 - precision_tumor: 0.8844 - recall_liver: 0.9848 - recall_tumor: 0.8487 - val_accuracy: 0.9973 - val_dice_avg: 0.9128 - val_dice_liver: 0.9817 - val_dice_tumor: 0.8439 - val_iou_liver: 0.9641 - val_iou_tumor: 0.7412 - val_loss: 0.3566 - val_precision_liver: 0.9752 - val_precision_tumor: 0.9305 - val_recall_liver: 0.9883 - val_recall_tumor: 0.7798 - learning_rate: 4.2000e-05
+Epoch 19/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 254ms/step - accuracy: 0.9975 - dice_avg: 0.9308 - dice_liver: 0.9828 - dice_tumor: 0.8788 - iou_liver: 0.9663 - iou_tumor: 0.7921 - loss: 0.3557 - precision_liver: 0.9813 - precision_tumor: 0.8894 - recall_liver: 0.9845 - recall_tumor: 0.8786Epoch 19 | Reward=0.076 | Metric=0.9238 | BG=3.554 | Liver=7.222 | Tumor=5.689 | Boost=1.45
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 384ms/step - accuracy: 0.9977 - dice_avg: 0.9267 - dice_liver: 0.9844 - dice_tumor: 0.8691 - iou_liver: 0.9693 - iou_tumor: 0.7838 - loss: 0.3542 - precision_liver: 0.9836 - precision_tumor: 0.8883 - recall_liver: 0.9853 - recall_tumor: 0.8632 - val_accuracy: 0.9976 - val_dice_avg: 0.9227 - val_dice_liver: 0.9835 - val_dice_tumor: 0.8620 - val_iou_liver: 0.9675 - val_iou_tumor: 0.7710 - val_loss: 0.3545 - val_precision_liver: 0.9888 - val_precision_tumor: 0.8548 - val_recall_liver: 0.9782 - val_recall_tumor: 0.8831 - learning_rate: 4.2000e-05
+Epoch 20/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 335ms/step - accuracy: 0.9979 - dice_avg: 0.9278 - dice_liver: 0.9864 - dice_tumor: 0.8693 - iou_liver: 0.9731 - iou_tumor: 0.7859 - loss: 0.3524 - precision_liver: 0.9867 - precision_tumor: 0.8905 - recall_liver: 0.9860 - recall_tumor: 0.8638Epoch 20 | Reward=-0.260 | Metric=0.8978 | BG=3.711 | Liver=7.541 | Tumor=5.214 | Boost=1.40
+100/100 ━━━━━━━━━━━━━━━━━━━━ 39s 394ms/step - accuracy: 0.9979 - dice_avg: 0.9262 - dice_liver: 0.9862 - dice_tumor: 0.8662 - iou_liver: 0.9728 - iou_tumor: 0.7816 - loss: 0.3525 - precision_liver: 0.9861 - precision_tumor: 0.8838 - recall_liver: 0.9864 - recall_tumor: 0.8657 - val_accuracy: 0.9976 - val_dice_avg: 0.8991 - val_dice_liver: 0.9839 - val_dice_tumor: 0.8142 - val_iou_liver: 0.9684 - val_iou_tumor: 0.7347 - val_loss: 0.3538 - val_precision_liver: 0.9778 - val_precision_tumor: 0.8629 - val_recall_liver: 0.9902 - val_recall_tumor: 0.7746 - learning_rate: 4.2000e-05
+Epoch 21/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 255ms/step - accuracy: 0.9980 - dice_avg: 0.9356 - dice_liver: 0.9861 - dice_tumor: 0.8850 - iou_liver: 0.9727 - iou_tumor: 0.8037 - loss: 0.3533 - precision_liver: 0.9851 - precision_tumor: 0.9085 - recall_liver: 0.9872 - recall_tumor: 0.8738Epoch 21 | Reward=0.058 | Metric=0.9296 | BG=3.782 | Liver=7.370 | Tumor=5.314 | Boost=1.35
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 355ms/step - accuracy: 0.9980 - dice_avg: 0.9359 - dice_liver: 0.9865 - dice_tumor: 0.8853 - iou_liver: 0.9733 - iou_tumor: 0.8067 - loss: 0.3519 - precision_liver: 0.9860 - precision_tumor: 0.9071 - recall_liver: 0.9870 - recall_tumor: 0.8739 - val_accuracy: 0.9976 - val_dice_avg: 0.9293 - val_dice_liver: 0.9837 - val_dice_tumor: 0.8749 - val_iou_liver: 0.9680 - val_iou_tumor: 0.7856 - val_loss: 0.3535 - val_precision_liver: 0.9852 - val_precision_tumor: 0.8581 - val_recall_liver: 0.9823 - val_recall_tumor: 0.8967 - learning_rate: 4.2000e-05
+Epoch 22/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 313ms/step - accuracy: 0.9981 - dice_avg: 0.9321 - dice_liver: 0.9877 - dice_tumor: 0.8765 - iou_liver: 0.9756 - iou_tumor: 0.7997 - loss: 0.3497 - precision_liver: 0.9878 - precision_tumor: 0.8926 - recall_liver: 0.9875 - recall_tumor: 0.8705Epoch 22 | Reward=0.026 | Metric=0.9323 | BG=3.695 | Liver=7.200 | Tumor=5.570 | Boost=1.30
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 414ms/step - accuracy: 0.9981 - dice_avg: 0.9278 - dice_liver: 0.9872 - dice_tumor: 0.8684 - iou_liver: 0.9747 - iou_tumor: 0.7924 - loss: 0.3511 - precision_liver: 0.9870 - precision_tumor: 0.8798 - recall_liver: 0.9875 - recall_tumor: 0.8639 - val_accuracy: 0.9976 - val_dice_avg: 0.9316 - val_dice_liver: 0.9836 - val_dice_tumor: 0.8795 - val_iou_liver: 0.9678 - val_iou_tumor: 0.7930 - val_loss: 0.3528 - val_precision_liver: 0.9871 - val_precision_tumor: 0.8853 - val_recall_liver: 0.9802 - val_recall_tumor: 0.8770 - learning_rate: 4.2000e-05
+Epoch 23/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 317ms/step - accuracy: 0.9981 - dice_avg: 0.9515 - dice_liver: 0.9873 - dice_tumor: 0.9157 - iou_liver: 0.9748 - iou_tumor: 0.8477 - loss: 0.3511 - precision_liver: 0.9870 - precision_tumor: 0.9190 - recall_liver: 0.9875 - recall_tumor: 0.9159Epoch 23 | Reward=-0.080 | Metric=0.9242 | BG=3.644 | Liver=7.327 | Tumor=5.494 | Boost=1.25
+100/100 ━━━━━━━━━━━━━━━━━━━━ 37s 376ms/step - accuracy: 0.9981 - dice_avg: 0.9472 - dice_liver: 0.9871 - dice_tumor: 0.9073 - iou_liver: 0.9746 - iou_tumor: 0.8342 - loss: 0.3507 - precision_liver: 0.9870 - precision_tumor: 0.9128 - recall_liver: 0.9874 - recall_tumor: 0.9071 - val_accuracy: 0.9976 - val_dice_avg: 0.9250 - val_dice_liver: 0.9838 - val_dice_tumor: 0.8661 - val_iou_liver: 0.9681 - val_iou_tumor: 0.7831 - val_loss: 0.3525 - val_precision_liver: 0.9802 - val_precision_tumor: 0.9039 - val_recall_liver: 0.9875 - val_recall_tumor: 0.8610 - learning_rate: 4.2000e-05
+Epoch 24/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 253ms/step - accuracy: 0.9980 - dice_avg: 0.9427 - dice_liver: 0.9861 - dice_tumor: 0.8994 - iou_liver: 0.9726 - iou_tumor: 0.8239 - loss: 0.3520 - precision_liver: 0.9857 - precision_tumor: 0.9025 - recall_liver: 0.9865 - recall_tumor: 0.9019Epoch 24 | Reward=-0.010 | Metric=0.9313 | BG=3.795 | Liver=7.630 | Tumor=5.041 | Boost=1.20
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 310ms/step - accuracy: 0.9980 - dice_avg: 0.9409 - dice_liver: 0.9870 - dice_tumor: 0.8949 - iou_liver: 0.9743 - iou_tumor: 0.8217 - loss: 0.3505 - precision_liver: 0.9869 - precision_tumor: 0.8995 - recall_liver: 0.9871 - recall_tumor: 0.8953 - val_accuracy: 0.9978 - val_dice_avg: 0.9314 - val_dice_liver: 0.9849 - val_dice_tumor: 0.8778 - val_iou_liver: 0.9703 - val_iou_tumor: 0.7915 - val_loss: 0.3518 - val_precision_liver: 0.9846 - val_precision_tumor: 0.8995 - val_recall_liver: 0.9853 - val_recall_tumor: 0.8611 - learning_rate: 4.2000e-05
+Epoch 25/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 255ms/step - accuracy: 0.9981 - dice_avg: 0.9466 - dice_liver: 0.9874 - dice_tumor: 0.9058 - iou_liver: 0.9750 - iou_tumor: 0.8331 - loss: 0.3492 - precision_liver: 0.9868 - precision_tumor: 0.9103 - recall_liver: 0.9880 - recall_tumor: 0.9059Epoch 25 | Reward=0.017 | Metric=0.9339 | BG=3.881 | Liver=7.429 | Tumor=5.155 | Boost=1.15
+100/100 ━━━━━━━━━━━━━━━━━━━━ 34s 344ms/step - accuracy: 0.9980 - dice_avg: 0.9376 - dice_liver: 0.9869 - dice_tumor: 0.8883 - iou_liver: 0.9741 - iou_tumor: 0.8127 - loss: 0.3502 - precision_liver: 0.9866 - precision_tumor: 0.9012 - recall_liver: 0.9871 - recall_tumor: 0.8843 - val_accuracy: 0.9978 - val_dice_avg: 0.9338 - val_dice_liver: 0.9848 - val_dice_tumor: 0.8829 - val_iou_liver: 0.9700 - val_iou_tumor: 0.7976 - val_loss: 0.3513 - val_precision_liver: 0.9853 - val_precision_tumor: 0.8890 - val_recall_liver: 0.9843 - val_recall_tumor: 0.8822 - learning_rate: 4.2000e-05
+Epoch 26/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 323ms/step - accuracy: 0.9983 - dice_avg: 0.9467 - dice_liver: 0.9885 - dice_tumor: 0.9050 - iou_liver: 0.9772 - iou_tumor: 0.8312 - loss: 0.3486 - precision_liver: 0.9879 - precision_tumor: 0.9064 - recall_liver: 0.9891 - recall_tumor: 0.9127Epoch 26 | Reward=0.051 | Metric=0.9390 | BG=4.011 | Liver=7.127 | Tumor=5.328 | Boost=1.10
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 408ms/step - accuracy: 0.9984 - dice_avg: 0.9493 - dice_liver: 0.9890 - dice_tumor: 0.9097 - iou_liver: 0.9782 - iou_tumor: 0.8384 - loss: 0.3486 - precision_liver: 0.9886 - precision_tumor: 0.9113 - recall_liver: 0.9893 - recall_tumor: 0.9158 - val_accuracy: 0.9979 - val_dice_avg: 0.9387 - val_dice_liver: 0.9855 - val_dice_tumor: 0.8918 - val_iou_liver: 0.9715 - val_iou_tumor: 0.8133 - val_loss: 0.3506 - val_precision_liver: 0.9873 - val_precision_tumor: 0.9075 - val_recall_liver: 0.9838 - val_recall_tumor: 0.8878 - learning_rate: 4.2000e-05
+Epoch 27/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 319ms/step - accuracy: 0.9985 - dice_avg: 0.9401 - dice_liver: 0.9893 - dice_tumor: 0.8909 - iou_liver: 0.9788 - iou_tumor: 0.8284 - loss: 0.3495 - precision_liver: 0.9889 - precision_tumor: 0.8955 - recall_liver: 0.9897 - recall_tumor: 0.8892Epoch 27 | Reward=0.017 | Metric=0.9407 | BG=3.913 | Liver=6.954 | Tumor=5.598 | Boost=1.05
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 417ms/step - accuracy: 0.9985 - dice_avg: 0.9464 - dice_liver: 0.9896 - dice_tumor: 0.9032 - iou_liver: 0.9795 - iou_tumor: 0.8354 - loss: 0.3479 - precision_liver: 0.9894 - precision_tumor: 0.9085 - recall_liver: 0.9899 - recall_tumor: 0.9034 - val_accuracy: 0.9980 - val_dice_avg: 0.9406 - val_dice_liver: 0.9864 - val_dice_tumor: 0.8947 - val_iou_liver: 0.9731 - val_iou_tumor: 0.8172 - val_loss: 0.3498 - val_precision_liver: 0.9871 - val_precision_tumor: 0.9327 - val_recall_liver: 0.9856 - val_recall_tumor: 0.8652 - learning_rate: 4.2000e-05
+Epoch 28/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 320ms/step - accuracy: 0.9985 - dice_avg: 0.9517 - dice_liver: 0.9904 - dice_tumor: 0.9130 - iou_liver: 0.9809 - iou_tumor: 0.8464 - loss: 0.3471 - precision_liver: 0.9901 - precision_tumor: 0.9253 - recall_liver: 0.9906 - recall_tumor: 0.9060Epoch 28 | Reward=-0.033 | Metric=0.9374 | BG=3.808 | Liver=7.210 | Tumor=5.447 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 381ms/step - accuracy: 0.9985 - dice_avg: 0.9510 - dice_liver: 0.9897 - dice_tumor: 0.9123 - iou_liver: 0.9797 - iou_tumor: 0.8469 - loss: 0.3476 - precision_liver: 0.9895 - precision_tumor: 0.9282 - recall_liver: 0.9900 - recall_tumor: 0.9058 - val_accuracy: 0.9979 - val_dice_avg: 0.9379 - val_dice_liver: 0.9857 - val_dice_tumor: 0.8901 - val_iou_liver: 0.9718 - val_iou_tumor: 0.8096 - val_loss: 0.3501 - val_precision_liver: 0.9831 - val_precision_tumor: 0.9263 - val_recall_liver: 0.9884 - val_recall_tumor: 0.8617 - learning_rate: 4.2000e-05
+Epoch 29/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9985 - dice_avg: 0.9514 - dice_liver: 0.9896 - dice_tumor: 0.9132 - iou_liver: 0.9795 - iou_tumor: 0.8438 - loss: 0.3483 - precision_liver: 0.9895 - precision_tumor: 0.9193 - recall_liver: 0.9899 - recall_tumor: 0.9122Epoch 29 | Reward=-0.027 | Metric=0.9380 | BG=3.954 | Liver=7.487 | Tumor=5.024 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 414ms/step - accuracy: 0.9985 - dice_avg: 0.9539 - dice_liver: 0.9900 - dice_tumor: 0.9178 - iou_liver: 0.9802 - iou_tumor: 0.8524 - loss: 0.3472 - precision_liver: 0.9900 - precision_tumor: 0.9230 - recall_liver: 0.9901 - recall_tumor: 0.9168 - val_accuracy: 0.9981 - val_dice_avg: 0.9378 - val_dice_liver: 0.9867 - val_dice_tumor: 0.8888 - val_iou_liver: 0.9738 - val_iou_tumor: 0.8090 - val_loss: 0.3494 - val_precision_liver: 0.9879 - val_precision_tumor: 0.8601 - val_recall_liver: 0.9856 - val_recall_tumor: 0.9330 - learning_rate: 4.2000e-05
+Epoch 30/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 189ms/step - accuracy: 0.9984 - dice_avg: 0.9587 - dice_liver: 0.9898 - dice_tumor: 0.9276 - iou_liver: 0.9799 - iou_tumor: 0.8674 - loss: 0.3463 - precision_liver: 0.9898 - precision_tumor: 0.9234 - recall_liver: 0.9899 - recall_tumor: 0.9341Epoch 30 | Reward=-0.127 | Metric=0.9280 | BG=4.091 | Liver=7.745 | Tumor=4.630 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 24s 243ms/step - accuracy: 0.9985 - dice_avg: 0.9502 - dice_liver: 0.9902 - dice_tumor: 0.9102 - iou_liver: 0.9807 - iou_tumor: 0.8497 - loss: 0.3468 - precision_liver: 0.9902 - precision_tumor: 0.9108 - recall_liver: 0.9903 - recall_tumor: 0.9140 - val_accuracy: 0.9979 - val_dice_avg: 0.9279 - val_dice_liver: 0.9858 - val_dice_tumor: 0.8701 - val_iou_liver: 0.9720 - val_iou_tumor: 0.7916 - val_loss: 0.3497 - val_precision_liver: 0.9862 - val_precision_tumor: 0.9410 - val_recall_liver: 0.9853 - val_recall_tumor: 0.8334 - learning_rate: 4.2000e-05
+Epoch 31/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 231ms/step - accuracy: 0.9984 - dice_avg: 0.9550 - dice_liver: 0.9895 - dice_tumor: 0.9205 - iou_liver: 0.9792 - iou_tumor: 0.8562 - loss: 0.3471 - precision_liver: 0.9894 - precision_tumor: 0.9267 - recall_liver: 0.9896 - recall_tumor: 0.9177Epoch 31 | Reward=0.018 | Metric=0.9425 | BG=4.225 | Liver=7.459 | Tumor=4.782 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 33s 332ms/step - accuracy: 0.9983 - dice_avg: 0.9523 - dice_liver: 0.9889 - dice_tumor: 0.9158 - iou_liver: 0.9780 - iou_tumor: 0.8488 - loss: 0.3475 - precision_liver: 0.9888 - precision_tumor: 0.9199 - recall_liver: 0.9890 - recall_tumor: 0.9151 - val_accuracy: 0.9979 - val_dice_avg: 0.9419 - val_dice_liver: 0.9854 - val_dice_tumor: 0.8984 - val_iou_liver: 0.9713 - val_iou_tumor: 0.8200 - val_loss: 0.3497 - val_precision_liver: 0.9884 - val_precision_tumor: 0.9096 - val_recall_liver: 0.9825 - val_recall_tumor: 0.8930 - learning_rate: 4.2000e-05
+Epoch 32/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 331ms/step - accuracy: 0.9985 - dice_avg: 0.9442 - dice_liver: 0.9899 - dice_tumor: 0.8984 - iou_liver: 0.9801 - iou_tumor: 0.8386 - loss: 0.3468 - precision_liver: 0.9902 - precision_tumor: 0.9044 - recall_liver: 0.9898 - recall_tumor: 0.8963Epoch 32 | Reward=-0.062 | Metric=0.9363 | BG=4.353 | Liver=7.686 | Tumor=4.426 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 39s 389ms/step - accuracy: 0.9985 - dice_avg: 0.9514 - dice_liver: 0.9901 - dice_tumor: 0.9126 - iou_liver: 0.9804 - iou_tumor: 0.8529 - loss: 0.3466 - precision_liver: 0.9901 - precision_tumor: 0.9140 - recall_liver: 0.9902 - recall_tumor: 0.9154 - val_accuracy: 0.9980 - val_dice_avg: 0.9364 - val_dice_liver: 0.9867 - val_dice_tumor: 0.8861 - val_iou_liver: 0.9738 - val_iou_tumor: 0.8068 - val_loss: 0.3487 - val_precision_liver: 0.9862 - val_precision_tumor: 0.9077 - val_recall_liver: 0.9872 - val_recall_tumor: 0.8741 - learning_rate: 4.2000e-05
+Epoch 33/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 260ms/step - accuracy: 0.9987 - dice_avg: 0.9470 - dice_liver: 0.9912 - dice_tumor: 0.9028 - iou_liver: 0.9826 - iou_tumor: 0.8412 - loss: 0.3458 - precision_liver: 0.9910 - precision_tumor: 0.9036 - recall_liver: 0.9915 - recall_tumor: 0.9059Epoch 33 | Reward=0.051 | Metric=0.9477 | BG=4.224 | Liver=7.458 | Tumor=4.783 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 36s 359ms/step - accuracy: 0.9987 - dice_avg: 0.9494 - dice_liver: 0.9911 - dice_tumor: 0.9078 - iou_liver: 0.9823 - iou_tumor: 0.8459 - loss: 0.3456 - precision_liver: 0.9909 - precision_tumor: 0.9127 - recall_liver: 0.9913 - recall_tumor: 0.9083 - val_accuracy: 0.9981 - val_dice_avg: 0.9474 - val_dice_liver: 0.9868 - val_dice_tumor: 0.9080 - val_iou_liver: 0.9739 - val_iou_tumor: 0.8362 - val_loss: 0.3485 - val_precision_liver: 0.9882 - val_precision_tumor: 0.8813 - val_recall_liver: 0.9854 - val_recall_tumor: 0.9398 - learning_rate: 4.2000e-05
+Epoch 34/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 317ms/step - accuracy: 0.9986 - dice_avg: 0.9589 - dice_liver: 0.9907 - dice_tumor: 0.9272 - iou_liver: 0.9815 - iou_tumor: 0.8698 - loss: 0.3453 - precision_liver: 0.9905 - precision_tumor: 0.9234 - recall_liver: 0.9908 - recall_tumor: 0.9332Epoch 34 | Reward=-0.055 | Metric=0.9422 | BG=4.349 | Liver=7.678 | Tumor=4.439 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 377ms/step - accuracy: 0.9986 - dice_avg: 0.9547 - dice_liver: 0.9905 - dice_tumor: 0.9190 - iou_liver: 0.9811 - iou_tumor: 0.8599 - loss: 0.3459 - precision_liver: 0.9904 - precision_tumor: 0.9176 - recall_liver: 0.9906 - recall_tumor: 0.9236 - val_accuracy: 0.9980 - val_dice_avg: 0.9417 - val_dice_liver: 0.9865 - val_dice_tumor: 0.8969 - val_iou_liver: 0.9734 - val_iou_tumor: 0.8191 - val_loss: 0.3484 - val_precision_liver: 0.9889 - val_precision_tumor: 0.8859 - val_recall_liver: 0.9841 - val_recall_tumor: 0.9127 - learning_rate: 4.2000e-05
+Epoch 35/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 260ms/step - accuracy: 0.9988 - dice_avg: 0.9563 - dice_liver: 0.9917 - dice_tumor: 0.9208 - iou_liver: 0.9836 - iou_tumor: 0.8664 - loss: 0.3450 - precision_liver: 0.9913 - precision_tumor: 0.9335 - recall_liver: 0.9922 - recall_tumor: 0.9170Epoch 35 | Reward=-0.061 | Metric=0.9416 | BG=4.229 | Liver=7.920 | Tumor=4.317 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 315ms/step - accuracy: 0.9988 - dice_avg: 0.9500 - dice_liver: 0.9916 - dice_tumor: 0.9084 - iou_liver: 0.9833 - iou_tumor: 0.8530 - loss: 0.3450 - precision_liver: 0.9912 - precision_tumor: 0.9203 - recall_liver: 0.9920 - recall_tumor: 0.9050 - val_accuracy: 0.9978 - val_dice_avg: 0.9400 - val_dice_liver: 0.9852 - val_dice_tumor: 0.8948 - val_iou_liver: 0.9708 - val_iou_tumor: 0.8195 - val_loss: 0.3494 - val_precision_liver: 0.9932 - val_precision_tumor: 0.8889 - val_recall_liver: 0.9773 - val_recall_tumor: 0.9147 - learning_rate: 4.2000e-05
+Epoch 36/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9987 - dice_avg: 0.9598 - dice_liver: 0.9910 - dice_tumor: 0.9286 - iou_liver: 0.9822 - iou_tumor: 0.8741 - loss: 0.3457 - precision_liver: 0.9915 - precision_tumor: 0.9287 - recall_liver: 0.9906 - recall_tumor: 0.9313Epoch 36 | Reward=-0.090 | Metric=0.9387 | BG=4.331 | Liver=8.111 | Tumor=4.023 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 308ms/step - accuracy: 0.9987 - dice_avg: 0.9573 - dice_liver: 0.9910 - dice_tumor: 0.9236 - iou_liver: 0.9821 - iou_tumor: 0.8684 - loss: 0.3453 - precision_liver: 0.9910 - precision_tumor: 0.9255 - recall_liver: 0.9910 - recall_tumor: 0.9247 - val_accuracy: 0.9979 - val_dice_avg: 0.9397 - val_dice_liver: 0.9857 - val_dice_tumor: 0.8936 - val_iou_liver: 0.9719 - val_iou_tumor: 0.8128 - val_loss: 0.3492 - val_precision_liver: 0.9809 - val_precision_tumor: 0.9247 - val_recall_liver: 0.9906 - val_recall_tumor: 0.8667 - learning_rate: 4.2000e-05
+Epoch 37/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9986 - dice_avg: 0.9540 - dice_liver: 0.9900 - dice_tumor: 0.9180 - iou_liver: 0.9802 - iou_tumor: 0.8597 - loss: 0.3460 - precision_liver: 0.9899 - precision_tumor: 0.9298 - recall_liver: 0.9901 - recall_tumor: 0.9184Epoch 37 | Reward=-0.016 | Metric=0.9460 | BG=4.421 | Liver=8.278 | Tumor=3.767 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 309ms/step - accuracy: 0.9986 - dice_avg: 0.9433 - dice_liver: 0.9904 - dice_tumor: 0.8961 - iou_liver: 0.9811 - iou_tumor: 0.8325 - loss: 0.3455 - precision_liver: 0.9902 - precision_tumor: 0.9176 - recall_liver: 0.9907 - recall_tumor: 0.8922 - val_accuracy: 0.9981 - val_dice_avg: 0.9457 - val_dice_liver: 0.9868 - val_dice_tumor: 0.9046 - val_iou_liver: 0.9739 - val_iou_tumor: 0.8345 - val_loss: 0.3481 - val_precision_liver: 0.9886 - val_precision_tumor: 0.9131 - val_recall_liver: 0.9850 - val_recall_tumor: 0.9006 - learning_rate: 4.2000e-05
+Epoch 38/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 259ms/step - accuracy: 0.9986 - dice_avg: 0.9510 - dice_liver: 0.9911 - dice_tumor: 0.9110 - iou_liver: 0.9824 - iou_tumor: 0.8596 - loss: 0.3440 - precision_liver: 0.9914 - precision_tumor: 0.9025 - recall_liver: 0.9908 - recall_tumor: 0.9219Epoch 38 | Reward=0.021 | Metric=0.9498 | BG=4.560 | Liver=8.019 | Tumor=3.886 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 36s 359ms/step - accuracy: 0.9987 - dice_avg: 0.9514 - dice_liver: 0.9911 - dice_tumor: 0.9118 - iou_liver: 0.9823 - iou_tumor: 0.8624 - loss: 0.3449 - precision_liver: 0.9912 - precision_tumor: 0.9079 - recall_liver: 0.9910 - recall_tumor: 0.9173 - val_accuracy: 0.9981 - val_dice_avg: 0.9490 - val_dice_liver: 0.9869 - val_dice_tumor: 0.9111 - val_iou_liver: 0.9742 - val_iou_tumor: 0.8429 - val_loss: 0.3478 - val_precision_liver: 0.9909 - val_precision_tumor: 0.8946 - val_recall_liver: 0.9830 - val_recall_tumor: 0.9350 - learning_rate: 4.2000e-05
+Epoch 39/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 329ms/step - accuracy: 0.9988 - dice_avg: 0.9646 - dice_liver: 0.9920 - dice_tumor: 0.9372 - iou_liver: 0.9841 - iou_tumor: 0.8889 - loss: 0.3440 - precision_liver: 0.9918 - precision_tumor: 0.9359 - recall_liver: 0.9923 - recall_tumor: 0.9405Epoch 39 | Reward=-0.154 | Metric=0.9344 | BG=4.435 | Liver=8.251 | Tumor=3.779 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 39s 390ms/step - accuracy: 0.9988 - dice_avg: 0.9570 - dice_liver: 0.9919 - dice_tumor: 0.9222 - iou_liver: 0.9839 - iou_tumor: 0.8735 - loss: 0.3443 - precision_liver: 0.9918 - precision_tumor: 0.9232 - recall_liver: 0.9919 - recall_tumor: 0.9235 - val_accuracy: 0.9980 - val_dice_avg: 0.9356 - val_dice_liver: 0.9863 - val_dice_tumor: 0.8849 - val_iou_liver: 0.9730 - val_iou_tumor: 0.8011 - val_loss: 0.3483 - val_precision_liver: 0.9800 - val_precision_tumor: 0.9597 - val_recall_liver: 0.9927 - val_recall_tumor: 0.8243 - learning_rate: 4.2000e-05
+Epoch 40/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 260ms/step - accuracy: 0.9989 - dice_avg: 0.9692 - dice_liver: 0.9927 - dice_tumor: 0.9457 - iou_liver: 0.9855 - iou_tumor: 0.8984 - loss: 0.3441 - precision_liver: 0.9923 - precision_tumor: 0.9475 - recall_liver: 0.9931 - recall_tumor: 0.9455Epoch 40 | Reward=-0.038 | Metric=0.9460 | BG=4.347 | Liver=8.414 | Tumor=3.704 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 32s 321ms/step - accuracy: 0.9989 - dice_avg: 0.9684 - dice_liver: 0.9927 - dice_tumor: 0.9442 - iou_liver: 0.9855 - iou_tumor: 0.8958 - loss: 0.3438 - precision_liver: 0.9925 - precision_tumor: 0.9441 - recall_liver: 0.9929 - recall_tumor: 0.9456 - val_accuracy: 0.9980 - val_dice_avg: 0.9447 - val_dice_liver: 0.9866 - val_dice_tumor: 0.9029 - val_iou_liver: 0.9735 - val_iou_tumor: 0.8325 - val_loss: 0.3479 - val_precision_liver: 0.9930 - val_precision_tumor: 0.8662 - val_recall_liver: 0.9802 - val_recall_tumor: 0.9509 - learning_rate: 4.2000e-05
+Epoch 41/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9988 - dice_avg: 0.9574 - dice_liver: 0.9918 - dice_tumor: 0.9231 - iou_liver: 0.9838 - iou_tumor: 0.8759 - loss: 0.3440 - precision_liver: 0.9918 - precision_tumor: 0.9275 - recall_liver: 0.9919 - recall_tumor: 0.9245Epoch 41 | Reward=-0.074 | Metric=0.9424 | BG=4.289 | Liver=8.523 | Tumor=3.654 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 308ms/step - accuracy: 0.9987 - dice_avg: 0.9565 - dice_liver: 0.9915 - dice_tumor: 0.9215 - iou_liver: 0.9831 - iou_tumor: 0.8681 - loss: 0.3444 - precision_liver: 0.9912 - precision_tumor: 0.9220 - recall_liver: 0.9917 - recall_tumor: 0.9266 - val_accuracy: 0.9976 - val_dice_avg: 0.9403 - val_dice_liver: 0.9832 - val_dice_tumor: 0.8975 - val_iou_liver: 0.9669 - val_iou_tumor: 0.8220 - val_loss: 0.3507 - val_precision_liver: 0.9935 - val_precision_tumor: 0.8938 - val_recall_liver: 0.9731 - val_recall_tumor: 0.9099 - learning_rate: 4.2000e-05
+Epoch 42/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 260ms/step - accuracy: 0.9979 - dice_avg: 0.9302 - dice_liver: 0.9857 - dice_tumor: 0.8748 - iou_liver: 0.9718 - iou_tumor: 0.8116 - loss: 0.3485 - precision_liver: 0.9868 - precision_tumor: 0.8932 - recall_liver: 0.9847 - recall_tumor: 0.8656Epoch 42 | Reward=-0.053 | Metric=0.9445 | BG=4.252 | Liver=8.590 | Tumor=3.623 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 309ms/step - accuracy: 0.9980 - dice_avg: 0.9369 - dice_liver: 0.9868 - dice_tumor: 0.8870 - iou_liver: 0.9740 - iou_tumor: 0.8225 - loss: 0.3479 - precision_liver: 0.9873 - precision_tumor: 0.9003 - recall_liver: 0.9863 - recall_tumor: 0.8811 - val_accuracy: 0.9978 - val_dice_avg: 0.9449 - val_dice_liver: 0.9849 - val_dice_tumor: 0.9049 - val_iou_liver: 0.9703 - val_iou_tumor: 0.8315 - val_loss: 0.3491 - val_precision_liver: 0.9831 - val_precision_tumor: 0.8923 - val_recall_liver: 0.9868 - val_recall_tumor: 0.9224 - learning_rate: 4.2000e-05
+Epoch 43/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9987 - dice_avg: 0.9660 - dice_liver: 0.9911 - dice_tumor: 0.9409 - iou_liver: 0.9824 - iou_tumor: 0.8915 - loss: 0.3453 - precision_liver: 0.9911 - precision_tumor: 0.9391 - recall_liver: 0.9911 - recall_tumor: 0.9460Epoch 43 | Reward=-0.054 | Metric=0.9444 | BG=4.233 | Liver=8.626 | Tumor=3.607 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 310ms/step - accuracy: 0.9988 - dice_avg: 0.9659 - dice_liver: 0.9919 - dice_tumor: 0.9400 - iou_liver: 0.9839 - iou_tumor: 0.8913 - loss: 0.3440 - precision_liver: 0.9917 - precision_tumor: 0.9420 - recall_liver: 0.9920 - recall_tumor: 0.9434 - val_accuracy: 0.9981 - val_dice_avg: 0.9433 - val_dice_liver: 0.9870 - val_dice_tumor: 0.8995 - val_iou_liver: 0.9743 - val_iou_tumor: 0.8272 - val_loss: 0.3476 - val_precision_liver: 0.9928 - val_precision_tumor: 0.8761 - val_recall_liver: 0.9812 - val_recall_tumor: 0.9363 - learning_rate: 4.2000e-05
+Epoch 44/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9991 - dice_avg: 0.9642 - dice_liver: 0.9939 - dice_tumor: 0.9346 - iou_liver: 0.9878 - iou_tumor: 0.8842 - loss: 0.3441 - precision_liver: 0.9941 - precision_tumor: 0.9291 - recall_liver: 0.9936 - recall_tumor: 0.9431Epoch 44 | Reward=0.034 | Metric=0.9532 | BG=3.560 | Liver=9.100 | Tumor=3.805 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 46s 461ms/step - accuracy: 0.9992 - dice_avg: 0.9665 - dice_liver: 0.9945 - dice_tumor: 0.9385 - iou_liver: 0.9891 - iou_tumor: 0.8950 - loss: 0.3424 - precision_liver: 0.9945 - precision_tumor: 0.9344 - recall_liver: 0.9945 - recall_tumor: 0.9455 - val_accuracy: 0.9985 - val_dice_avg: 0.9531 - val_dice_liver: 0.9898 - val_dice_tumor: 0.9164 - val_iou_liver: 0.9798 - val_iou_tumor: 0.8538 - val_loss: 0.3454 - val_precision_liver: 0.9905 - val_precision_tumor: 0.9024 - val_recall_liver: 0.9891 - val_recall_tumor: 0.9386 - learning_rate: 2.1000e-05
+Epoch 45/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 191ms/step - accuracy: 0.9994 - dice_avg: 0.9769 - dice_liver: 0.9959 - dice_tumor: 0.9580 - iou_liver: 0.9918 - iou_tumor: 0.9208 - loss: 0.3424 - precision_liver: 0.9956 - precision_tumor: 0.9538 - recall_liver: 0.9961 - recall_tumor: 0.9633Epoch 45 | Reward=0.001 | Metric=0.9534 | BG=3.468 | Liver=8.863 | Tumor=4.135 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 379ms/step - accuracy: 0.9994 - dice_avg: 0.9788 - dice_liver: 0.9958 - dice_tumor: 0.9618 - iou_liver: 0.9917 - iou_tumor: 0.9278 - loss: 0.3416 - precision_liver: 0.9956 - precision_tumor: 0.9582 - recall_liver: 0.9961 - recall_tumor: 0.9668 - val_accuracy: 0.9985 - val_dice_avg: 0.9532 - val_dice_liver: 0.9898 - val_dice_tumor: 0.9165 - val_iou_liver: 0.9798 - val_iou_tumor: 0.8525 - val_loss: 0.3453 - val_precision_liver: 0.9909 - val_precision_tumor: 0.8862 - val_recall_liver: 0.9887 - val_recall_tumor: 0.9538 - learning_rate: 2.1000e-05
+Epoch 46/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 199ms/step - accuracy: 0.9995 - dice_avg: 0.9785 - dice_liver: 0.9962 - dice_tumor: 0.9609 - iou_liver: 0.9924 - iou_tumor: 0.9276 - loss: 0.3428 - precision_liver: 0.9963 - precision_tumor: 0.9547 - recall_liver: 0.9961 - recall_tumor: 0.9681Epoch 46 | Reward=0.038 | Metric=0.9572 | BG=3.384 | Liver=8.649 | Tumor=4.433 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 34s 337ms/step - accuracy: 0.9994 - dice_avg: 0.9759 - dice_liver: 0.9962 - dice_tumor: 0.9557 - iou_liver: 0.9924 - iou_tumor: 0.9248 - loss: 0.3413 - precision_liver: 0.9962 - precision_tumor: 0.9516 - recall_liver: 0.9962 - recall_tumor: 0.9609 - val_accuracy: 0.9985 - val_dice_avg: 0.9566 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9235 - val_iou_liver: 0.9797 - val_iou_tumor: 0.8644 - val_loss: 0.3455 - val_precision_liver: 0.9924 - val_precision_tumor: 0.9083 - val_recall_liver: 0.9871 - val_recall_tumor: 0.9431 - learning_rate: 2.1000e-05
+Epoch 47/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 359ms/step - accuracy: 0.9995 - dice_avg: 0.9819 - dice_liver: 0.9965 - dice_tumor: 0.9674 - iou_liver: 0.9931 - iou_tumor: 0.9390 - loss: 0.3407 - precision_liver: 0.9964 - precision_tumor: 0.9656 - recall_liver: 0.9966 - recall_tumor: 0.9706Epoch 47 | Reward=0.007 | Metric=0.9579 | BG=3.308 | Liver=8.456 | Tumor=4.701 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 46s 466ms/step - accuracy: 0.9995 - dice_avg: 0.9808 - dice_liver: 0.9964 - dice_tumor: 0.9651 - iou_liver: 0.9929 - iou_tumor: 0.9354 - loss: 0.3411 - precision_liver: 0.9963 - precision_tumor: 0.9657 - recall_liver: 0.9965 - recall_tumor: 0.9662 - val_accuracy: 0.9985 - val_dice_avg: 0.9573 - val_dice_liver: 0.9895 - val_dice_tumor: 0.9250 - val_iou_liver: 0.9793 - val_iou_tumor: 0.8669 - val_loss: 0.3455 - val_precision_liver: 0.9926 - val_precision_tumor: 0.9090 - val_recall_liver: 0.9864 - val_recall_tumor: 0.9455 - learning_rate: 2.1000e-05
+Epoch 48/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 327ms/step - accuracy: 0.9995 - dice_avg: 0.9844 - dice_liver: 0.9966 - dice_tumor: 0.9723 - iou_liver: 0.9932 - iou_tumor: 0.9474 - loss: 0.3409 - precision_liver: 0.9966 - precision_tumor: 0.9704 - recall_liver: 0.9966 - recall_tumor: 0.9746Epoch 48 | Reward=0.005 | Metric=0.9584 | BG=3.336 | Liver=8.390 | Tumor=4.740 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 425ms/step - accuracy: 0.9995 - dice_avg: 0.9788 - dice_liver: 0.9967 - dice_tumor: 0.9609 - iou_liver: 0.9933 - iou_tumor: 0.9339 - loss: 0.3409 - precision_liver: 0.9966 - precision_tumor: 0.9569 - recall_liver: 0.9967 - recall_tumor: 0.9655 - val_accuracy: 0.9985 - val_dice_avg: 0.9582 - val_dice_liver: 0.9899 - val_dice_tumor: 0.9264 - val_iou_liver: 0.9800 - val_iou_tumor: 0.8667 - val_loss: 0.3452 - val_precision_liver: 0.9910 - val_precision_tumor: 0.9106 - val_recall_liver: 0.9889 - val_recall_tumor: 0.9463 - learning_rate: 2.1000e-05
+Epoch 49/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 332ms/step - accuracy: 0.9996 - dice_avg: 0.9820 - dice_liver: 0.9971 - dice_tumor: 0.9669 - iou_liver: 0.9942 - iou_tumor: 0.9373 - loss: 0.3415 - precision_liver: 0.9971 - precision_tumor: 0.9638 - recall_liver: 0.9971 - recall_tumor: 0.9715Epoch 49 | Reward=0.017 | Metric=0.9600 | BG=3.269 | Liver=8.221 | Tumor=4.976 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 44s 439ms/step - accuracy: 0.9995 - dice_avg: 0.9814 - dice_liver: 0.9969 - dice_tumor: 0.9660 - iou_liver: 0.9938 - iou_tumor: 0.9357 - loss: 0.3407 - precision_liver: 0.9969 - precision_tumor: 0.9646 - recall_liver: 0.9970 - recall_tumor: 0.9693 - val_accuracy: 0.9985 - val_dice_avg: 0.9603 - val_dice_liver: 0.9900 - val_dice_tumor: 0.9306 - val_iou_liver: 0.9803 - val_iou_tumor: 0.8734 - val_loss: 0.3453 - val_precision_liver: 0.9886 - val_precision_tumor: 0.9193 - val_recall_liver: 0.9915 - val_recall_tumor: 0.9461 - learning_rate: 2.1000e-05
+Epoch 50/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 322ms/step - accuracy: 0.9995 - dice_avg: 0.9808 - dice_liver: 0.9970 - dice_tumor: 0.9646 - iou_liver: 0.9941 - iou_tumor: 0.9332 - loss: 0.3393 - precision_liver: 0.9970 - precision_tumor: 0.9608 - recall_liver: 0.9971 - recall_tumor: 0.9694Epoch 50 | Reward=0.020 | Metric=0.9620 | BG=3.209 | Liver=8.071 | Tumor=5.186 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 42s 424ms/step - accuracy: 0.9995 - dice_avg: 0.9825 - dice_liver: 0.9969 - dice_tumor: 0.9681 - iou_liver: 0.9938 - iou_tumor: 0.9392 - loss: 0.3406 - precision_liver: 0.9968 - precision_tumor: 0.9648 - recall_liver: 0.9970 - recall_tumor: 0.9724 - val_accuracy: 0.9985 - val_dice_avg: 0.9619 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9341 - val_iou_liver: 0.9796 - val_iou_tumor: 0.8794 - val_loss: 0.3454 - val_precision_liver: 0.9900 - val_precision_tumor: 0.9187 - val_recall_liver: 0.9894 - val_recall_tumor: 0.9531 - learning_rate: 2.1000e-05
+Epoch 51/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 324ms/step - accuracy: 0.9996 - dice_avg: 0.9816 - dice_liver: 0.9971 - dice_tumor: 0.9662 - iou_liver: 0.9941 - iou_tumor: 0.9375 - loss: 0.3406 - precision_liver: 0.9969 - precision_tumor: 0.9621 - recall_liver: 0.9972 - recall_tumor: 0.9711Epoch 51 | Reward=-0.027 | Metric=0.9593 | BG=3.192 | Liver=8.116 | Tumor=5.158 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 385ms/step - accuracy: 0.9996 - dice_avg: 0.9775 - dice_liver: 0.9970 - dice_tumor: 0.9580 - iou_liver: 0.9940 - iou_tumor: 0.9295 - loss: 0.3405 - precision_liver: 0.9969 - precision_tumor: 0.9531 - recall_liver: 0.9971 - recall_tumor: 0.9638 - val_accuracy: 0.9985 - val_dice_avg: 0.9595 - val_dice_liver: 0.9899 - val_dice_tumor: 0.9291 - val_iou_liver: 0.9801 - val_iou_tumor: 0.8721 - val_loss: 0.3454 - val_precision_liver: 0.9889 - val_precision_tumor: 0.9172 - val_recall_liver: 0.9910 - val_recall_tumor: 0.9442 - learning_rate: 2.1000e-05
+Epoch 52/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 259ms/step - accuracy: 0.9996 - dice_avg: 0.9848 - dice_liver: 0.9971 - dice_tumor: 0.9724 - iou_liver: 0.9943 - iou_tumor: 0.9469 - loss: 0.3406 - precision_liver: 0.9971 - precision_tumor: 0.9717 - recall_liver: 0.9972 - recall_tumor: 0.9737Epoch 52 | Reward=-0.003 | Metric=0.9617 | BG=3.268 | Liver=8.311 | Tumor=4.887 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 355ms/step - accuracy: 0.9995 - dice_avg: 0.9844 - dice_liver: 0.9970 - dice_tumor: 0.9719 - iou_liver: 0.9940 - iou_tumor: 0.9460 - loss: 0.3405 - precision_liver: 0.9970 - precision_tumor: 0.9710 - recall_liver: 0.9970 - recall_tumor: 0.9733 - val_accuracy: 0.9985 - val_dice_avg: 0.9622 - val_dice_liver: 0.9898 - val_dice_tumor: 0.9346 - val_iou_liver: 0.9799 - val_iou_tumor: 0.8796 - val_loss: 0.3455 - val_precision_liver: 0.9870 - val_precision_tumor: 0.9459 - val_recall_liver: 0.9927 - val_recall_tumor: 0.9256 - learning_rate: 2.1000e-05
+Epoch 53/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 321ms/step - accuracy: 0.9996 - dice_avg: 0.9838 - dice_liver: 0.9971 - dice_tumor: 0.9706 - iou_liver: 0.9943 - iou_tumor: 0.9438 - loss: 0.3403 - precision_liver: 0.9970 - precision_tumor: 0.9695 - recall_liver: 0.9972 - recall_tumor: 0.9725Epoch 53 | Reward=-0.025 | Metric=0.9594 | BG=3.258 | Liver=8.335 | Tumor=4.872 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 381ms/step - accuracy: 0.9996 - dice_avg: 0.9825 - dice_liver: 0.9970 - dice_tumor: 0.9680 - iou_liver: 0.9940 - iou_tumor: 0.9395 - loss: 0.3404 - precision_liver: 0.9969 - precision_tumor: 0.9647 - recall_liver: 0.9970 - recall_tumor: 0.9724 - val_accuracy: 0.9985 - val_dice_avg: 0.9596 - val_dice_liver: 0.9900 - val_dice_tumor: 0.9291 - val_iou_liver: 0.9802 - val_iou_tumor: 0.8726 - val_loss: 0.3454 - val_precision_liver: 0.9895 - val_precision_tumor: 0.9251 - val_recall_liver: 0.9905 - val_recall_tumor: 0.9386 - learning_rate: 2.1000e-05
+Epoch 54/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 264ms/step - accuracy: 0.9995 - dice_avg: 0.9828 - dice_liver: 0.9969 - dice_tumor: 0.9687 - iou_liver: 0.9938 - iou_tumor: 0.9407 - loss: 0.3407 - precision_liver: 0.9968 - precision_tumor: 0.9624 - recall_liver: 0.9970 - recall_tumor: 0.9765Epoch 54 | Reward=-0.064 | Metric=0.9556 | BG=3.328 | Liver=8.514 | Tumor=4.623 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 315ms/step - accuracy: 0.9995 - dice_avg: 0.9808 - dice_liver: 0.9968 - dice_tumor: 0.9647 - iou_liver: 0.9937 - iou_tumor: 0.9352 - loss: 0.3404 - precision_liver: 0.9968 - precision_tumor: 0.9608 - recall_liver: 0.9969 - recall_tumor: 0.9705 - val_accuracy: 0.9985 - val_dice_avg: 0.9552 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9207 - val_iou_liver: 0.9797 - val_iou_tumor: 0.8599 - val_loss: 0.3455 - val_precision_liver: 0.9915 - val_precision_tumor: 0.9198 - val_recall_liver: 0.9880 - val_recall_tumor: 0.9258 - learning_rate: 2.1000e-05
+Epoch 55/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9995 - dice_avg: 0.9788 - dice_liver: 0.9970 - dice_tumor: 0.9607 - iou_liver: 0.9940 - iou_tumor: 0.9316 - loss: 0.3396 - precision_liver: 0.9970 - precision_tumor: 0.9589 - recall_liver: 0.9970 - recall_tumor: 0.9639Epoch 55 | Reward=-0.067 | Metric=0.9552 | BG=3.393 | Liver=8.680 | Tumor=4.392 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 310ms/step - accuracy: 0.9995 - dice_avg: 0.9772 - dice_liver: 0.9969 - dice_tumor: 0.9575 - iou_liver: 0.9938 - iou_tumor: 0.9290 - loss: 0.3404 - precision_liver: 0.9969 - precision_tumor: 0.9533 - recall_liver: 0.9969 - recall_tumor: 0.9636 - val_accuracy: 0.9985 - val_dice_avg: 0.9550 - val_dice_liver: 0.9897 - val_dice_tumor: 0.9203 - val_iou_liver: 0.9796 - val_iou_tumor: 0.8601 - val_loss: 0.3455 - val_precision_liver: 0.9908 - val_precision_tumor: 0.9186 - val_recall_liver: 0.9887 - val_recall_tumor: 0.9259 - learning_rate: 2.1000e-05
+Epoch 56/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 259ms/step - accuracy: 0.9995 - dice_avg: 0.9774 - dice_liver: 0.9969 - dice_tumor: 0.9579 - iou_liver: 0.9938 - iou_tumor: 0.9287 - loss: 0.3406 - precision_liver: 0.9967 - precision_tumor: 0.9738 - recall_liver: 0.9970 - recall_tumor: 0.9537Epoch 56 | Reward=-0.060 | Metric=0.9559 | BG=3.389 | Liver=8.689 | Tumor=4.387 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 312ms/step - accuracy: 0.9995 - dice_avg: 0.9803 - dice_liver: 0.9967 - dice_tumor: 0.9640 - iou_liver: 0.9934 - iou_tumor: 0.9340 - loss: 0.3404 - precision_liver: 0.9965 - precision_tumor: 0.9656 - recall_liver: 0.9968 - recall_tumor: 0.9664 - val_accuracy: 0.9985 - val_dice_avg: 0.9563 - val_dice_liver: 0.9894 - val_dice_tumor: 0.9233 - val_iou_liver: 0.9790 - val_iou_tumor: 0.8606 - val_loss: 0.3457 - val_precision_liver: 0.9875 - val_precision_tumor: 0.9307 - val_recall_liver: 0.9912 - val_recall_tumor: 0.9200 - learning_rate: 2.1000e-05
+Epoch 57/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 255ms/step - accuracy: 0.9995 - dice_avg: 0.9781 - dice_liver: 0.9968 - dice_tumor: 0.9595 - iou_liver: 0.9936 - iou_tumor: 0.9282 - loss: 0.3404 - precision_liver: 0.9967 - precision_tumor: 0.9615 - recall_liver: 0.9969 - recall_tumor: 0.9653Epoch 57 | Reward=-0.041 | Metric=0.9579 | BG=3.391 | Liver=8.686 | Tumor=4.389 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 41s 414ms/step - accuracy: 0.9995 - dice_avg: 0.9804 - dice_liver: 0.9967 - dice_tumor: 0.9641 - iou_liver: 0.9935 - iou_tumor: 0.9348 - loss: 0.3403 - precision_liver: 0.9967 - precision_tumor: 0.9655 - recall_liver: 0.9968 - recall_tumor: 0.9678 - val_accuracy: 0.9985 - val_dice_avg: 0.9573 - val_dice_liver: 0.9895 - val_dice_tumor: 0.9252 - val_iou_liver: 0.9791 - val_iou_tumor: 0.8669 - val_loss: 0.3458 - val_precision_liver: 0.9924 - val_precision_tumor: 0.9205 - val_recall_liver: 0.9866 - val_recall_tumor: 0.9354 - learning_rate: 2.1000e-05
+Epoch 58/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 193ms/step - accuracy: 0.9996 - dice_avg: 0.9873 - dice_liver: 0.9974 - dice_tumor: 0.9773 - iou_liver: 0.9947 - iou_tumor: 0.9563 - loss: 0.3394 - precision_liver: 0.9974 - precision_tumor: 0.9712 - recall_liver: 0.9973 - recall_tumor: 0.9840Epoch 58 | Reward=-0.030 | Metric=0.9590 | BG=3.396 | Liver=8.675 | Tumor=4.395 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 24s 242ms/step - accuracy: 0.9997 - dice_avg: 0.9823 - dice_liver: 0.9976 - dice_tumor: 0.9670 - iou_liver: 0.9953 - iou_tumor: 0.9456 - loss: 0.3398 - precision_liver: 0.9976 - precision_tumor: 0.9626 - recall_liver: 0.9977 - recall_tumor: 0.9719 - val_accuracy: 0.9986 - val_dice_avg: 0.9594 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9285 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8713 - val_loss: 0.3451 - val_precision_liver: 0.9886 - val_precision_tumor: 0.9347 - val_recall_liver: 0.9919 - val_recall_tumor: 0.9253 - learning_rate: 1.0500e-05
+Epoch 59/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 229ms/step - accuracy: 0.9998 - dice_avg: 0.9756 - dice_liver: 0.9985 - dice_tumor: 0.9528 - iou_liver: 0.9970 - iou_tumor: 0.9351 - loss: 0.3399 - precision_liver: 0.9984 - precision_tumor: 0.9510 - recall_liver: 0.9986 - recall_tumor: 0.9551Epoch 59 | Reward=0.002 | Metric=0.9622 | BG=3.334 | Liver=8.516 | Tumor=4.616 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 28s 280ms/step - accuracy: 0.9998 - dice_avg: 0.9786 - dice_liver: 0.9984 - dice_tumor: 0.9587 - iou_liver: 0.9969 - iou_tumor: 0.9394 - loss: 0.3394 - precision_liver: 0.9984 - precision_tumor: 0.9565 - recall_liver: 0.9985 - recall_tumor: 0.9616 - val_accuracy: 0.9986 - val_dice_avg: 0.9620 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9337 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8795 - val_loss: 0.3449 - val_precision_liver: 0.9909 - val_precision_tumor: 0.9218 - val_recall_liver: 0.9898 - val_recall_tumor: 0.9486 - learning_rate: 1.0500e-05
+Epoch 60/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9998 - dice_avg: 0.9911 - dice_liver: 0.9986 - dice_tumor: 0.9835 - iou_liver: 0.9972 - iou_tumor: 0.9679 - loss: 0.3377 - precision_liver: 0.9986 - precision_tumor: 0.9789 - recall_liver: 0.9986 - recall_tumor: 0.9884Epoch 60 | Reward=-0.011 | Metric=0.9611 | BG=3.393 | Liver=8.668 | Tumor=4.404 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 307ms/step - accuracy: 0.9998 - dice_avg: 0.9908 - dice_liver: 0.9986 - dice_tumor: 0.9830 - iou_liver: 0.9971 - iou_tumor: 0.9670 - loss: 0.3393 - precision_liver: 0.9986 - precision_tumor: 0.9798 - recall_liver: 0.9985 - recall_tumor: 0.9864 - val_accuracy: 0.9986 - val_dice_avg: 0.9611 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9318 - val_iou_liver: 0.9810 - val_iou_tumor: 0.8770 - val_loss: 0.3449 - val_precision_liver: 0.9902 - val_precision_tumor: 0.9237 - val_recall_liver: 0.9907 - val_recall_tumor: 0.9442 - learning_rate: 1.0500e-05
+Epoch 61/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 259ms/step - accuracy: 0.9998 - dice_avg: 0.9838 - dice_liver: 0.9987 - dice_tumor: 0.9688 - iou_liver: 0.9974 - iou_tumor: 0.9543 - loss: 0.3395 - precision_liver: 0.9987 - precision_tumor: 0.9666 - recall_liver: 0.9987 - recall_tumor: 0.9714Epoch 61 | Reward=-0.018 | Metric=0.9604 | BG=3.448 | Liver=8.808 | Tumor=4.210 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 313ms/step - accuracy: 0.9998 - dice_avg: 0.9865 - dice_liver: 0.9985 - dice_tumor: 0.9744 - iou_liver: 0.9971 - iou_tumor: 0.9596 - loss: 0.3392 - precision_liver: 0.9986 - precision_tumor: 0.9717 - recall_liver: 0.9985 - recall_tumor: 0.9775 - val_accuracy: 0.9986 - val_dice_avg: 0.9606 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9308 - val_iou_liver: 0.9810 - val_iou_tumor: 0.8758 - val_loss: 0.3451 - val_precision_liver: 0.9892 - val_precision_tumor: 0.9176 - val_recall_liver: 0.9916 - val_recall_tumor: 0.9492 - learning_rate: 1.0500e-05
+Epoch 62/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9998 - dice_avg: 0.9897 - dice_liver: 0.9986 - dice_tumor: 0.9808 - iou_liver: 0.9973 - iou_tumor: 0.9660 - loss: 0.3393 - precision_liver: 0.9986 - precision_tumor: 0.9788 - recall_liver: 0.9987 - recall_tumor: 0.9831Epoch 62 | Reward=0.012 | Metric=0.9634 | BG=3.385 | Liver=8.649 | Tumor=4.431 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 36s 362ms/step - accuracy: 0.9998 - dice_avg: 0.9856 - dice_liver: 0.9986 - dice_tumor: 0.9725 - iou_liver: 0.9973 - iou_tumor: 0.9561 - loss: 0.3392 - precision_liver: 0.9986 - precision_tumor: 0.9711 - recall_liver: 0.9987 - recall_tumor: 0.9746 - val_accuracy: 0.9986 - val_dice_avg: 0.9632 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9360 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8835 - val_loss: 0.3450 - val_precision_liver: 0.9912 - val_precision_tumor: 0.9263 - val_recall_liver: 0.9895 - val_recall_tumor: 0.9489 - learning_rate: 1.0500e-05
+Epoch 63/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 329ms/step - accuracy: 0.9998 - dice_avg: 0.9914 - dice_liver: 0.9987 - dice_tumor: 0.9841 - iou_liver: 0.9973 - iou_tumor: 0.9689 - loss: 0.3389 - precision_liver: 0.9986 - precision_tumor: 0.9802 - recall_liver: 0.9987 - recall_tumor: 0.9882Epoch 63 | Reward=-0.016 | Metric=0.9618 | BG=3.439 | Liver=8.785 | Tumor=4.242 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 39s 391ms/step - accuracy: 0.9998 - dice_avg: 0.9914 - dice_liver: 0.9986 - dice_tumor: 0.9841 - iou_liver: 0.9973 - iou_tumor: 0.9689 - loss: 0.3391 - precision_liver: 0.9986 - precision_tumor: 0.9811 - recall_liver: 0.9987 - recall_tumor: 0.9872 - val_accuracy: 0.9986 - val_dice_avg: 0.9618 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9333 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8796 - val_loss: 0.3451 - val_precision_liver: 0.9901 - val_precision_tumor: 0.9171 - val_recall_liver: 0.9907 - val_recall_tumor: 0.9546 - learning_rate: 1.0500e-05
+Epoch 64/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9998 - dice_avg: 0.9891 - dice_liver: 0.9988 - dice_tumor: 0.9793 - iou_liver: 0.9975 - iou_tumor: 0.9637 - loss: 0.3388 - precision_liver: 0.9988 - precision_tumor: 0.9762 - recall_liver: 0.9987 - recall_tumor: 0.9828Epoch 64 | Reward=-0.002 | Metric=0.9631 | BG=3.446 | Liver=8.769 | Tumor=4.251 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 35s 350ms/step - accuracy: 0.9998 - dice_avg: 0.9858 - dice_liver: 0.9988 - dice_tumor: 0.9728 - iou_liver: 0.9976 - iou_tumor: 0.9569 - loss: 0.3390 - precision_liver: 0.9988 - precision_tumor: 0.9688 - recall_liver: 0.9988 - recall_tumor: 0.9772 - val_accuracy: 0.9986 - val_dice_avg: 0.9633 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9362 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8829 - val_loss: 0.3450 - val_precision_liver: 0.9898 - val_precision_tumor: 0.9339 - val_recall_liver: 0.9910 - val_recall_tumor: 0.9396 - learning_rate: 1.0500e-05
+Epoch 65/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 317ms/step - accuracy: 0.9998 - dice_avg: 0.9899 - dice_liver: 0.9986 - dice_tumor: 0.9813 - iou_liver: 0.9971 - iou_tumor: 0.9647 - loss: 0.3385 - precision_liver: 0.9985 - precision_tumor: 0.9812 - recall_liver: 0.9986 - recall_tumor: 0.9820Epoch 65 | Reward=-0.019 | Metric=0.9614 | BG=3.494 | Liver=8.891 | Tumor=4.080 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 379ms/step - accuracy: 0.9998 - dice_avg: 0.9912 - dice_liver: 0.9987 - dice_tumor: 0.9837 - iou_liver: 0.9975 - iou_tumor: 0.9686 - loss: 0.3390 - precision_liver: 0.9987 - precision_tumor: 0.9810 - recall_liver: 0.9988 - recall_tumor: 0.9869 - val_accuracy: 0.9986 - val_dice_avg: 0.9613 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9323 - val_iou_liver: 0.9808 - val_iou_tumor: 0.8767 - val_loss: 0.3452 - val_precision_liver: 0.9911 - val_precision_tumor: 0.9349 - val_recall_liver: 0.9895 - val_recall_tumor: 0.9322 - learning_rate: 1.0500e-05
+Epoch 66/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 259ms/step - accuracy: 0.9998 - dice_avg: 0.9902 - dice_liver: 0.9988 - dice_tumor: 0.9815 - iou_liver: 0.9977 - iou_tumor: 0.9646 - loss: 0.3387 - precision_liver: 0.9988 - precision_tumor: 0.9775 - recall_liver: 0.9988 - recall_tumor: 0.9862Epoch 66 | Reward=-0.030 | Metric=0.9604 | BG=3.503 | Liver=8.872 | Tumor=4.091 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 308ms/step - accuracy: 0.9998 - dice_avg: 0.9900 - dice_liver: 0.9988 - dice_tumor: 0.9812 - iou_liver: 0.9977 - iou_tumor: 0.9646 - loss: 0.3389 - precision_liver: 0.9988 - precision_tumor: 0.9778 - recall_liver: 0.9988 - recall_tumor: 0.9853 - val_accuracy: 0.9986 - val_dice_avg: 0.9603 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9303 - val_iou_liver: 0.9806 - val_iou_tumor: 0.8748 - val_loss: 0.3453 - val_precision_liver: 0.9906 - val_precision_tumor: 0.9136 - val_recall_liver: 0.9898 - val_recall_tumor: 0.9507 - learning_rate: 1.0500e-05
+Epoch 67/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 255ms/step - accuracy: 0.9998 - dice_avg: 0.9861 - dice_liver: 0.9987 - dice_tumor: 0.9735 - iou_liver: 0.9975 - iou_tumor: 0.9579 - loss: 0.3379 - precision_liver: 0.9987 - precision_tumor: 0.9670 - recall_liver: 0.9988 - recall_tumor: 0.9816Epoch 67 | Reward=-0.014 | Metric=0.9620 | BG=3.514 | Liver=8.849 | Tumor=4.103 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 304ms/step - accuracy: 0.9998 - dice_avg: 0.9808 - dice_liver: 0.9987 - dice_tumor: 0.9629 - iou_liver: 0.9974 - iou_tumor: 0.9474 - loss: 0.3389 - precision_liver: 0.9987 - precision_tumor: 0.9568 - recall_liver: 0.9987 - recall_tumor: 0.9701 - val_accuracy: 0.9986 - val_dice_avg: 0.9621 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9340 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8797 - val_loss: 0.3452 - val_precision_liver: 0.9897 - val_precision_tumor: 0.9273 - val_recall_liver: 0.9910 - val_recall_tumor: 0.9437 - learning_rate: 1.0500e-05
+Epoch 68/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9998 - dice_avg: 0.9909 - dice_liver: 0.9989 - dice_tumor: 0.9830 - iou_liver: 0.9978 - iou_tumor: 0.9675 - loss: 0.3386 - precision_liver: 0.9988 - precision_tumor: 0.9803 - recall_liver: 0.9990 - recall_tumor: 0.9860Epoch 68 | Reward=-0.026 | Metric=0.9608 | BG=3.557 | Liver=8.957 | Tumor=3.951 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 305ms/step - accuracy: 0.9998 - dice_avg: 0.9865 - dice_liver: 0.9989 - dice_tumor: 0.9740 - iou_liver: 0.9978 - iou_tumor: 0.9592 - loss: 0.3388 - precision_liver: 0.9989 - precision_tumor: 0.9719 - recall_liver: 0.9989 - recall_tumor: 0.9765 - val_accuracy: 0.9986 - val_dice_avg: 0.9608 - val_dice_liver: 0.9903 - val_dice_tumor: 0.9314 - val_iou_liver: 0.9807 - val_iou_tumor: 0.8765 - val_loss: 0.3452 - val_precision_liver: 0.9898 - val_precision_tumor: 0.9198 - val_recall_liver: 0.9907 - val_recall_tumor: 0.9484 - learning_rate: 1.0500e-05
+Epoch 69/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 255ms/step - accuracy: 0.9998 - dice_avg: 0.9935 - dice_liver: 0.9988 - dice_tumor: 0.9881 - iou_liver: 0.9977 - iou_tumor: 0.9766 - loss: 0.3388 - precision_liver: 0.9988 - precision_tumor: 0.9874 - recall_liver: 0.9989 - recall_tumor: 0.9890Epoch 69 | Reward=-0.023 | Metric=0.9611 | BG=3.569 | Liver=8.933 | Tumor=3.964 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 309ms/step - accuracy: 0.9998 - dice_avg: 0.9928 - dice_liver: 0.9988 - dice_tumor: 0.9868 - iou_liver: 0.9977 - iou_tumor: 0.9742 - loss: 0.3388 - precision_liver: 0.9988 - precision_tumor: 0.9852 - recall_liver: 0.9988 - recall_tumor: 0.9887 - val_accuracy: 0.9986 - val_dice_avg: 0.9610 - val_dice_liver: 0.9902 - val_dice_tumor: 0.9318 - val_iou_liver: 0.9805 - val_iou_tumor: 0.8764 - val_loss: 0.3453 - val_precision_liver: 0.9907 - val_precision_tumor: 0.9222 - val_recall_liver: 0.9897 - val_recall_tumor: 0.9446 - learning_rate: 1.0500e-05
+Epoch 70/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9998 - dice_avg: 0.9904 - dice_liver: 0.9990 - dice_tumor: 0.9818 - iou_liver: 0.9979 - iou_tumor: 0.9662 - loss: 0.3386 - precision_liver: 0.9989 - precision_tumor: 0.9791 - recall_liver: 0.9990 - recall_tumor: 0.9854Epoch 70 | Reward=-0.020 | Metric=0.9613 | BG=3.608 | Liver=9.031 | Tumor=3.827 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 32s 319ms/step - accuracy: 0.9999 - dice_avg: 0.9924 - dice_liver: 0.9991 - dice_tumor: 0.9858 - iou_liver: 0.9982 - iou_tumor: 0.9737 - loss: 0.3387 - precision_liver: 0.9991 - precision_tumor: 0.9825 - recall_liver: 0.9991 - recall_tumor: 0.9898 - val_accuracy: 0.9986 - val_dice_avg: 0.9614 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9322 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8778 - val_loss: 0.3451 - val_precision_liver: 0.9904 - val_precision_tumor: 0.9154 - val_recall_liver: 0.9907 - val_recall_tumor: 0.9533 - learning_rate: 5.2500e-06
+Epoch 71/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9957 - dice_liver: 0.9994 - dice_tumor: 0.9920 - iou_liver: 0.9987 - iou_tumor: 0.9842 - loss: 0.3386 - precision_liver: 0.9994 - precision_tumor: 0.9896 - recall_liver: 0.9993 - recall_tumor: 0.9946Epoch 71 | Reward=-0.008 | Metric=0.9626 | BG=3.620 | Liver=9.005 | Tumor=3.840 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 309ms/step - accuracy: 0.9999 - dice_avg: 0.9949 - dice_liver: 0.9994 - dice_tumor: 0.9904 - iou_liver: 0.9988 - iou_tumor: 0.9812 - loss: 0.3385 - precision_liver: 0.9994 - precision_tumor: 0.9879 - recall_liver: 0.9994 - recall_tumor: 0.9931 - val_accuracy: 0.9986 - val_dice_avg: 0.9625 - val_dice_liver: 0.9906 - val_dice_tumor: 0.9345 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8821 - val_loss: 0.3451 - val_precision_liver: 0.9908 - val_precision_tumor: 0.9172 - val_recall_liver: 0.9903 - val_recall_tumor: 0.9572 - learning_rate: 5.2500e-06
+Epoch 72/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9946 - dice_liver: 0.9994 - dice_tumor: 0.9898 - iou_liver: 0.9988 - iou_tumor: 0.9801 - loss: 0.3383 - precision_liver: 0.9994 - precision_tumor: 0.9872 - recall_liver: 0.9994 - recall_tumor: 0.9926Epoch 72 | Reward=0.003 | Metric=0.9637 | BG=3.560 | Liver=8.855 | Tumor=4.050 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 36s 358ms/step - accuracy: 0.9999 - dice_avg: 0.9944 - dice_liver: 0.9994 - dice_tumor: 0.9894 - iou_liver: 0.9988 - iou_tumor: 0.9795 - loss: 0.3384 - precision_liver: 0.9994 - precision_tumor: 0.9876 - recall_liver: 0.9994 - recall_tumor: 0.9916 - val_accuracy: 0.9986 - val_dice_avg: 0.9637 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9369 - val_iou_liver: 0.9812 - val_iou_tumor: 0.8848 - val_loss: 0.3452 - val_precision_liver: 0.9906 - val_precision_tumor: 0.9231 - val_recall_liver: 0.9905 - val_recall_tumor: 0.9545 - learning_rate: 5.2500e-06
+Epoch 73/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 338ms/step - accuracy: 0.9999 - dice_avg: 0.9865 - dice_liver: 0.9993 - dice_tumor: 0.9737 - iou_liver: 0.9985 - iou_tumor: 0.9617 - loss: 0.3381 - precision_liver: 0.9992 - precision_tumor: 0.9718 - recall_liver: 0.9993 - recall_tumor: 0.9766Epoch 73 | Reward=0.008 | Metric=0.9645 | BG=3.529 | Liver=8.922 | Tumor=4.015 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 47s 473ms/step - accuracy: 0.9999 - dice_avg: 0.9873 - dice_liver: 0.9993 - dice_tumor: 0.9753 - iou_liver: 0.9986 - iou_tumor: 0.9631 - loss: 0.3385 - precision_liver: 0.9993 - precision_tumor: 0.9726 - recall_liver: 0.9993 - recall_tumor: 0.9802 - val_accuracy: 0.9986 - val_dice_avg: 0.9644 - val_dice_liver: 0.9906 - val_dice_tumor: 0.9383 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8871 - val_loss: 0.3452 - val_precision_liver: 0.9909 - val_precision_tumor: 0.9283 - val_recall_liver: 0.9902 - val_recall_tumor: 0.9517 - learning_rate: 5.2500e-06
+Epoch 74/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 322ms/step - accuracy: 0.9999 - dice_avg: 0.9954 - dice_liver: 0.9995 - dice_tumor: 0.9913 - iou_liver: 0.9989 - iou_tumor: 0.9828 - loss: 0.3382 - precision_liver: 0.9994 - precision_tumor: 0.9900 - recall_liver: 0.9995 - recall_tumor: 0.9927Epoch 74 | Reward=-0.017 | Metric=0.9628 | BG=3.566 | Liver=9.016 | Tumor=3.884 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 38s 381ms/step - accuracy: 0.9999 - dice_avg: 0.9955 - dice_liver: 0.9995 - dice_tumor: 0.9916 - iou_liver: 0.9989 - iou_tumor: 0.9834 - loss: 0.3384 - precision_liver: 0.9995 - precision_tumor: 0.9891 - recall_liver: 0.9994 - recall_tumor: 0.9942 - val_accuracy: 0.9986 - val_dice_avg: 0.9631 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9358 - val_iou_liver: 0.9810 - val_iou_tumor: 0.8835 - val_loss: 0.3453 - val_precision_liver: 0.9889 - val_precision_tumor: 0.9271 - val_recall_liver: 0.9919 - val_recall_tumor: 0.9486 - learning_rate: 5.2500e-06
+Epoch 75/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 254ms/step - accuracy: 0.9999 - dice_avg: 0.9955 - dice_liver: 0.9994 - dice_tumor: 0.9916 - iou_liver: 0.9988 - iou_tumor: 0.9837 - loss: 0.3387 - precision_liver: 0.9994 - precision_tumor: 0.9894 - recall_liver: 0.9994 - recall_tumor: 0.9940Epoch 75 | Reward=-0.017 | Metric=0.9628 | BG=3.599 | Liver=9.102 | Tumor=3.764 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 313ms/step - accuracy: 0.9999 - dice_avg: 0.9953 - dice_liver: 0.9994 - dice_tumor: 0.9911 - iou_liver: 0.9989 - iou_tumor: 0.9826 - loss: 0.3383 - precision_liver: 0.9994 - precision_tumor: 0.9880 - recall_liver: 0.9995 - recall_tumor: 0.9944 - val_accuracy: 0.9986 - val_dice_avg: 0.9629 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9353 - val_iou_liver: 0.9810 - val_iou_tumor: 0.8824 - val_loss: 0.3453 - val_precision_liver: 0.9900 - val_precision_tumor: 0.9263 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9478 - learning_rate: 5.2500e-06
+Epoch 76/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9960 - dice_liver: 0.9994 - dice_tumor: 0.9926 - iou_liver: 0.9989 - iou_tumor: 0.9855 - loss: 0.3385 - precision_liver: 0.9994 - precision_tumor: 0.9911 - recall_liver: 0.9995 - recall_tumor: 0.9942Epoch 76 | Reward=-0.024 | Metric=0.9621 | BG=3.631 | Liver=9.180 | Tumor=3.655 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 307ms/step - accuracy: 0.9999 - dice_avg: 0.9954 - dice_liver: 0.9994 - dice_tumor: 0.9914 - iou_liver: 0.9988 - iou_tumor: 0.9832 - loss: 0.3383 - precision_liver: 0.9994 - precision_tumor: 0.9890 - recall_liver: 0.9994 - recall_tumor: 0.9940 - val_accuracy: 0.9986 - val_dice_avg: 0.9620 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9336 - val_iou_liver: 0.9812 - val_iou_tumor: 0.8797 - val_loss: 0.3453 - val_precision_liver: 0.9910 - val_precision_tumor: 0.9142 - val_recall_liver: 0.9900 - val_recall_tumor: 0.9572 - learning_rate: 5.2500e-06
+Epoch 77/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9948 - dice_liver: 0.9995 - dice_tumor: 0.9902 - iou_liver: 0.9990 - iou_tumor: 0.9810 - loss: 0.3391 - precision_liver: 0.9995 - precision_tumor: 0.9860 - recall_liver: 0.9995 - recall_tumor: 0.9950Epoch 77 | Reward=-0.029 | Metric=0.9616 | BG=3.640 | Liver=9.161 | Tumor=3.664 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 306ms/step - accuracy: 0.9999 - dice_avg: 0.9957 - dice_liver: 0.9995 - dice_tumor: 0.9919 - iou_liver: 0.9989 - iou_tumor: 0.9843 - loss: 0.3383 - precision_liver: 0.9995 - precision_tumor: 0.9891 - recall_liver: 0.9995 - recall_tumor: 0.9951 - val_accuracy: 0.9986 - val_dice_avg: 0.9616 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9328 - val_iou_liver: 0.9809 - val_iou_tumor: 0.8789 - val_loss: 0.3454 - val_precision_liver: 0.9907 - val_precision_tumor: 0.9146 - val_recall_liver: 0.9901 - val_recall_tumor: 0.9563 - learning_rate: 5.2500e-06
+Epoch 78/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9999 - dice_avg: 0.9915 - dice_liver: 0.9994 - dice_tumor: 0.9836 - iou_liver: 0.9989 - iou_tumor: 0.9761 - loss: 0.3398 - precision_liver: 0.9995 - precision_tumor: 0.9811 - recall_liver: 0.9994 - recall_tumor: 0.9865Epoch 78 | Reward=-0.020 | Metric=0.9625 | BG=3.668 | Liver=9.232 | Tumor=3.565 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 305ms/step - accuracy: 0.9999 - dice_avg: 0.9902 - dice_liver: 0.9995 - dice_tumor: 0.9809 - iou_liver: 0.9989 - iou_tumor: 0.9724 - loss: 0.3383 - precision_liver: 0.9995 - precision_tumor: 0.9793 - recall_liver: 0.9995 - recall_tumor: 0.9829 - val_accuracy: 0.9986 - val_dice_avg: 0.9625 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9346 - val_iou_liver: 0.9812 - val_iou_tumor: 0.8821 - val_loss: 0.3454 - val_precision_liver: 0.9902 - val_precision_tumor: 0.9191 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9553 - learning_rate: 5.2500e-06
+Epoch 79/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 253ms/step - accuracy: 0.9999 - dice_avg: 0.9949 - dice_liver: 0.9995 - dice_tumor: 0.9902 - iou_liver: 0.9990 - iou_tumor: 0.9812 - loss: 0.3379 - precision_liver: 0.9995 - precision_tumor: 0.9882 - recall_liver: 0.9995 - recall_tumor: 0.9927Epoch 79 | Reward=-0.013 | Metric=0.9632 | BG=3.678 | Liver=9.212 | Tumor=3.575 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 311ms/step - accuracy: 0.9999 - dice_avg: 0.9937 - dice_liver: 0.9995 - dice_tumor: 0.9879 - iou_liver: 0.9990 - iou_tumor: 0.9778 - loss: 0.3382 - precision_liver: 0.9995 - precision_tumor: 0.9888 - recall_liver: 0.9995 - recall_tumor: 0.9888 - val_accuracy: 0.9986 - val_dice_avg: 0.9631 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9359 - val_iou_liver: 0.9811 - val_iou_tumor: 0.8835 - val_loss: 0.3453 - val_precision_liver: 0.9905 - val_precision_tumor: 0.9212 - val_recall_liver: 0.9903 - val_recall_tumor: 0.9547 - learning_rate: 2.6250e-06
+Epoch 80/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 253ms/step - accuracy: 0.9999 - dice_avg: 0.9960 - dice_liver: 0.9996 - dice_tumor: 0.9924 - iou_liver: 0.9992 - iou_tumor: 0.9861 - loss: 0.3369 - precision_liver: 0.9996 - precision_tumor: 0.9913 - recall_liver: 0.9996 - recall_tumor: 0.9935Epoch 80 | Reward=-0.018 | Metric=0.9627 | BG=3.689 | Liver=9.191 | Tumor=3.585 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 311ms/step - accuracy: 0.9999 - dice_avg: 0.9915 - dice_liver: 0.9996 - dice_tumor: 0.9834 - iou_liver: 0.9992 - iou_tumor: 0.9771 - loss: 0.3382 - precision_liver: 0.9996 - precision_tumor: 0.9821 - recall_liver: 0.9996 - recall_tumor: 0.9848 - val_accuracy: 0.9986 - val_dice_avg: 0.9628 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9350 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8822 - val_loss: 0.3454 - val_precision_liver: 0.9904 - val_precision_tumor: 0.9264 - val_recall_liver: 0.9907 - val_recall_tumor: 0.9474 - learning_rate: 2.6250e-06
+Epoch 81/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9999 - dice_avg: 0.9908 - dice_liver: 0.9996 - dice_tumor: 0.9821 - iou_liver: 0.9992 - iou_tumor: 0.9747 - loss: 0.3381 - precision_liver: 0.9996 - precision_tumor: 0.9799 - recall_liver: 0.9996 - recall_tumor: 0.9846Epoch 81 | Reward=-0.009 | Metric=0.9636 | BG=3.714 | Liver=9.254 | Tumor=3.498 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 30s 304ms/step - accuracy: 0.9999 - dice_avg: 0.9914 - dice_liver: 0.9997 - dice_tumor: 0.9831 - iou_liver: 0.9993 - iou_tumor: 0.9766 - loss: 0.3381 - precision_liver: 0.9997 - precision_tumor: 0.9805 - recall_liver: 0.9997 - recall_tumor: 0.9860 - val_accuracy: 0.9986 - val_dice_avg: 0.9636 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9366 - val_iou_liver: 0.9812 - val_iou_tumor: 0.8845 - val_loss: 0.3454 - val_precision_liver: 0.9906 - val_precision_tumor: 0.9220 - val_recall_liver: 0.9905 - val_recall_tumor: 0.9554 - learning_rate: 2.6250e-06
+Epoch 82/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9948 - dice_liver: 0.9997 - dice_tumor: 0.9900 - iou_liver: 0.9993 - iou_tumor: 0.9816 - loss: 0.3381 - precision_liver: 0.9997 - precision_tumor: 0.9883 - recall_liver: 0.9997 - recall_tumor: 0.9924Epoch 82 | Reward=-0.013 | Metric=0.9632 | BG=3.725 | Liver=9.233 | Tumor=3.508 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 309ms/step - accuracy: 0.9999 - dice_avg: 0.9943 - dice_liver: 0.9997 - dice_tumor: 0.9889 - iou_liver: 0.9993 - iou_tumor: 0.9801 - loss: 0.3381 - precision_liver: 0.9997 - precision_tumor: 0.9866 - recall_liver: 0.9996 - recall_tumor: 0.9918 - val_accuracy: 0.9986 - val_dice_avg: 0.9633 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9362 - val_iou_liver: 0.9811 - val_iou_tumor: 0.8839 - val_loss: 0.3454 - val_precision_liver: 0.9900 - val_precision_tumor: 0.9266 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9489 - learning_rate: 2.6250e-06
+Epoch 83/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 0.9999 - dice_avg: 0.9958 - dice_liver: 0.9996 - dice_tumor: 0.9919 - iou_liver: 0.9992 - iou_tumor: 0.9842 - loss: 0.3382 - precision_liver: 0.9996 - precision_tumor: 0.9890 - recall_liver: 0.9996 - recall_tumor: 0.9951Epoch 83 | Reward=-0.012 | Metric=0.9633 | BG=3.748 | Liver=9.289 | Tumor=3.429 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 306ms/step - accuracy: 0.9999 - dice_avg: 0.9965 - dice_liver: 0.9996 - dice_tumor: 0.9933 - iou_liver: 0.9993 - iou_tumor: 0.9869 - loss: 0.3381 - precision_liver: 0.9997 - precision_tumor: 0.9906 - recall_liver: 0.9996 - recall_tumor: 0.9962 - val_accuracy: 0.9986 - val_dice_avg: 0.9633 - val_dice_liver: 0.9904 - val_dice_tumor: 0.9361 - val_iou_liver: 0.9811 - val_iou_tumor: 0.8841 - val_loss: 0.3455 - val_precision_liver: 0.9905 - val_precision_tumor: 0.9238 - val_recall_liver: 0.9904 - val_recall_tumor: 0.9525 - learning_rate: 2.6250e-06
+Epoch 84/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 1.0000 - dice_avg: 0.9868 - dice_liver: 0.9997 - dice_tumor: 0.9740 - iou_liver: 0.9994 - iou_tumor: 0.9682 - loss: 0.3380 - precision_liver: 0.9997 - precision_tumor: 0.9725 - recall_liver: 0.9997 - recall_tumor: 0.9755Epoch 84 | Reward=-0.010 | Metric=0.9635 | BG=3.759 | Liver=9.268 | Tumor=3.439 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 316ms/step - accuracy: 1.0000 - dice_avg: 0.9915 - dice_liver: 0.9997 - dice_tumor: 0.9834 - iou_liver: 0.9993 - iou_tumor: 0.9770 - loss: 0.3381 - precision_liver: 0.9997 - precision_tumor: 0.9824 - recall_liver: 0.9997 - recall_tumor: 0.9844 - val_accuracy: 0.9986 - val_dice_avg: 0.9635 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9365 - val_iou_liver: 0.9811 - val_iou_tumor: 0.8844 - val_loss: 0.3454 - val_precision_liver: 0.9904 - val_precision_tumor: 0.9232 - val_recall_liver: 0.9905 - val_recall_tumor: 0.9534 - learning_rate: 1.3125e-06
+Epoch 85/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 0.9999 - dice_avg: 0.9971 - dice_liver: 0.9996 - dice_tumor: 0.9946 - iou_liver: 0.9993 - iou_tumor: 0.9895 - loss: 0.3396 - precision_liver: 0.9996 - precision_tumor: 0.9936 - recall_liver: 0.9996 - recall_tumor: 0.9959Epoch 85 | Reward=-0.015 | Metric=0.9630 | BG=3.779 | Liver=9.319 | Tumor=3.367 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 32s 318ms/step - accuracy: 1.0000 - dice_avg: 0.9963 - dice_liver: 0.9997 - dice_tumor: 0.9928 - iou_liver: 0.9994 - iou_tumor: 0.9865 - loss: 0.3381 - precision_liver: 0.9997 - precision_tumor: 0.9930 - recall_liver: 0.9997 - recall_tumor: 0.9934 - val_accuracy: 0.9986 - val_dice_avg: 0.9631 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9358 - val_iou_liver: 0.9811 - val_iou_tumor: 0.8832 - val_loss: 0.3454 - val_precision_liver: 0.9900 - val_precision_tumor: 0.9262 - val_recall_liver: 0.9909 - val_recall_tumor: 0.9485 - learning_rate: 1.3125e-06
+Epoch 86/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 258ms/step - accuracy: 1.0000 - dice_avg: 0.9970 - dice_liver: 0.9997 - dice_tumor: 0.9942 - iou_liver: 0.9994 - iou_tumor: 0.9886 - loss: 0.3378 - precision_liver: 0.9997 - precision_tumor: 0.9939 - recall_liver: 0.9997 - recall_tumor: 0.9946Epoch 86 | Reward=-0.016 | Metric=0.9629 | BG=3.953 | Liver=9.191 | Tumor=3.321 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 310ms/step - accuracy: 1.0000 - dice_avg: 0.9971 - dice_liver: 0.9997 - dice_tumor: 0.9945 - iou_liver: 0.9994 - iou_tumor: 0.9892 - loss: 0.3381 - precision_liver: 0.9997 - precision_tumor: 0.9937 - recall_liver: 0.9997 - recall_tumor: 0.9954 - val_accuracy: 0.9986 - val_dice_avg: 0.9629 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9353 - val_iou_liver: 0.9812 - val_iou_tumor: 0.8829 - val_loss: 0.3454 - val_precision_liver: 0.9906 - val_precision_tumor: 0.9218 - val_recall_liver: 0.9905 - val_recall_tumor: 0.9532 - learning_rate: 1.3125e-06
+Epoch 87/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 1.0000 - dice_avg: 0.9971 - dice_liver: 0.9997 - dice_tumor: 0.9945 - iou_liver: 0.9994 - iou_tumor: 0.9896 - loss: 0.3368 - precision_liver: 0.9997 - precision_tumor: 0.9924 - recall_liver: 0.9997 - recall_tumor: 0.9971Epoch 87 | Reward=-0.017 | Metric=0.9628 | BG=4.119 | Liver=9.070 | Tumor=3.277 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 306ms/step - accuracy: 1.0000 - dice_avg: 0.9959 - dice_liver: 0.9997 - dice_tumor: 0.9921 - iou_liver: 0.9994 - iou_tumor: 0.9861 - loss: 0.3380 - precision_liver: 0.9997 - precision_tumor: 0.9892 - recall_liver: 0.9997 - recall_tumor: 0.9968 - val_accuracy: 0.9986 - val_dice_avg: 0.9629 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9352 - val_iou_liver: 0.9812 - val_iou_tumor: 0.8826 - val_loss: 0.3454 - val_precision_liver: 0.9903 - val_precision_tumor: 0.9210 - val_recall_liver: 0.9908 - val_recall_tumor: 0.9537 - learning_rate: 1.3125e-06
+Epoch 88/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 256ms/step - accuracy: 1.0000 - dice_avg: 0.9973 - dice_liver: 0.9997 - dice_tumor: 0.9949 - iou_liver: 0.9994 - iou_tumor: 0.9899 - loss: 0.3367 - precision_liver: 0.9997 - precision_tumor: 0.9936 - recall_liver: 0.9997 - recall_tumor: 0.9962Epoch 88 | Reward=-0.015 | Metric=0.9630 | BG=4.138 | Liver=9.112 | Tumor=3.215 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 306ms/step - accuracy: 1.0000 - dice_avg: 0.9974 - dice_liver: 0.9997 - dice_tumor: 0.9950 - iou_liver: 0.9994 - iou_tumor: 0.9902 - loss: 0.3380 - precision_liver: 0.9997 - precision_tumor: 0.9933 - recall_liver: 0.9997 - recall_tumor: 0.9968 - val_accuracy: 0.9986 - val_dice_avg: 0.9630 - val_dice_liver: 0.9906 - val_dice_tumor: 0.9354 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8828 - val_loss: 0.3454 - val_precision_liver: 0.9909 - val_precision_tumor: 0.9221 - val_recall_liver: 0.9903 - val_recall_tumor: 0.9526 - learning_rate: 1.3125e-06
+Epoch 89/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 257ms/step - accuracy: 0.9999 - dice_avg: 0.9963 - dice_liver: 0.9996 - dice_tumor: 0.9930 - iou_liver: 0.9993 - iou_tumor: 0.9862 - loss: 0.3379 - precision_liver: 0.9997 - precision_tumor: 0.9911 - recall_liver: 0.9996 - recall_tumor: 0.9949Epoch 89 | Reward=-0.018 | Metric=0.9627 | BG=4.156 | Liver=9.151 | Tumor=3.158 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 312ms/step - accuracy: 1.0000 - dice_avg: 0.9972 - dice_liver: 0.9997 - dice_tumor: 0.9948 - iou_liver: 0.9994 - iou_tumor: 0.9897 - loss: 0.3380 - precision_liver: 0.9997 - precision_tumor: 0.9937 - recall_liver: 0.9997 - recall_tumor: 0.9959 - val_accuracy: 0.9986 - val_dice_avg: 0.9627 - val_dice_liver: 0.9906 - val_dice_tumor: 0.9349 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8822 - val_loss: 0.3454 - val_precision_liver: 0.9905 - val_precision_tumor: 0.9228 - val_recall_liver: 0.9906 - val_recall_tumor: 0.9507 - learning_rate: 1.0000e-06
+Epoch 90/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 253ms/step - accuracy: 1.0000 - dice_avg: 0.9981 - dice_liver: 0.9997 - dice_tumor: 0.9965 - iou_liver: 0.9994 - iou_tumor: 0.9930 - loss: 0.3389 - precision_liver: 0.9997 - precision_tumor: 0.9959 - recall_liver: 0.9997 - recall_tumor: 0.9971Epoch 90 | Reward=-0.012 | Metric=0.9633 | BG=4.167 | Liver=9.132 | Tumor=3.167 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 314ms/step - accuracy: 1.0000 - dice_avg: 0.9978 - dice_liver: 0.9997 - dice_tumor: 0.9959 - iou_liver: 0.9994 - iou_tumor: 0.9918 - loss: 0.3380 - precision_liver: 0.9997 - precision_tumor: 0.9946 - recall_liver: 0.9997 - recall_tumor: 0.9972 - val_accuracy: 0.9986 - val_dice_avg: 0.9633 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9360 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8839 - val_loss: 0.3454 - val_precision_liver: 0.9905 - val_precision_tumor: 0.9215 - val_recall_liver: 0.9905 - val_recall_tumor: 0.9548 - learning_rate: 1.0000e-06
+Epoch 91/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 260ms/step - accuracy: 1.0000 - dice_avg: 0.9978 - dice_liver: 0.9998 - dice_tumor: 0.9959 - iou_liver: 0.9995 - iou_tumor: 0.9919 - loss: 0.3388 - precision_liver: 0.9998 - precision_tumor: 0.9943 - recall_liver: 0.9997 - recall_tumor: 0.9976Epoch 91 | Reward=-0.010 | Metric=0.9635 | BG=4.178 | Liver=9.112 | Tumor=3.175 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 309ms/step - accuracy: 1.0000 - dice_avg: 0.9976 - dice_liver: 0.9997 - dice_tumor: 0.9954 - iou_liver: 0.9994 - iou_tumor: 0.9910 - loss: 0.3380 - precision_liver: 0.9997 - precision_tumor: 0.9939 - recall_liver: 0.9997 - recall_tumor: 0.9970 - val_accuracy: 0.9986 - val_dice_avg: 0.9635 - val_dice_liver: 0.9906 - val_dice_tumor: 0.9365 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8847 - val_loss: 0.3454 - val_precision_liver: 0.9905 - val_precision_tumor: 0.9248 - val_recall_liver: 0.9906 - val_recall_tumor: 0.9524 - learning_rate: 1.0000e-06
+Epoch 92/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 262ms/step - accuracy: 1.0000 - dice_avg: 0.9931 - dice_liver: 0.9997 - dice_tumor: 0.9865 - iou_liver: 0.9995 - iou_tumor: 0.9818 - loss: 0.3389 - precision_liver: 0.9998 - precision_tumor: 0.9854 - recall_liver: 0.9997 - recall_tumor: 0.9877Epoch 92 | Reward=-0.019 | Metric=0.9626 | BG=4.328 | Liver=9.001 | Tumor=3.137 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 32s 317ms/step - accuracy: 1.0000 - dice_avg: 0.9924 - dice_liver: 0.9998 - dice_tumor: 0.9850 - iou_liver: 0.9995 - iou_tumor: 0.9802 - loss: 0.3380 - precision_liver: 0.9998 - precision_tumor: 0.9835 - recall_liver: 0.9998 - recall_tumor: 0.9866 - val_accuracy: 0.9986 - val_dice_avg: 0.9626 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9346 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8818 - val_loss: 0.3455 - val_precision_liver: 0.9909 - val_precision_tumor: 0.9221 - val_recall_liver: 0.9902 - val_recall_tumor: 0.9509 - learning_rate: 1.0000e-06
+Epoch 93/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 261ms/step - accuracy: 1.0000 - dice_avg: 0.9892 - dice_liver: 0.9997 - dice_tumor: 0.9786 - iou_liver: 0.9995 - iou_tumor: 0.9755 - loss: 0.3381 - precision_liver: 0.9998 - precision_tumor: 0.9783 - recall_liver: 0.9997 - recall_tumor: 0.9790Epoch 93 | Reward=-0.021 | Metric=0.9624 | BG=4.344 | Liver=9.035 | Tumor=3.087 | Boost=1.00
+100/100 ━━━━━━━━━━━━━━━━━━━━ 31s 312ms/step - accuracy: 1.0000 - dice_avg: 0.9880 - dice_liver: 0.9998 - dice_tumor: 0.9762 - iou_liver: 0.9995 - iou_tumor: 0.9725 - loss: 0.3380 - precision_liver: 0.9998 - precision_tumor: 0.9749 - recall_liver: 0.9998 - recall_tumor: 0.9776 - val_accuracy: 0.9986 - val_dice_avg: 0.9624 - val_dice_liver: 0.9905 - val_dice_tumor: 0.9343 - val_iou_liver: 0.9813 - val_iou_tumor: 0.8813 - val_loss: 0.3455 - val_precision_liver: 0.9905 - val_precision_tumor: 0.9234 - val_recall_liver: 0.9906 - val_recall_tumor: 0.9486 - learning_rate: 1.0000e-06
+Training completed in 55.4 minutes.
+
+
+=== Running Final Evaluation with Default Post-Processing ===
+
+=== Metrics Default (thresh=0.35, liver_min=30, tumor_min=3) ===
+Liver_ASSD: 0.0278 ± 0.0923 | 95% CI: [0.0164, 0.0424]
+Liver_DSC: 0.9726 ± 0.1207 | 95% CI: [0.9528, 0.9874]
+Liver_ICC: 0.9719 ± 0.1206 | 95% CI: [0.9526, 0.9867]
+Liver_IoU: 0.9606 ± 0.1202 | 95% CI: [0.9419, 0.9746]
+Liver_MSD: 2.8195 ± 6.1892 | 95% CI: [2.0507, 3.7038]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9549, 0.9892]
+Liver_RVD: -0.0189 ± 0.1225 | 95% CI: [-0.0382, -0.0044]
+Liver_Recall: 0.9707 ± 0.1211 | 95% CI: [0.9510, 0.9857]
+Liver_VOE: 0.0394 ± 0.1202 | 95% CI: [0.0252, 0.0578]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0293, 0.1420]
+Tumor_DSC: 0.9299 ± 0.1969 | 95% CI: [0.9023, 0.9550]
+Tumor_ICC: 0.9314 ± 0.1946 | 95% CI: [0.9022, 0.9579]
+Tumor_IoU: 0.9068 ± 0.2092 | 95% CI: [0.8783, 0.9344]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.4947, 1.2485]
+Tumor_Precision: 0.3804 ± 0.4620 | 95% CI: [0.3170, 0.4427]
+Tumor_RVD: 1999.9995 ± 28284.2402 | 95% CI: [-0.0346, 7999.9517]
+Tumor_Recall: 0.3861 ± 0.4640 | 95% CI: [0.3208, 0.4452]
+Tumor_VOE: 0.0932 ± 0.2092 | 95% CI: [0.0671, 0.1226]
+
+=== Metrics  (thresh=0.35, liver_min=30, tumor_min=3) ===
+Liver_ASSD: 0.0278 ± 0.0923 | 95% CI: [0.0171, 0.0410]
+Liver_DSC: 0.9726 ± 0.1207 | 95% CI: [0.9532, 0.9873]
+Liver_ICC: 0.9719 ± 0.1206 | 95% CI: [0.9518, 0.9866]
+Liver_IoU: 0.9606 ± 0.1202 | 95% CI: [0.9438, 0.9758]
+Liver_MSD: 2.8195 ± 6.1892 | 95% CI: [2.0542, 3.7668]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9554, 0.9894]
+Liver_RVD: -0.0189 ± 0.1225 | 95% CI: [-0.0378, -0.0040]
+Liver_Recall: 0.9707 ± 0.1211 | 95% CI: [0.9541, 0.9850]
+Liver_VOE: 0.0394 ± 0.1202 | 95% CI: [0.0252, 0.0580]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0296, 0.1448]
+Tumor_DSC: 0.9299 ± 0.1969 | 95% CI: [0.9043, 0.9544]
+Tumor_ICC: 0.9314 ± 0.1946 | 95% CI: [0.9037, 0.9567]
+Tumor_IoU: 0.9068 ± 0.2092 | 95% CI: [0.8774, 0.9329]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.4855, 1.2760]
+Tumor_Precision: 0.3804 ± 0.4620 | 95% CI: [0.3168, 0.4420]
+Tumor_RVD: 1999.9995 ± 28284.2402 | 95% CI: [-0.0338, 6000.0610]
+Tumor_Recall: 0.3861 ± 0.4640 | 95% CI: [0.3254, 0.4602]
+Tumor_VOE: 0.0932 ± 0.2092 | 95% CI: [0.0657, 0.1209]
+
+=== Post-Processing Sensitivity Analysis (±20%) ===
+
+Testing: Default (thresh=0.35, liver_min=30, tumor_min=3)
+
+=== Metrics Default (thresh=0.35, liver_min=30, tumor_min=3) ===
+Liver_ASSD: 0.0278 ± 0.0923 | 95% CI: [0.0167, 0.0420]
+Liver_DSC: 0.9726 ± 0.1207 | 95% CI: [0.9532, 0.9872]
+Liver_ICC: 0.9719 ± 0.1206 | 95% CI: [0.9521, 0.9865]
+Liver_IoU: 0.9606 ± 0.1202 | 95% CI: [0.9415, 0.9747]
+Liver_MSD: 2.8195 ± 6.1892 | 95% CI: [2.0125, 3.6533]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9549, 0.9895]
+Liver_RVD: -0.0189 ± 0.1225 | 95% CI: [-0.0382, -0.0041]
+Liver_Recall: 0.9707 ± 0.1211 | 95% CI: [0.9520, 0.9854]
+Liver_VOE: 0.0394 ± 0.1202 | 95% CI: [0.0249, 0.0581]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0281, 0.1517]
+Tumor_DSC: 0.9299 ± 0.1969 | 95% CI: [0.9005, 0.9550]
+Tumor_ICC: 0.9314 ± 0.1946 | 95% CI: [0.9039, 0.9565]
+Tumor_IoU: 0.9068 ± 0.2092 | 95% CI: [0.8778, 0.9327]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.5008, 1.2508]
+Tumor_Precision: 0.3804 ± 0.4620 | 95% CI: [0.3196, 0.4407]
+Tumor_RVD: 1999.9995 ± 28284.2402 | 95% CI: [-0.0353, 6000.0200]
+Tumor_Recall: 0.3861 ± 0.4640 | 95% CI: [0.3208, 0.4491]
+Tumor_VOE: 0.0932 ± 0.2092 | 95% CI: [0.0671, 0.1241]
+
+Testing: -20% (all) (thresh=0.28, liver_min=24, tumor_min=2)
+
+=== Metrics -20% (all) (thresh=0.28, liver_min=24, tumor_min=2) ===
+Liver_ASSD: 0.0272 ± 0.0916 | 95% CI: [0.0166, 0.0401]
+Liver_DSC: 0.9774 ± 0.0990 | 95% CI: [0.9614, 0.9879]
+Liver_ICC: 0.9767 ± 0.0989 | 95% CI: [0.9616, 0.9870]
+Liver_IoU: 0.9653 ± 0.0991 | 95% CI: [0.9504, 0.9761]
+Liver_MSD: 2.7481 ± 6.1143 | 95% CI: [1.9862, 3.7541]
+Liver_Precision: 0.9792 ± 0.0991 | 95% CI: [0.9640, 0.9896]
+Liver_RVD: -0.0135 ± 0.1008 | 95% CI: [-0.0288, -0.0025]
+Liver_Recall: 0.9757 ± 0.0995 | 95% CI: [0.9601, 0.9864]
+Liver_VOE: 0.0347 ± 0.0991 | 95% CI: [0.0236, 0.0499]
+Tumor_ASSD: 0.1088 ± 0.6347 | 95% CI: [0.0350, 0.2126]
+Tumor_DSC: 0.9321 ± 0.1867 | 95% CI: [0.9065, 0.9563]
+Tumor_ICC: 0.9339 ± 0.1839 | 95% CI: [0.9085, 0.9580]
+Tumor_IoU: 0.9074 ± 0.2019 | 95% CI: [0.8768, 0.9340]
+Tumor_MSD: 0.9603 ± 3.9371 | 95% CI: [0.5031, 1.5576]
+Tumor_Precision: 0.3899 ± 0.4638 | 95% CI: [0.3271, 0.4520]
+Tumor_RVD: 3000.0063 ± 31559.0898 | 95% CI: [-0.0163, 8000.0298]
+Tumor_Recall: 0.3922 ± 0.4631 | 95% CI: [0.3257, 0.4592]
+Tumor_VOE: 0.0926 ± 0.2019 | 95% CI: [0.0658, 0.1208]
+
+Testing: +20% (all) (thresh=0.42, liver_min=36, tumor_min=3)
+
+=== Metrics +20% (all) (thresh=0.42, liver_min=36, tumor_min=3) ===
+Liver_ASSD: 0.0290 ± 0.0929 | 95% CI: [0.0180, 0.0426]
+Liver_DSC: 0.9724 ± 0.1207 | 95% CI: [0.9531, 0.9870]
+Liver_ICC: 0.9717 ± 0.1206 | 95% CI: [0.9522, 0.9864]
+Liver_IoU: 0.9604 ± 0.1202 | 95% CI: [0.9424, 0.9751]
+Liver_MSD: 2.9242 ± 6.2465 | 95% CI: [2.1472, 3.8951]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9549, 0.9893]
+Liver_RVD: -0.0192 ± 0.1225 | 95% CI: [-0.0387, -0.0044]
+Liver_Recall: 0.9704 ± 0.1211 | 95% CI: [0.9516, 0.9849]
+Liver_VOE: 0.0396 ± 0.1202 | 95% CI: [0.0258, 0.0571]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0293, 0.1449]
+Tumor_DSC: 0.9300 ± 0.1970 | 95% CI: [0.8994, 0.9542]
+Tumor_ICC: 0.9315 ± 0.1946 | 95% CI: [0.9015, 0.9557]
+Tumor_IoU: 0.9069 ± 0.2092 | 95% CI: [0.8758, 0.9332]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.4807, 1.2857]
+Tumor_Precision: 0.3806 ± 0.4622 | 95% CI: [0.3188, 0.4440]
+Tumor_RVD: 1999.9994 ± 28284.2402 | 95% CI: [-0.0328, 6000.0312]
+Tumor_Recall: 0.3861 ± 0.4639 | 95% CI: [0.3266, 0.4497]
+Tumor_VOE: 0.0931 ± 0.2092 | 95% CI: [0.0655, 0.1243]
+
+Testing: Tumor Threshold -20% (thresh=0.28, liver_min=30, tumor_min=3)
+
+=== Metrics Tumor Threshold -20% (thresh=0.28, liver_min=30, tumor_min=3) ===
+Liver_ASSD: 0.0278 ± 0.0923 | 95% CI: [0.0172, 0.0422]
+Liver_DSC: 0.9726 ± 0.1207 | 95% CI: [0.9542, 0.9873]
+Liver_ICC: 0.9719 ± 0.1206 | 95% CI: [0.9519, 0.9871]
+Liver_IoU: 0.9606 ± 0.1202 | 95% CI: [0.9421, 0.9751]
+Liver_MSD: 2.8195 ± 6.1892 | 95% CI: [2.0205, 3.6877]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9549, 0.9891]
+Liver_RVD: -0.0189 ± 0.1225 | 95% CI: [-0.0386, -0.0037]
+Liver_Recall: 0.9707 ± 0.1211 | 95% CI: [0.9513, 0.9858]
+Liver_VOE: 0.0394 ± 0.1202 | 95% CI: [0.0243, 0.0581]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0291, 0.1511]
+Tumor_DSC: 0.9299 ± 0.1969 | 95% CI: [0.9018, 0.9555]
+Tumor_ICC: 0.9314 ± 0.1946 | 95% CI: [0.9045, 0.9548]
+Tumor_IoU: 0.9068 ± 0.2092 | 95% CI: [0.8752, 0.9351]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.5241, 1.2813]
+Tumor_Precision: 0.3804 ± 0.4620 | 95% CI: [0.3193, 0.4449]
+Tumor_RVD: 1999.9995 ± 28284.2402 | 95% CI: [-0.0339, 6000.0264]
+Tumor_Recall: 0.3861 ± 0.4640 | 95% CI: [0.3255, 0.4490]
+Tumor_VOE: 0.0932 ± 0.2092 | 95% CI: [0.0671, 0.1247]
+
+Testing: Tumor Threshold +20% (thresh=0.42, liver_min=30, tumor_min=3)
+
+=== Metrics Tumor Threshold +20% (thresh=0.42, liver_min=30, tumor_min=3) ===
+Liver_ASSD: 0.0278 ± 0.0923 | 95% CI: [0.0167, 0.0423]
+Liver_DSC: 0.9726 ± 0.1207 | 95% CI: [0.9528, 0.9876]
+Liver_ICC: 0.9719 ± 0.1206 | 95% CI: [0.9522, 0.9865]
+Liver_IoU: 0.9606 ± 0.1202 | 95% CI: [0.9414, 0.9757]
+Liver_MSD: 2.8195 ± 6.1892 | 95% CI: [2.0575, 3.7741]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9555, 0.9896]
+Liver_RVD: -0.0189 ± 0.1225 | 95% CI: [-0.0385, -0.0043]
+Liver_Recall: 0.9707 ± 0.1211 | 95% CI: [0.9510, 0.9851]
+Liver_VOE: 0.0394 ± 0.1202 | 95% CI: [0.0241, 0.0569]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0292, 0.1498]
+Tumor_DSC: 0.9300 ± 0.1970 | 95% CI: [0.9020, 0.9549]
+Tumor_ICC: 0.9315 ± 0.1946 | 95% CI: [0.9048, 0.9563]
+Tumor_IoU: 0.9069 ± 0.2092 | 95% CI: [0.8751, 0.9325]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.5069, 1.2383]
+Tumor_Precision: 0.3806 ± 0.4622 | 95% CI: [0.3206, 0.4485]
+Tumor_RVD: 1999.9994 ± 28284.2402 | 95% CI: [-0.0355, 6000.0288]
+Tumor_Recall: 0.3861 ± 0.4639 | 95% CI: [0.3265, 0.4534]
+Tumor_VOE: 0.0931 ± 0.2092 | 95% CI: [0.0664, 0.1237]
+
+Testing: Liver Min Size -20% (thresh=0.35, liver_min=24, tumor_min=3)
+
+=== Metrics Liver Min Size -20% (thresh=0.35, liver_min=24, tumor_min=3) ===
+Liver_ASSD: 0.0272 ± 0.0916 | 95% CI: [0.0162, 0.0418]
+Liver_DSC: 0.9774 ± 0.0990 | 95% CI: [0.9623, 0.9877]
+Liver_ICC: 0.9767 ± 0.0989 | 95% CI: [0.9615, 0.9873]
+Liver_IoU: 0.9653 ± 0.0991 | 95% CI: [0.9497, 0.9760]
+Liver_MSD: 2.7481 ± 6.1143 | 95% CI: [1.9657, 3.7200]
+Liver_Precision: 0.9792 ± 0.0991 | 95% CI: [0.9637, 0.9896]
+Liver_RVD: -0.0135 ± 0.1008 | 95% CI: [-0.0296, -0.0026]
+Liver_Recall: 0.9757 ± 0.0995 | 95% CI: [0.9598, 0.9866]
+Liver_VOE: 0.0347 ± 0.0991 | 95% CI: [0.0237, 0.0493]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0292, 0.1530]
+Tumor_DSC: 0.9299 ± 0.1969 | 95% CI: [0.9018, 0.9535]
+Tumor_ICC: 0.9314 ± 0.1946 | 95% CI: [0.9054, 0.9558]
+Tumor_IoU: 0.9068 ± 0.2092 | 95% CI: [0.8747, 0.9343]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.4888, 1.2842]
+Tumor_Precision: 0.3804 ± 0.4620 | 95% CI: [0.3169, 0.4461]
+Tumor_RVD: 1999.9995 ± 28284.2402 | 95% CI: [-0.0373, 7999.9785]
+Tumor_Recall: 0.3861 ± 0.4640 | 95% CI: [0.3258, 0.4457]
+Tumor_VOE: 0.0932 ± 0.2092 | 95% CI: [0.0659, 0.1241]
+
+Testing: Liver Min Size +20% (thresh=0.35, liver_min=36, tumor_min=3)
+
+=== Metrics Liver Min Size +20% (thresh=0.35, liver_min=36, tumor_min=3) ===
+Liver_ASSD: 0.0290 ± 0.0929 | 95% CI: [0.0177, 0.0448]
+Liver_DSC: 0.9724 ± 0.1207 | 95% CI: [0.9565, 0.9870]
+Liver_ICC: 0.9717 ± 0.1206 | 95% CI: [0.9525, 0.9866]
+Liver_IoU: 0.9604 ± 0.1202 | 95% CI: [0.9417, 0.9744]
+Liver_MSD: 2.9242 ± 6.2465 | 95% CI: [2.1566, 3.9277]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9550, 0.9896]
+Liver_RVD: -0.0192 ± 0.1225 | 95% CI: [-0.0400, -0.0043]
+Liver_Recall: 0.9704 ± 0.1211 | 95% CI: [0.9512, 0.9850]
+Liver_VOE: 0.0396 ± 0.1202 | 95% CI: [0.0249, 0.0595]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0291, 0.1424]
+Tumor_DSC: 0.9299 ± 0.1969 | 95% CI: [0.9003, 0.9536]
+Tumor_ICC: 0.9314 ± 0.1946 | 95% CI: [0.9028, 0.9566]
+Tumor_IoU: 0.9068 ± 0.2092 | 95% CI: [0.8762, 0.9356]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.4952, 1.2584]
+Tumor_Precision: 0.3804 ± 0.4620 | 95% CI: [0.3233, 0.4457]
+Tumor_RVD: 1999.9995 ± 28284.2402 | 95% CI: [-0.0349, 6000.0317]
+Tumor_Recall: 0.3861 ± 0.4640 | 95% CI: [0.3258, 0.4463]
+Tumor_VOE: 0.0932 ± 0.2092 | 95% CI: [0.0640, 0.1235]
+
+Testing: Tumor Min Size -20% (thresh=0.35, liver_min=30, tumor_min=2)
+
+=== Metrics Tumor Min Size -20% (thresh=0.35, liver_min=30, tumor_min=2) ===
+Liver_ASSD: 0.0278 ± 0.0923 | 95% CI: [0.0162, 0.0421]
+Liver_DSC: 0.9726 ± 0.1207 | 95% CI: [0.9530, 0.9873]
+Liver_ICC: 0.9719 ± 0.1206 | 95% CI: [0.9524, 0.9865]
+Liver_IoU: 0.9606 ± 0.1202 | 95% CI: [0.9417, 0.9748]
+Liver_MSD: 2.8195 ± 6.1892 | 95% CI: [2.0535, 3.8368]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9587, 0.9893]
+Liver_RVD: -0.0189 ± 0.1225 | 95% CI: [-0.0381, -0.0038]
+Liver_Recall: 0.9707 ± 0.1211 | 95% CI: [0.9528, 0.9857]
+Liver_VOE: 0.0394 ± 0.1202 | 95% CI: [0.0252, 0.0585]
+Tumor_ASSD: 0.1088 ± 0.6347 | 95% CI: [0.0368, 0.2056]
+Tumor_DSC: 0.9321 ± 0.1867 | 95% CI: [0.9036, 0.9556]
+Tumor_ICC: 0.9339 ± 0.1839 | 95% CI: [0.9038, 0.9568]
+Tumor_IoU: 0.9074 ± 0.2019 | 95% CI: [0.8774, 0.9346]
+Tumor_MSD: 0.9603 ± 3.9371 | 95% CI: [0.4904, 1.6054]
+Tumor_Precision: 0.3899 ± 0.4638 | 95% CI: [0.3267, 0.4531]
+Tumor_RVD: 3000.0063 ± 31559.0898 | 95% CI: [-0.0124, 7999.9985]
+Tumor_Recall: 0.3922 ± 0.4631 | 95% CI: [0.3285, 0.4556]
+Tumor_VOE: 0.0926 ± 0.2019 | 95% CI: [0.0666, 0.1201]
+
+Testing: Tumor Min Size +20% (thresh=0.35, liver_min=30, tumor_min=3)
+
+=== Metrics Tumor Min Size +20% (thresh=0.35, liver_min=30, tumor_min=3) ===
+Liver_ASSD: 0.0278 ± 0.0923 | 95% CI: [0.0173, 0.0431]
+Liver_DSC: 0.9726 ± 0.1207 | 95% CI: [0.9539, 0.9875]
+Liver_ICC: 0.9719 ± 0.1206 | 95% CI: [0.9521, 0.9865]
+Liver_IoU: 0.9606 ± 0.1202 | 95% CI: [0.9413, 0.9754]
+Liver_MSD: 2.8195 ± 6.1892 | 95% CI: [2.0567, 3.6747]
+Liver_Precision: 0.9746 ± 0.1209 | 95% CI: [0.9547, 0.9892]
+Liver_RVD: -0.0189 ± 0.1225 | 95% CI: [-0.0384, -0.0041]
+Liver_Recall: 0.9707 ± 0.1211 | 95% CI: [0.9546, 0.9853]
+Liver_VOE: 0.0394 ± 0.1202 | 95% CI: [0.0244, 0.0588]
+Tumor_ASSD: 0.0742 ± 0.4639 | 95% CI: [0.0297, 0.1545]
+Tumor_DSC: 0.9299 ± 0.1969 | 95% CI: [0.9027, 0.9558]
+Tumor_ICC: 0.9314 ± 0.1946 | 95% CI: [0.9019, 0.9568]
+Tumor_IoU: 0.9068 ± 0.2092 | 95% CI: [0.8774, 0.9326]
+Tumor_MSD: 0.8213 ± 2.8708 | 95% CI: [0.5056, 1.2607]
+Tumor_Precision: 0.3804 ± 0.4620 | 95% CI: [0.3215, 0.4415]
+Tumor_RVD: 1999.9995 ± 28284.2402 | 95% CI: [-0.0360, 6000.0225]
+Tumor_Recall: 0.3861 ± 0.4640 | 95% CI: [0.3253, 0.4517]
+Tumor_VOE: 0.0932 ± 0.2092 | 95% CI: [0.0657, 0.1246]
+
+Sensitivity analysis table saved to sensitivity_analysis_table.csv
+
+=== جدول آماده برای مقاله ===
+Parameter Combination  Tumor Threshold  Liver Min Size  Tumor Min Size Tumor DSC (Mean ± SD)
+              Default             0.35              30               3       0.9299 ± 0.1969
+           -20% (all)             0.28              24               2       0.9321 ± 0.1867
+           +20% (all)             0.42              36               3       0.9300 ± 0.1970
+ Tumor Threshold -20%             0.28              30               3       0.9299 ± 0.1969
+ Tumor Threshold +20%             0.42              30               3       0.9300 ± 0.1970
+  Liver Min Size -20%             0.35              24               3       0.9299 ± 0.1969
+  Liver Min Size +20%             0.35              36               3       0.9299 ± 0.1969
+  Tumor Min Size -20%             0.35              30               2       0.9321 ± 0.1867
+  Tumor Min Size +20%             0.35              30               3       0.9299 ± 0.1969
+All evaluations completed!
