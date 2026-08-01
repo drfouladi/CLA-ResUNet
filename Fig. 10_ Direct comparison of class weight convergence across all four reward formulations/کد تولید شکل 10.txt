@@ -1,0 +1,73 @@
+import os
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers, Model, callbacks
+from sklearn.model_selection import train_test_split
+from google.colab import drive
+import matplotlib.pyplot as plt
+import json
+import pandas as pd
+from skimage import measure
+from scipy.spatial.distance import cdist
+from scipy.stats import pearsonr
+from matplotlib.colors import ListedColormap
+
+print("GPU Available:", tf.config.list_physical_devices('GPU'))
+print("TensorFlow Version:", tf.__version__)
+
+drive.mount('/content/drive', force_remount=True)
+
+SEED = 42
+os.environ["PYTHONHASHSEED"] = str(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# مسیر فایل‌ها
+files = {
+    'Proposed': '/content/drive/MyDrive/LITS/cla_weight_history-proposed.csv',
+    'Tumor-only': '/content/drive/MyDrive/LITS/cla_weight_history-tumor_only.csv',
+    'Equal Dice': '/content/drive/MyDrive/LITS/cla_weight_history-equal_dice.csv',
+    'G-mean': '/content/drive/MyDrive/LITS/cla_weight_history-gmean.csv'
+}
+
+# بارگذاری داده‌ها
+data = {}
+for name, path in files.items():
+    df = pd.read_csv(path)
+    data[name] = df
+
+# رسم شکل ۹
+fig, axs = plt.subplots(1, 3, figsize=(18, 6), sharey=True)
+
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']  # آبی، نارنجی، سبز، قرمز
+linestyles = ['-', '--', '-.', ':']
+
+for i, (name, df) in enumerate(data.items()):
+    epochs = df['epoch']
+    
+    axs[0].plot(epochs, df['background'], color=colors[i], linestyle=linestyles[i], linewidth=2.2, label=name)
+    axs[1].plot(epochs, df['liver'], color=colors[i], linestyle=linestyles[i], linewidth=2.2, label=name)
+    axs[2].plot(epochs, df['tumor'], color=colors[i], linestyle=linestyles[i], linewidth=2.2, label=name)
+
+# تنظیمات subplotها
+titles = ['Background', 'Liver', 'Tumor']
+for ax, title in zip(axs, titles):
+    ax.set_xlabel('Epoch', fontsize=12)
+    ax.set_title(title, fontsize=14, pad=10)
+    ax.grid(True, alpha=0.3)
+
+axs[0].set_ylabel('Adaptive Class Weight', fontsize=12)
+fig.suptitle('Class Weight Convergence under Different Reward Formulations', fontsize=16, y=1.02)
+
+# Legend
+handles, labels = axs[0].get_legend_handles_labels()
+fig.legend(handles, labels, loc='upper center', ncol=4, fontsize=11, bbox_to_anchor=(0.5, 0.96))
+
+plt.tight_layout(rect=[0, 0, 1, 0.94])
+plt.savefig('/content/drive/MyDrive/LITS/Figure9_Weight_Convergence_Combined.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+print("✅ Figure 9 saved successfully!")
