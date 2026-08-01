@@ -1,0 +1,60 @@
+import json
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from pathlib import Path
+
+# Load metadata
+metadata_path = "/content/drive/MyDrive/LITS/json/slice_metadata.json"
+
+with open(metadata_path, 'r') as f:
+    metadata = json.load(f)
+
+# Extract statistics
+tumor_pixels = [item['tumor_pixels'] for item in metadata if item['tumor_pixels'] > 0]
+slices_per_volume = {}
+for item in metadata:
+    vid = item['volume_id']
+    slices_per_volume[vid] = slices_per_volume.get(vid, 0) + 1
+
+total_slices = len(metadata)
+tumor_slices = len([m for m in metadata if m['contains_tumor']])
+
+# ============== Journal-Style Plot ==============
+plt.style.use('default')
+sns.set_style("whitegrid")
+fig, axes = plt.subplots(2, 2, figsize=(14, 11))
+
+# 1. Tumor Size Distribution (log scale)
+axes[0,0].hist(tumor_pixels, bins=60, color='#2E86AB', edgecolor='black', alpha=0.85)
+axes[0,0].set_xscale('log')
+axes[0,0].set_xlabel('Number of Tumor Pixels (log scale)', fontsize=12)
+axes[0,0].set_ylabel('Number of Slices', fontsize=12)
+axes[0,0].set_title('Distribution of Tumor Size', fontsize=13, fontweight='bold')
+
+# 2. Slices per Volume
+axes[0,1].hist(list(slices_per_volume.values()), bins=25, color='#A23B72', edgecolor='black', alpha=0.85)
+axes[0,1].set_xlabel('Number of Tumor-Containing Slices per Volume', fontsize=12)
+axes[0,1].set_ylabel('Number of Volumes', fontsize=12)
+axes[0,1].set_title('Slices per CT Volume', fontsize=13, fontweight='bold')
+
+# 3. Proportion of slices with/without tumor
+labels = ['With Tumor', 'Without Tumor']
+sizes = [tumor_slices, total_slices - tumor_slices]
+colors = ['#F18F01', '#C2C5CC']
+axes[1,1].pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=90, textprops={'fontsize': 11})
+axes[1,1].set_title('Proportion of Slices Containing Tumor', fontsize=13, fontweight='bold')
+
+# 4. Tumor pixels vs Liver pixels ratio (new subplot)
+tumor_ratio = [item['tumor_pixels'] / (item['liver_pixels'] + item['tumor_pixels'] + 1e-6) 
+               for item in metadata if item['liver_pixels'] + item['tumor_pixels'] > 0]
+
+axes[1,0].hist(tumor_ratio, bins=50, color='#2CA02C', edgecolor='black', alpha=0.85)
+axes[1,0].set_xlabel('Tumor / (Liver + Tumor) Pixel Ratio', fontsize=12)
+axes[1,0].set_ylabel('Number of Slices', fontsize=12)
+axes[1,0].set_title('Tumor Burden Ratio per Slice', fontsize=13, fontweight='bold')
+
+plt.tight_layout()
+plt.savefig("/content/drive/MyDrive/LITS/json/dataset_statistics_journal_v2.png", 
+            dpi=300, bbox_inches='tight')
+plt.show()
