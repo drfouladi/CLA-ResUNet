@@ -1,0 +1,22 @@
+تعداد نمونه Baseline: 200
+تعداد نمونه Proposed: 200
+
+=== مقایسه آماری (Wilcoxon signed-rank test) ===
+Liver_DSC          | Baseline: 0.9758±0.0986 | Proposed: 0.9758±0.1035 | p = 1.1034e-02 ***
+Liver_IoU          | Baseline: 0.9621±0.0986 | Proposed: 0.9635±0.1074 | p = 1.1073e-02 ***
+Liver_Precision    | Baseline: 0.9733±0.0990 | Proposed: 0.9763±0.1078 | p = 1.1527e-06 ***
+Liver_Recall       | Baseline: 0.9784±0.0990 | Proposed: 0.9769±0.0992 | p = 3.6205e-01 
+Liver_VOE          | Baseline: 0.0379±0.0986 | Proposed: 0.0365±0.1074 | p = 1.1073e-02 ***
+Liver_RVD          | Baseline: -0.0046±0.1020 | Proposed: -0.0039±0.1586 | p = 1.7663e-05 ***
+Liver_ASSD         | Baseline: 0.0295±0.0923 | Proposed: 0.0297±0.0974 | p = 8.9913e-03 ***
+Liver_MSD          | Baseline: 2.7440±6.1262 | Proposed: 2.8070±6.1470 | p = 8.4206e-01 
+Tumor_DSC          | Baseline: 0.9025±0.2400 | Proposed: 0.9248±0.2052 | p = 4.2929e-01 
+Tumor_IoU          | Baseline: 0.8767±0.2516 | Proposed: 0.9010±0.2179 | p = 4.2995e-01 
+Tumor_Precision    | Baseline: 0.3671±0.4509 | Proposed: 0.3764±0.4578 | p = 6.9402e-01 
+Tumor_Recall       | Baseline: 0.3800±0.4623 | Proposed: 0.3809±0.4625 | p = 9.5012e-01 
+Tumor_VOE          | Baseline: 0.1233±0.2516 | Proposed: 0.0990±0.2179 | p = 4.2995e-01 
+Tumor_RVD          | Baseline: 9000.0220±64179.4329 | Proposed: 1499.9883±21160.1048 | p = 1.3460e-01 
+Tumor_ASSD         | Baseline: 0.1327±0.7095 | Proposed: 0.1177±0.7082 | p = 4.2971e-01 
+Tumor_MSD          | Baseline: 1.1646±4.3708 | Proposed: 1.0569±4.2282 | p = 7.1652e-01 
+
+جدول مقایسه آماری با موفقیت ذخیره شد!

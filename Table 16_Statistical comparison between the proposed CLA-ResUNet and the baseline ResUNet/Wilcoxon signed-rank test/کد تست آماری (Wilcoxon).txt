@@ -1,0 +1,52 @@
+import pandas as pd
+from scipy.stats import wilcoxon
+import numpy as np
+
+# بارگذاری فایل‌ها
+baseline_df = pd.read_csv("/content/drive/MyDrive/LITS/baseline_per_slice_metrics.csv")
+proposed_df = pd.read_csv("/content/drive/MyDrive/LITS/cla_per_slice_metrics.csv")
+
+print("تعداد نمونه Baseline:", len(baseline_df))
+print("تعداد نمونه Proposed:", len(proposed_df))
+
+# لیست متریک‌ها
+metrics = ['Liver_DSC', 'Liver_IoU', 'Liver_Precision', 'Liver_Recall',
+           'Liver_VOE', 'Liver_RVD', 'Liver_ASSD', 'Liver_MSD',
+           'Tumor_DSC', 'Tumor_IoU', 'Tumor_Precision', 'Tumor_Recall',
+           'Tumor_VOE', 'Tumor_RVD', 'Tumor_ASSD', 'Tumor_MSD']
+
+print("\n=== مقایسه آماری (Wilcoxon signed-rank test) ===")
+results = []
+
+for metric in metrics:
+    if metric in baseline_df.columns and metric in proposed_df.columns:
+        b = baseline_df[metric].values
+        p = proposed_df[metric].values
+        
+        # هم طول کردن
+        min_len = min(len(b), len(p))
+        b = b[:min_len]
+        p = p[:min_len]
+        
+        stat, p_value = wilcoxon(b, p)
+        
+        mean_b = np.mean(b)
+        std_b = np.std(b)
+        mean_p = np.mean(p)
+        std_p = np.std(p)
+        
+        results.append({
+            'Metric': metric,
+            'Baseline': f"{mean_b:.4f} ± {std_b:.4f}",
+            'Proposed': f"{mean_p:.4f} ± {std_p:.4f}",
+            'p-value': f"{p_value:.4e}",
+            'Significant': 'بله' if p_value < 0.05 else 'خیر'
+        })
+        
+        print(f"{metric:18s} | Baseline: {mean_b:.4f}±{std_b:.4f} | "
+              f"Proposed: {mean_p:.4f}±{std_p:.4f} | p = {p_value:.4e} {'***' if p_value < 0.05 else ''}")
+
+# ذخیره جدول
+stat_df = pd.DataFrame(results)
+stat_df.to_csv("/content/drive/MyDrive/LITS/statistical_comparison.csv", index=False)
+print("\nجدول مقایسه آماری با موفقیت ذخیره شد!")
