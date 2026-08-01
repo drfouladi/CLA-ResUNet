@@ -1,0 +1,1181 @@
+[
+    {
+        "volume_id": 0,
+        "volume_name": "volume-0.nii",
+        "segmentation_name": "segmentation-0.nii",
+        "original_depth": 75,
+        "num_saved_slices": 29,
+        "first_saved_slice_index": 0,
+        "last_saved_slice_index": 28
+    },
+    {
+        "volume_id": 1,
+        "volume_name": "volume-1.nii",
+        "segmentation_name": "segmentation-1.nii",
+        "original_depth": 123,
+        "num_saved_slices": 29,
+        "first_saved_slice_index": 29,
+        "last_saved_slice_index": 57
+    },
+    {
+        "volume_id": 2,
+        "volume_name": "volume-2.nii",
+        "segmentation_name": "segmentation-2.nii",
+        "original_depth": 517,
+        "num_saved_slices": 139,
+        "first_saved_slice_index": 58,
+        "last_saved_slice_index": 196
+    },
+    {
+        "volume_id": 3,
+        "volume_name": "volume-3.nii",
+        "segmentation_name": "segmentation-3.nii",
+        "original_depth": 534,
+        "num_saved_slices": 169,
+        "first_saved_slice_index": 197,
+        "last_saved_slice_index": 365
+    },
+    {
+        "volume_id": 4,
+        "volume_name": "volume-4.nii",
+        "segmentation_name": "segmentation-4.nii",
+        "original_depth": 841,
+        "num_saved_slices": 250,
+        "first_saved_slice_index": 366,
+        "last_saved_slice_index": 615
+    },
+    {
+        "volume_id": 5,
+        "volume_name": "volume-5.nii",
+        "segmentation_name": "segmentation-5.nii",
+        "original_depth": 537,
+        "num_saved_slices": 176,
+        "first_saved_slice_index": 616,
+        "last_saved_slice_index": 791
+    },
+    {
+        "volume_id": 6,
+        "volume_name": "volume-6.nii",
+        "segmentation_name": "segmentation-6.nii",
+        "original_depth": 518,
+        "num_saved_slices": 186,
+        "first_saved_slice_index": 792,
+        "last_saved_slice_index": 977
+    },
+    {
+        "volume_id": 7,
+        "volume_name": "volume-7.nii",
+        "segmentation_name": "segmentation-7.nii",
+        "original_depth": 541,
+        "num_saved_slices": 177,
+        "first_saved_slice_index": 978,
+        "last_saved_slice_index": 1154
+    },
+    {
+        "volume_id": 8,
+        "volume_name": "volume-8.nii",
+        "segmentation_name": "segmentation-8.nii",
+        "original_depth": 541,
+        "num_saved_slices": 179,
+        "first_saved_slice_index": 1155,
+        "last_saved_slice_index": 1333
+    },
+    {
+        "volume_id": 9,
+        "volume_name": "volume-9.nii",
+        "segmentation_name": "segmentation-9.nii",
+        "original_depth": 549,
+        "num_saved_slices": 173,
+        "first_saved_slice_index": 1334,
+        "last_saved_slice_index": 1506
+    },
+    {
+        "volume_id": 10,
+        "volume_name": "volume-10.nii",
+        "segmentation_name": "segmentation-10.nii",
+        "original_depth": 501,
+        "num_saved_slices": 181,
+        "first_saved_slice_index": 1507,
+        "last_saved_slice_index": 1687
+    },
+    {
+        "volume_id": 11,
+        "volume_name": "volume-11.nii",
+        "segmentation_name": "segmentation-11.nii",
+        "original_depth": 466,
+        "num_saved_slices": 167,
+        "first_saved_slice_index": 1688,
+        "last_saved_slice_index": 1854
+    },
+    {
+        "volume_id": 12,
+        "volume_name": "volume-12.nii",
+        "segmentation_name": "segmentation-12.nii",
+        "original_depth": 455,
+        "num_saved_slices": 189,
+        "first_saved_slice_index": 1855,
+        "last_saved_slice_index": 2043
+    },
+    {
+        "volume_id": 13,
+        "volume_name": "volume-13.nii",
+        "segmentation_name": "segmentation-13.nii",
+        "original_depth": 605,
+        "num_saved_slices": 142,
+        "first_saved_slice_index": 2044,
+        "last_saved_slice_index": 2185
+    },
+    {
+        "volume_id": 14,
+        "volume_name": "volume-14.nii",
+        "segmentation_name": "segmentation-14.nii",
+        "original_depth": 588,
+        "num_saved_slices": 139,
+        "first_saved_slice_index": 2186,
+        "last_saved_slice_index": 2324
+    },
+    {
+        "volume_id": 15,
+        "volume_name": "volume-15.nii",
+        "segmentation_name": "segmentation-15.nii",
+        "original_depth": 565,
+        "num_saved_slices": 133,
+        "first_saved_slice_index": 2325,
+        "last_saved_slice_index": 2457
+    },
+    {
+        "volume_id": 16,
+        "volume_name": "volume-16.nii",
+        "segmentation_name": "segmentation-16.nii",
+        "original_depth": 689,
+        "num_saved_slices": 187,
+        "first_saved_slice_index": 2458,
+        "last_saved_slice_index": 2644
+    },
+    {
+        "volume_id": 17,
+        "volume_name": "volume-17.nii",
+        "segmentation_name": "segmentation-17.nii",
+        "original_depth": 826,
+        "num_saved_slices": 198,
+        "first_saved_slice_index": 2645,
+        "last_saved_slice_index": 2842
+    },
+    {
+        "volume_id": 18,
+        "volume_name": "volume-18.nii",
+        "segmentation_name": "segmentation-18.nii",
+        "original_depth": 845,
+        "num_saved_slices": 189,
+        "first_saved_slice_index": 2843,
+        "last_saved_slice_index": 3031
+    },
+    {
+        "volume_id": 19,
+        "volume_name": "volume-19.nii",
+        "segmentation_name": "segmentation-19.nii",
+        "original_depth": 547,
+        "num_saved_slices": 188,
+        "first_saved_slice_index": 3032,
+        "last_saved_slice_index": 3219
+    },
+    {
+        "volume_id": 20,
+        "volume_name": "volume-20.nii",
+        "segmentation_name": "segmentation-20.nii",
+        "original_depth": 574,
+        "num_saved_slices": 194,
+        "first_saved_slice_index": 3220,
+        "last_saved_slice_index": 3413
+    },
+    {
+        "volume_id": 21,
+        "volume_name": "volume-21.nii",
+        "segmentation_name": "segmentation-21.nii",
+        "original_depth": 437,
+        "num_saved_slices": 175,
+        "first_saved_slice_index": 3414,
+        "last_saved_slice_index": 3588
+    },
+    {
+        "volume_id": 22,
+        "volume_name": "volume-22.nii",
+        "segmentation_name": "segmentation-22.nii",
+        "original_depth": 247,
+        "num_saved_slices": 46,
+        "first_saved_slice_index": 3589,
+        "last_saved_slice_index": 3634
+    },
+    {
+        "volume_id": 23,
+        "volume_name": "volume-23.nii",
+        "segmentation_name": "segmentation-23.nii",
+        "original_depth": 391,
+        "num_saved_slices": 116,
+        "first_saved_slice_index": 3635,
+        "last_saved_slice_index": 3750
+    },
+    {
+        "volume_id": 24,
+        "volume_name": "volume-24.nii",
+        "segmentation_name": "segmentation-24.nii",
+        "original_depth": 276,
+        "num_saved_slices": 118,
+        "first_saved_slice_index": 3751,
+        "last_saved_slice_index": 3868
+    },
+    {
+        "volume_id": 25,
+        "volume_name": "volume-25.nii",
+        "segmentation_name": "segmentation-25.nii",
+        "original_depth": 601,
+        "num_saved_slices": 232,
+        "first_saved_slice_index": 3869,
+        "last_saved_slice_index": 4100
+    },
+    {
+        "volume_id": 26,
+        "volume_name": "volume-26.nii",
+        "segmentation_name": "segmentation-26.nii",
+        "original_depth": 668,
+        "num_saved_slices": 192,
+        "first_saved_slice_index": 4101,
+        "last_saved_slice_index": 4292
+    },
+    {
+        "volume_id": 27,
+        "volume_name": "volume-27.nii",
+        "segmentation_name": "segmentation-27.nii",
+        "original_depth": 861,
+        "num_saved_slices": 229,
+        "first_saved_slice_index": 4293,
+        "last_saved_slice_index": 4521
+    },
+    {
+        "volume_id": 28,
+        "volume_name": "volume-28.nii",
+        "segmentation_name": "segmentation-28.nii",
+        "original_depth": 129,
+        "num_saved_slices": 98,
+        "first_saved_slice_index": 4522,
+        "last_saved_slice_index": 4619
+    },
+    {
+        "volume_id": 29,
+        "volume_name": "volume-29.nii",
+        "segmentation_name": "segmentation-29.nii",
+        "original_depth": 172,
+        "num_saved_slices": 114,
+        "first_saved_slice_index": 4620,
+        "last_saved_slice_index": 4733
+    },
+    {
+        "volume_id": 30,
+        "volume_name": "volume-30.nii",
+        "segmentation_name": "segmentation-30.nii",
+        "original_depth": 200,
+        "num_saved_slices": 123,
+        "first_saved_slice_index": 4734,
+        "last_saved_slice_index": 4856
+    },
+    {
+        "volume_id": 31,
+        "volume_name": "volume-31.nii",
+        "segmentation_name": "segmentation-31.nii",
+        "original_depth": 91,
+        "num_saved_slices": 67,
+        "first_saved_slice_index": 4857,
+        "last_saved_slice_index": 4923
+    },
+    {
+        "volume_id": 32,
+        "volume_name": "volume-32.nii",
+        "segmentation_name": "segmentation-32.nii",
+        "original_depth": 139,
+        "num_saved_slices": 119,
+        "first_saved_slice_index": 4924,
+        "last_saved_slice_index": 5042
+    },
+    {
+        "volume_id": 33,
+        "volume_name": "volume-33.nii",
+        "segmentation_name": "segmentation-33.nii",
+        "original_depth": 135,
+        "num_saved_slices": 96,
+        "first_saved_slice_index": 5043,
+        "last_saved_slice_index": 5138
+    },
+    {
+        "volume_id": 34,
+        "volume_name": "volume-34.nii",
+        "segmentation_name": "segmentation-34.nii",
+        "original_depth": 151,
+        "num_saved_slices": 98,
+        "first_saved_slice_index": 5139,
+        "last_saved_slice_index": 5236
+    },
+    {
+        "volume_id": 35,
+        "volume_name": "volume-35.nii",
+        "segmentation_name": "segmentation-35.nii",
+        "original_depth": 124,
+        "num_saved_slices": 116,
+        "first_saved_slice_index": 5237,
+        "last_saved_slice_index": 5352
+    },
+    {
+        "volume_id": 36,
+        "volume_name": "volume-36.nii",
+        "segmentation_name": "segmentation-36.nii",
+        "original_depth": 111,
+        "num_saved_slices": 89,
+        "first_saved_slice_index": 5353,
+        "last_saved_slice_index": 5441
+    },
+    {
+        "volume_id": 37,
+        "volume_name": "volume-37.nii",
+        "segmentation_name": "segmentation-37.nii",
+        "original_depth": 122,
+        "num_saved_slices": 99,
+        "first_saved_slice_index": 5442,
+        "last_saved_slice_index": 5540
+    },
+    {
+        "volume_id": 38,
+        "volume_name": "volume-38.nii",
+        "segmentation_name": "segmentation-38.nii",
+        "original_depth": 132,
+        "num_saved_slices": 96,
+        "first_saved_slice_index": 5541,
+        "last_saved_slice_index": 5636
+    },
+    {
+        "volume_id": 39,
+        "volume_name": "volume-39.nii",
+        "segmentation_name": "segmentation-39.nii",
+        "original_depth": 260,
+        "num_saved_slices": 239,
+        "first_saved_slice_index": 5637,
+        "last_saved_slice_index": 5875
+    },
+    {
+        "volume_id": 40,
+        "volume_name": "volume-40.nii",
+        "segmentation_name": "segmentation-40.nii",
+        "original_depth": 122,
+        "num_saved_slices": 90,
+        "first_saved_slice_index": 5876,
+        "last_saved_slice_index": 5965
+    },
+    {
+        "volume_id": 41,
+        "volume_name": "volume-41.nii",
+        "segmentation_name": "segmentation-41.nii",
+        "original_depth": 113,
+        "num_saved_slices": 104,
+        "first_saved_slice_index": 5966,
+        "last_saved_slice_index": 6069
+    },
+    {
+        "volume_id": 42,
+        "volume_name": "volume-42.nii",
+        "segmentation_name": "segmentation-42.nii",
+        "original_depth": 125,
+        "num_saved_slices": 115,
+        "first_saved_slice_index": 6070,
+        "last_saved_slice_index": 6184
+    },
+    {
+        "volume_id": 43,
+        "volume_name": "volume-43.nii",
+        "segmentation_name": "segmentation-43.nii",
+        "original_depth": 155,
+        "num_saved_slices": 113,
+        "first_saved_slice_index": 6185,
+        "last_saved_slice_index": 6297
+    },
+    {
+        "volume_id": 44,
+        "volume_name": "volume-44.nii",
+        "segmentation_name": "segmentation-44.nii",
+        "original_depth": 119,
+        "num_saved_slices": 113,
+        "first_saved_slice_index": 6298,
+        "last_saved_slice_index": 6410
+    },
+    {
+        "volume_id": 45,
+        "volume_name": "volume-45.nii",
+        "segmentation_name": "segmentation-45.nii",
+        "original_depth": 74,
+        "num_saved_slices": 59,
+        "first_saved_slice_index": 6411,
+        "last_saved_slice_index": 6469
+    },
+    {
+        "volume_id": 46,
+        "volume_name": "volume-46.nii",
+        "segmentation_name": "segmentation-46.nii",
+        "original_depth": 124,
+        "num_saved_slices": 41,
+        "first_saved_slice_index": 6470,
+        "last_saved_slice_index": 6510
+    },
+    {
+        "volume_id": 47,
+        "volume_name": "volume-47.nii",
+        "segmentation_name": "segmentation-47.nii",
+        "original_depth": 225,
+        "num_saved_slices": 85,
+        "first_saved_slice_index": 6511,
+        "last_saved_slice_index": 6595
+    },
+    {
+        "volume_id": 48,
+        "volume_name": "volume-48.nii",
+        "segmentation_name": "segmentation-48.nii",
+        "original_depth": 244,
+        "num_saved_slices": 69,
+        "first_saved_slice_index": 6596,
+        "last_saved_slice_index": 6664
+    },
+    {
+        "volume_id": 49,
+        "volume_name": "volume-49.nii",
+        "segmentation_name": "segmentation-49.nii",
+        "original_depth": 254,
+        "num_saved_slices": 73,
+        "first_saved_slice_index": 6665,
+        "last_saved_slice_index": 6737
+    },
+    {
+        "volume_id": 50,
+        "volume_name": "volume-50.nii",
+        "segmentation_name": "segmentation-50.nii",
+        "original_depth": 240,
+        "num_saved_slices": 64,
+        "first_saved_slice_index": 6738,
+        "last_saved_slice_index": 6801
+    },
+    {
+        "volume_id": 51,
+        "volume_name": "volume-51.nii",
+        "segmentation_name": "segmentation-51.nii",
+        "original_depth": 227,
+        "num_saved_slices": 56,
+        "first_saved_slice_index": 6802,
+        "last_saved_slice_index": 6857
+    },
+    {
+        "volume_id": 52,
+        "volume_name": "volume-52.nii",
+        "segmentation_name": "segmentation-52.nii",
+        "original_depth": 237,
+        "num_saved_slices": 56,
+        "first_saved_slice_index": 6858,
+        "last_saved_slice_index": 6913
+    },
+    {
+        "volume_id": 53,
+        "volume_name": "volume-53.nii",
+        "segmentation_name": "segmentation-53.nii",
+        "original_depth": 105,
+        "num_saved_slices": 44,
+        "first_saved_slice_index": 6914,
+        "last_saved_slice_index": 6957
+    },
+    {
+        "volume_id": 54,
+        "volume_name": "volume-54.nii",
+        "segmentation_name": "segmentation-54.nii",
+        "original_depth": 96,
+        "num_saved_slices": 29,
+        "first_saved_slice_index": 6958,
+        "last_saved_slice_index": 6986
+    },
+    {
+        "volume_id": 55,
+        "volume_name": "volume-55.nii",
+        "segmentation_name": "segmentation-55.nii",
+        "original_depth": 192,
+        "num_saved_slices": 92,
+        "first_saved_slice_index": 6987,
+        "last_saved_slice_index": 7078
+    },
+    {
+        "volume_id": 56,
+        "volume_name": "volume-56.nii",
+        "segmentation_name": "segmentation-56.nii",
+        "original_depth": 239,
+        "num_saved_slices": 91,
+        "first_saved_slice_index": 7079,
+        "last_saved_slice_index": 7169
+    },
+    {
+        "volume_id": 57,
+        "volume_name": "volume-57.nii",
+        "segmentation_name": "segmentation-57.nii",
+        "original_depth": 366,
+        "num_saved_slices": 149,
+        "first_saved_slice_index": 7170,
+        "last_saved_slice_index": 7318
+    },
+    {
+        "volume_id": 58,
+        "volume_name": "volume-58.nii",
+        "segmentation_name": "segmentation-58.nii",
+        "original_depth": 212,
+        "num_saved_slices": 83,
+        "first_saved_slice_index": 7319,
+        "last_saved_slice_index": 7401
+    },
+    {
+        "volume_id": 59,
+        "volume_name": "volume-59.nii",
+        "segmentation_name": "segmentation-59.nii",
+        "original_depth": 216,
+        "num_saved_slices": 77,
+        "first_saved_slice_index": 7402,
+        "last_saved_slice_index": 7478
+    },
+    {
+        "volume_id": 60,
+        "volume_name": "volume-60.nii",
+        "segmentation_name": "segmentation-60.nii",
+        "original_depth": 244,
+        "num_saved_slices": 79,
+        "first_saved_slice_index": 7479,
+        "last_saved_slice_index": 7557
+    },
+    {
+        "volume_id": 61,
+        "volume_name": "volume-61.nii",
+        "segmentation_name": "segmentation-61.nii",
+        "original_depth": 193,
+        "num_saved_slices": 61,
+        "first_saved_slice_index": 7558,
+        "last_saved_slice_index": 7618
+    },
+    {
+        "volume_id": 62,
+        "volume_name": "volume-62.nii",
+        "segmentation_name": "segmentation-62.nii",
+        "original_depth": 188,
+        "num_saved_slices": 89,
+        "first_saved_slice_index": 7619,
+        "last_saved_slice_index": 7707
+    },
+    {
+        "volume_id": 63,
+        "volume_name": "volume-63.nii",
+        "segmentation_name": "segmentation-63.nii",
+        "original_depth": 104,
+        "num_saved_slices": 37,
+        "first_saved_slice_index": 7708,
+        "last_saved_slice_index": 7744
+    },
+    {
+        "volume_id": 64,
+        "volume_name": "volume-64.nii",
+        "segmentation_name": "segmentation-64.nii",
+        "original_depth": 230,
+        "num_saved_slices": 104,
+        "first_saved_slice_index": 7745,
+        "last_saved_slice_index": 7848
+    },
+    {
+        "volume_id": 65,
+        "volume_name": "volume-65.nii",
+        "segmentation_name": "segmentation-65.nii",
+        "original_depth": 513,
+        "num_saved_slices": 201,
+        "first_saved_slice_index": 7849,
+        "last_saved_slice_index": 8049
+    },
+    {
+        "volume_id": 66,
+        "volume_name": "volume-66.nii",
+        "segmentation_name": "segmentation-66.nii",
+        "original_depth": 86,
+        "num_saved_slices": 36,
+        "first_saved_slice_index": 8050,
+        "last_saved_slice_index": 8085
+    },
+    {
+        "volume_id": 67,
+        "volume_name": "volume-67.nii",
+        "segmentation_name": "segmentation-67.nii",
+        "original_depth": 165,
+        "num_saved_slices": 79,
+        "first_saved_slice_index": 8086,
+        "last_saved_slice_index": 8164
+    },
+    {
+        "volume_id": 68,
+        "volume_name": "volume-68.nii",
+        "segmentation_name": "segmentation-68.nii",
+        "original_depth": 266,
+        "num_saved_slices": 64,
+        "first_saved_slice_index": 8165,
+        "last_saved_slice_index": 8228
+    },
+    {
+        "volume_id": 69,
+        "volume_name": "volume-69.nii",
+        "segmentation_name": "segmentation-69.nii",
+        "original_depth": 245,
+        "num_saved_slices": 96,
+        "first_saved_slice_index": 8229,
+        "last_saved_slice_index": 8324
+    },
+    {
+        "volume_id": 70,
+        "volume_name": "volume-70.nii",
+        "segmentation_name": "segmentation-70.nii",
+        "original_depth": 333,
+        "num_saved_slices": 110,
+        "first_saved_slice_index": 8325,
+        "last_saved_slice_index": 8434
+    },
+    {
+        "volume_id": 71,
+        "volume_name": "volume-71.nii",
+        "segmentation_name": "segmentation-71.nii",
+        "original_depth": 94,
+        "num_saved_slices": 36,
+        "first_saved_slice_index": 8435,
+        "last_saved_slice_index": 8470
+    },
+    {
+        "volume_id": 72,
+        "volume_name": "volume-72.nii",
+        "segmentation_name": "segmentation-72.nii",
+        "original_depth": 93,
+        "num_saved_slices": 58,
+        "first_saved_slice_index": 8471,
+        "last_saved_slice_index": 8528
+    },
+    {
+        "volume_id": 73,
+        "volume_name": "volume-73.nii",
+        "segmentation_name": "segmentation-73.nii",
+        "original_depth": 121,
+        "num_saved_slices": 50,
+        "first_saved_slice_index": 8529,
+        "last_saved_slice_index": 8578
+    },
+    {
+        "volume_id": 74,
+        "volume_name": "volume-74.nii",
+        "segmentation_name": "segmentation-74.nii",
+        "original_depth": 107,
+        "num_saved_slices": 32,
+        "first_saved_slice_index": 8579,
+        "last_saved_slice_index": 8610
+    },
+    {
+        "volume_id": 75,
+        "volume_name": "volume-75.nii",
+        "segmentation_name": "segmentation-75.nii",
+        "original_depth": 89,
+        "num_saved_slices": 37,
+        "first_saved_slice_index": 8611,
+        "last_saved_slice_index": 8647
+    },
+    {
+        "volume_id": 76,
+        "volume_name": "volume-76.nii",
+        "segmentation_name": "segmentation-76.nii",
+        "original_depth": 168,
+        "num_saved_slices": 75,
+        "first_saved_slice_index": 8648,
+        "last_saved_slice_index": 8722
+    },
+    {
+        "volume_id": 77,
+        "volume_name": "volume-77.nii",
+        "segmentation_name": "segmentation-77.nii",
+        "original_depth": 94,
+        "num_saved_slices": 36,
+        "first_saved_slice_index": 8723,
+        "last_saved_slice_index": 8758
+    },
+    {
+        "volume_id": 78,
+        "volume_name": "volume-78.nii",
+        "segmentation_name": "segmentation-78.nii",
+        "original_depth": 198,
+        "num_saved_slices": 59,
+        "first_saved_slice_index": 8759,
+        "last_saved_slice_index": 8817
+    },
+    {
+        "volume_id": 79,
+        "volume_name": "volume-79.nii",
+        "segmentation_name": "segmentation-79.nii",
+        "original_depth": 147,
+        "num_saved_slices": 59,
+        "first_saved_slice_index": 8818,
+        "last_saved_slice_index": 8876
+    },
+    {
+        "volume_id": 80,
+        "volume_name": "volume-80.nii",
+        "segmentation_name": "segmentation-80.nii",
+        "original_depth": 217,
+        "num_saved_slices": 76,
+        "first_saved_slice_index": 8877,
+        "last_saved_slice_index": 8952
+    },
+    {
+        "volume_id": 81,
+        "volume_name": "volume-81.nii",
+        "segmentation_name": "segmentation-81.nii",
+        "original_depth": 343,
+        "num_saved_slices": 111,
+        "first_saved_slice_index": 8953,
+        "last_saved_slice_index": 9063
+    },
+    {
+        "volume_id": 82,
+        "volume_name": "volume-82.nii",
+        "segmentation_name": "segmentation-82.nii",
+        "original_depth": 519,
+        "num_saved_slices": 170,
+        "first_saved_slice_index": 9064,
+        "last_saved_slice_index": 9233
+    },
+    {
+        "volume_id": 83,
+        "volume_name": "volume-83.nii",
+        "segmentation_name": "segmentation-83.nii",
+        "original_depth": 871,
+        "num_saved_slices": 215,
+        "first_saved_slice_index": 9234,
+        "last_saved_slice_index": 9448
+    },
+    {
+        "volume_id": 84,
+        "volume_name": "volume-84.nii",
+        "segmentation_name": "segmentation-84.nii",
+        "original_depth": 733,
+        "num_saved_slices": 258,
+        "first_saved_slice_index": 9449,
+        "last_saved_slice_index": 9706
+    },
+    {
+        "volume_id": 85,
+        "volume_name": "volume-85.nii",
+        "segmentation_name": "segmentation-85.nii",
+        "original_depth": 630,
+        "num_saved_slices": 276,
+        "first_saved_slice_index": 9707,
+        "last_saved_slice_index": 9982
+    },
+    {
+        "volume_id": 86,
+        "volume_name": "volume-86.nii",
+        "segmentation_name": "segmentation-86.nii",
+        "original_depth": 647,
+        "num_saved_slices": 280,
+        "first_saved_slice_index": 9983,
+        "last_saved_slice_index": 10262
+    },
+    {
+        "volume_id": 87,
+        "volume_name": "volume-87.nii",
+        "segmentation_name": "segmentation-87.nii",
+        "original_depth": 896,
+        "num_saved_slices": 215,
+        "first_saved_slice_index": 10263,
+        "last_saved_slice_index": 10477
+    },
+    {
+        "volume_id": 88,
+        "volume_name": "volume-88.nii",
+        "segmentation_name": "segmentation-88.nii",
+        "original_depth": 811,
+        "num_saved_slices": 175,
+        "first_saved_slice_index": 10478,
+        "last_saved_slice_index": 10652
+    },
+    {
+        "volume_id": 89,
+        "volume_name": "volume-89.nii",
+        "segmentation_name": "segmentation-89.nii",
+        "original_depth": 766,
+        "num_saved_slices": 193,
+        "first_saved_slice_index": 10653,
+        "last_saved_slice_index": 10845
+    },
+    {
+        "volume_id": 90,
+        "volume_name": "volume-90.nii",
+        "segmentation_name": "segmentation-90.nii",
+        "original_depth": 751,
+        "num_saved_slices": 183,
+        "first_saved_slice_index": 10846,
+        "last_saved_slice_index": 11028
+    },
+    {
+        "volume_id": 91,
+        "volume_name": "volume-91.nii",
+        "segmentation_name": "segmentation-91.nii",
+        "original_depth": 751,
+        "num_saved_slices": 189,
+        "first_saved_slice_index": 11029,
+        "last_saved_slice_index": 11217
+    },
+    {
+        "volume_id": 92,
+        "volume_name": "volume-92.nii",
+        "segmentation_name": "segmentation-92.nii",
+        "original_depth": 836,
+        "num_saved_slices": 179,
+        "first_saved_slice_index": 11218,
+        "last_saved_slice_index": 11396
+    },
+    {
+        "volume_id": 93,
+        "volume_name": "volume-93.nii",
+        "segmentation_name": "segmentation-93.nii",
+        "original_depth": 696,
+        "num_saved_slices": 234,
+        "first_saved_slice_index": 11397,
+        "last_saved_slice_index": 11630
+    },
+    {
+        "volume_id": 94,
+        "volume_name": "volume-94.nii",
+        "segmentation_name": "segmentation-94.nii",
+        "original_depth": 917,
+        "num_saved_slices": 251,
+        "first_saved_slice_index": 11631,
+        "last_saved_slice_index": 11881
+    },
+    {
+        "volume_id": 95,
+        "volume_name": "volume-95.nii",
+        "segmentation_name": "segmentation-95.nii",
+        "original_depth": 841,
+        "num_saved_slices": 263,
+        "first_saved_slice_index": 11882,
+        "last_saved_slice_index": 12144
+    },
+    {
+        "volume_id": 96,
+        "volume_name": "volume-96.nii",
+        "segmentation_name": "segmentation-96.nii",
+        "original_depth": 722,
+        "num_saved_slices": 299,
+        "first_saved_slice_index": 12145,
+        "last_saved_slice_index": 12443
+    },
+    {
+        "volume_id": 97,
+        "volume_name": "volume-97.nii",
+        "segmentation_name": "segmentation-97.nii",
+        "original_depth": 671,
+        "num_saved_slices": 232,
+        "first_saved_slice_index": 12444,
+        "last_saved_slice_index": 12675
+    },
+    {
+        "volume_id": 98,
+        "volume_name": "volume-98.nii",
+        "segmentation_name": "segmentation-98.nii",
+        "original_depth": 645,
+        "num_saved_slices": 241,
+        "first_saved_slice_index": 12676,
+        "last_saved_slice_index": 12916
+    },
+    {
+        "volume_id": 99,
+        "volume_name": "volume-99.nii",
+        "segmentation_name": "segmentation-99.nii",
+        "original_depth": 629,
+        "num_saved_slices": 226,
+        "first_saved_slice_index": 12917,
+        "last_saved_slice_index": 13142
+    },
+    {
+        "volume_id": 100,
+        "volume_name": "volume-100.nii",
+        "segmentation_name": "segmentation-100.nii",
+        "original_depth": 685,
+        "num_saved_slices": 276,
+        "first_saved_slice_index": 13143,
+        "last_saved_slice_index": 13418
+    },
+    {
+        "volume_id": 101,
+        "volume_name": "volume-101.nii",
+        "segmentation_name": "segmentation-101.nii",
+        "original_depth": 683,
+        "num_saved_slices": 259,
+        "first_saved_slice_index": 13419,
+        "last_saved_slice_index": 13677
+    },
+    {
+        "volume_id": 102,
+        "volume_name": "volume-102.nii",
+        "segmentation_name": "segmentation-102.nii",
+        "original_depth": 677,
+        "num_saved_slices": 266,
+        "first_saved_slice_index": 13678,
+        "last_saved_slice_index": 13943
+    },
+    {
+        "volume_id": 103,
+        "volume_name": "volume-103.nii",
+        "segmentation_name": "segmentation-103.nii",
+        "original_depth": 683,
+        "num_saved_slices": 214,
+        "first_saved_slice_index": 13944,
+        "last_saved_slice_index": 14157
+    },
+    {
+        "volume_id": 104,
+        "volume_name": "volume-104.nii",
+        "segmentation_name": "segmentation-104.nii",
+        "original_depth": 781,
+        "num_saved_slices": 194,
+        "first_saved_slice_index": 14158,
+        "last_saved_slice_index": 14351
+    },
+    {
+        "volume_id": 105,
+        "volume_name": "volume-105.nii",
+        "segmentation_name": "segmentation-105.nii",
+        "original_depth": 986,
+        "num_saved_slices": 239,
+        "first_saved_slice_index": 14352,
+        "last_saved_slice_index": 14590
+    },
+    {
+        "volume_id": 106,
+        "volume_name": "volume-106.nii",
+        "segmentation_name": "segmentation-106.nii",
+        "original_depth": 771,
+        "num_saved_slices": 168,
+        "first_saved_slice_index": 14591,
+        "last_saved_slice_index": 14758
+    },
+    {
+        "volume_id": 107,
+        "volume_name": "volume-107.nii",
+        "segmentation_name": "segmentation-107.nii",
+        "original_depth": 771,
+        "num_saved_slices": 248,
+        "first_saved_slice_index": 14759,
+        "last_saved_slice_index": 15006
+    },
+    {
+        "volume_id": 108,
+        "volume_name": "volume-108.nii",
+        "segmentation_name": "segmentation-108.nii",
+        "original_depth": 856,
+        "num_saved_slices": 205,
+        "first_saved_slice_index": 15007,
+        "last_saved_slice_index": 15211
+    },
+    {
+        "volume_id": 109,
+        "volume_name": "volume-109.nii",
+        "segmentation_name": "segmentation-109.nii",
+        "original_depth": 756,
+        "num_saved_slices": 194,
+        "first_saved_slice_index": 15212,
+        "last_saved_slice_index": 15405
+    },
+    {
+        "volume_id": 110,
+        "volume_name": "volume-110.nii",
+        "segmentation_name": "segmentation-110.nii",
+        "original_depth": 816,
+        "num_saved_slices": 189,
+        "first_saved_slice_index": 15406,
+        "last_saved_slice_index": 15594
+    },
+    {
+        "volume_id": 111,
+        "volume_name": "volume-111.nii",
+        "segmentation_name": "segmentation-111.nii",
+        "original_depth": 761,
+        "num_saved_slices": 233,
+        "first_saved_slice_index": 15595,
+        "last_saved_slice_index": 15827
+    },
+    {
+        "volume_id": 112,
+        "volume_name": "volume-112.nii",
+        "segmentation_name": "segmentation-112.nii",
+        "original_depth": 751,
+        "num_saved_slices": 191,
+        "first_saved_slice_index": 15828,
+        "last_saved_slice_index": 16018
+    },
+    {
+        "volume_id": 113,
+        "volume_name": "volume-113.nii",
+        "segmentation_name": "segmentation-113.nii",
+        "original_depth": 836,
+        "num_saved_slices": 170,
+        "first_saved_slice_index": 16019,
+        "last_saved_slice_index": 16188
+    },
+    {
+        "volume_id": 114,
+        "volume_name": "volume-114.nii",
+        "segmentation_name": "segmentation-114.nii",
+        "original_depth": 846,
+        "num_saved_slices": 215,
+        "first_saved_slice_index": 16189,
+        "last_saved_slice_index": 16403
+    },
+    {
+        "volume_id": 115,
+        "volume_name": "volume-115.nii",
+        "segmentation_name": "segmentation-115.nii",
+        "original_depth": 846,
+        "num_saved_slices": 186,
+        "first_saved_slice_index": 16404,
+        "last_saved_slice_index": 16589
+    },
+    {
+        "volume_id": 116,
+        "volume_name": "volume-116.nii",
+        "segmentation_name": "segmentation-116.nii",
+        "original_depth": 908,
+        "num_saved_slices": 219,
+        "first_saved_slice_index": 16590,
+        "last_saved_slice_index": 16808
+    },
+    {
+        "volume_id": 117,
+        "volume_name": "volume-117.nii",
+        "segmentation_name": "segmentation-117.nii",
+        "original_depth": 836,
+        "num_saved_slices": 260,
+        "first_saved_slice_index": 16809,
+        "last_saved_slice_index": 17068
+    },
+    {
+        "volume_id": 118,
+        "volume_name": "volume-118.nii",
+        "segmentation_name": "segmentation-118.nii",
+        "original_depth": 427,
+        "num_saved_slices": 122,
+        "first_saved_slice_index": 17069,
+        "last_saved_slice_index": 17190
+    },
+    {
+        "volume_id": 119,
+        "volume_name": "volume-119.nii",
+        "segmentation_name": "segmentation-119.nii",
+        "original_depth": 461,
+        "num_saved_slices": 132,
+        "first_saved_slice_index": 17191,
+        "last_saved_slice_index": 17322
+    },
+    {
+        "volume_id": 120,
+        "volume_name": "volume-120.nii",
+        "segmentation_name": "segmentation-120.nii",
+        "original_depth": 424,
+        "num_saved_slices": 120,
+        "first_saved_slice_index": 17323,
+        "last_saved_slice_index": 17442
+    },
+    {
+        "volume_id": 121,
+        "volume_name": "volume-121.nii",
+        "segmentation_name": "segmentation-121.nii",
+        "original_depth": 463,
+        "num_saved_slices": 113,
+        "first_saved_slice_index": 17443,
+        "last_saved_slice_index": 17555
+    },
+    {
+        "volume_id": 122,
+        "volume_name": "volume-122.nii",
+        "segmentation_name": "segmentation-122.nii",
+        "original_depth": 422,
+        "num_saved_slices": 118,
+        "first_saved_slice_index": 17556,
+        "last_saved_slice_index": 17673
+    },
+    {
+        "volume_id": 123,
+        "volume_name": "volume-123.nii",
+        "segmentation_name": "segmentation-123.nii",
+        "original_depth": 432,
+        "num_saved_slices": 115,
+        "first_saved_slice_index": 17674,
+        "last_saved_slice_index": 17788
+    },
+    {
+        "volume_id": 124,
+        "volume_name": "volume-124.nii",
+        "segmentation_name": "segmentation-124.nii",
+        "original_depth": 407,
+        "num_saved_slices": 112,
+        "first_saved_slice_index": 17789,
+        "last_saved_slice_index": 17900
+    },
+    {
+        "volume_id": 125,
+        "volume_name": "volume-125.nii",
+        "segmentation_name": "segmentation-125.nii",
+        "original_depth": 410,
+        "num_saved_slices": 112,
+        "first_saved_slice_index": 17901,
+        "last_saved_slice_index": 18012
+    },
+    {
+        "volume_id": 126,
+        "volume_name": "volume-126.nii",
+        "segmentation_name": "segmentation-126.nii",
+        "original_depth": 401,
+        "num_saved_slices": 113,
+        "first_saved_slice_index": 18013,
+        "last_saved_slice_index": 18125
+    },
+    {
+        "volume_id": 127,
+        "volume_name": "volume-127.nii",
+        "segmentation_name": "segmentation-127.nii",
+        "original_depth": 987,
+        "num_saved_slices": 227,
+        "first_saved_slice_index": 18126,
+        "last_saved_slice_index": 18352
+    },
+    {
+        "volume_id": 128,
+        "volume_name": "volume-128.nii",
+        "segmentation_name": "segmentation-128.nii",
+        "original_depth": 654,
+        "num_saved_slices": 292,
+        "first_saved_slice_index": 18353,
+        "last_saved_slice_index": 18644
+    },
+    {
+        "volume_id": 129,
+        "volume_name": "volume-129.nii",
+        "segmentation_name": "segmentation-129.nii",
+        "original_depth": 338,
+        "num_saved_slices": 277,
+        "first_saved_slice_index": 18645,
+        "last_saved_slice_index": 18921
+    },
+    {
+        "volume_id": 130,
+        "volume_name": "volume-130.nii",
+        "segmentation_name": "segmentation-130.nii",
+        "original_depth": 624,
+        "num_saved_slices": 241,
+        "first_saved_slice_index": 18922,
+        "last_saved_slice_index": 19162
+    }
+]

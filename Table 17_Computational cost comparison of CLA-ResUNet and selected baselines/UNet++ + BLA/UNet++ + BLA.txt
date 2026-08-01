@@ -1,0 +1,883 @@
+import os
+import numpy as np
+import tensorflow as tf
+import time
+import json
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime
+
+# Keras imports
+from tensorflow.keras import layers
+from tensorflow.keras.models import Model
+from tensorflow.keras import callbacks
+
+from sklearn.model_selection import train_test_split
+from google.colab import drive
+
+from skimage import measure
+from scipy.spatial.distance import cdist
+from scipy.stats import pearsonr
+from matplotlib.colors import ListedColormap
+from sklearn.metrics import r2_score
+print("GPU Available:", tf.config.list_physical_devices('GPU'))
+print("TensorFlow Version:", tf.__version__)
+
+drive.mount('/content/drive', force_remount=True)
+
+SEED = 42
+os.environ["PYTHONHASHSEED"] = str(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+
+# محدود کردن حافظه GPU
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    try:
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+    except RuntimeError as e:
+        print(e)
+
+# توابع معیارها
+def dice_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    denominator = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f)
+    return tf.where(denominator > 0, (2. * intersection + 1e-5) / (denominator + 1e-5), 0.0)
+
+def iou_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    union = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) - intersection
+    return tf.where(union > 0, (intersection + 1e-5) / (union + 1e-5), 0.0)
+
+def precision_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    true_positives = tf.reduce_sum(y_true_f * y_pred_f)
+    predicted_positives = tf.reduce_sum(y_pred_f)
+    return tf.where(predicted_positives > 0, true_positives / (predicted_positives + 1e-5), 0.0)
+
+def recall_per_class(y_true, y_pred, class_id):
+    y_true_f = tf.cast(y_true == class_id, tf.float32)
+    y_pred_f = tf.cast(tf.argmax(y_pred, axis=-1) == class_id, tf.float32)
+    true_positives = tf.reduce_sum(y_true_f * y_pred_f)
+    actual_positives = tf.reduce_sum(y_true_f)
+    return tf.where(actual_positives > 0, true_positives / (actual_positives + 1e-5), 0.0)
+
+def dice_background(y_true, y_pred):
+    return dice_per_class(y_true, y_pred, 0)
+
+def dice_liver(y_true, y_pred):
+    return dice_per_class(y_true, y_pred, 1)
+
+def dice_tumor(y_true, y_pred):
+    return dice_per_class(y_true, y_pred, 2)
+
+def iou_liver(y_true, y_pred):
+    return iou_per_class(y_true, y_pred, 1)
+
+def iou_tumor(y_true, y_pred):
+    return iou_per_class(y_true, y_pred, 2)
+
+def precision_liver(y_true, y_pred):
+    return precision_per_class(y_true, y_pred, 1)
+
+def precision_tumor(y_true, y_pred):
+    return precision_per_class(y_true, y_pred, 2)
+
+def recall_liver(y_true, y_pred):
+    return recall_per_class(y_true, y_pred, 1)
+
+def recall_tumor(y_true, y_pred):
+    return recall_per_class(y_true, y_pred, 2)
+
+def dice_avg(y_true, y_pred):
+    dice_l = dice_liver(y_true, y_pred)
+    dice_t = dice_tumor(y_true, y_pred)
+    return (dice_l + dice_t) / 2
+
+def tversky_loss(y_true, y_pred, alpha=0.6, beta=0.4):
+    y_true_f = tf.one_hot(tf.cast(y_true, tf.int32), depth=3)
+    y_pred_f = tf.nn.softmax(y_pred, axis=-1)
+    numerator = tf.reduce_sum(y_true_f * y_pred_f, axis=[1, 2])
+    denominator = numerator + alpha * tf.reduce_sum(y_true_f * (1 - y_pred_f), axis=[1, 2]) + \
+                  beta * tf.reduce_sum((1 - y_true_f) * y_pred_f, axis=[1, 2])
+    tversky = numerator / (denominator + 1e-5)
+    return tf.where(denominator > 0, 1 - tf.reduce_mean(tversky), 0.0)
+
+def focal_loss(gamma=2., alpha=0.25):
+    def focal_loss_fixed(y_true, y_pred):
+        y_true = tf.one_hot(tf.cast(y_true, tf.int32), depth=3)
+        y_pred = tf.clip_by_value(y_pred, 1e-7, 1. - 1e-7)
+        ce = -y_true * tf.math.log(y_pred)
+        weight = y_true * tf.pow(1 - y_pred, gamma)
+        fl = alpha * weight * ce
+        return tf.reduce_mean(fl)
+    return focal_loss_fixed
+
+# Bayesian Learning Automata (BLA)
+class BayesianLearningAutomata:
+    def __init__(self, num_classes=3, initial_weights=None, alpha=0.18, beta=0.09, liver_priority=1.5, tumor_priority=4.0):
+        self.num_classes = num_classes
+        self.alpha = alpha
+        self.beta = beta
+        self.liver_priority = liver_priority
+        self.tumor_priority = tumor_priority
+        self.dirichlet_params = np.array(initial_weights) if initial_weights is not None else np.ones(num_classes) * 7.0
+        self.weights = self.dirichlet_params / np.sum(self.dirichlet_params)
+        self.probabilities = self.weights.copy()
+        self.history = []
+        self.best_weights = self.weights.copy()
+        self.best_metric = 0.0
+        self.moving_avg_dice_liver = []
+        self.moving_avg_dice_tumor = []
+        self.window_size = 5
+        self.tumor_boost = 1.0
+        self.success_counts = np.zeros(num_classes)
+        self.failure_counts = np.zeros(num_classes)
+
+    def select_action(self):
+        if len(self.moving_avg_dice_tumor) >= self.window_size and np.mean(self.moving_avg_dice_tumor[-self.window_size:]) < 0.80:
+            return 2
+        elif len(self.moving_avg_dice_liver) >= self.window_size and np.mean(self.moving_avg_dice_liver[-self.window_size:]) < 0.90:
+            return 1
+        else:
+            sampled_probs = np.random.dirichlet(self.dirichlet_params)
+            adjusted_probs = sampled_probs.copy()
+            adjusted_probs[1] *= self.liver_priority
+            adjusted_probs[2] *= self.tumor_priority * self.tumor_boost
+            adjusted_probs /= np.sum(adjusted_probs)
+            return np.random.choice(self.num_classes, p=adjusted_probs)
+
+    def update_weights(self, selected_class, reward, metric, liver_metric, tumor_metric, precision_liver, epoch):
+        self.moving_avg_dice_liver.append(liver_metric)
+        self.moving_avg_dice_tumor.append(tumor_metric)
+
+        if len(self.moving_avg_dice_tumor) >= self.window_size:
+            avg_dice_tumor = np.mean(self.moving_avg_dice_tumor[-self.window_size:])
+            if avg_dice_tumor < 0.80:
+                self.tumor_boost = min(self.tumor_boost + 0.1, 3.0)
+            else:
+                self.tumor_boost = max(self.tumor_boost - 0.05, 1.0)
+
+        combined_metric = 0.3 * liver_metric + 0.5 * tumor_metric + 0.2 * precision_liver
+
+        if combined_metric > self.best_metric:
+            self.best_metric = combined_metric
+            self.best_weights = self.weights.copy()
+            print(f"بهترین وزن‌ها به‌روزرسانی شدند: پس‌زمینه={self.best_weights[0]:.1f}, "
+                  f"کبد={self.best_weights[1]:.1f}, تومور={self.best_weights[2]:.1f}, "
+                  f"ضریب تقویت تومور={self.tumor_boost:.2f}")
+
+        alpha = self.alpha * np.exp(-epoch / 50) + 0.01
+        beta = self.beta * np.exp(-epoch / 50) + 0.005
+
+        if reward > 0:
+            self.success_counts[selected_class] += alpha * (10 - self.dirichlet_params[selected_class])
+            if selected_class == 2 and tumor_metric < 0.80:
+                self.success_counts[2] += alpha * self.tumor_boost * 1.5
+            if selected_class == 1 and liver_metric > 0.90:
+                self.failure_counts[0] += alpha * 0.3
+        else:
+            self.failure_counts[selected_class] += beta * self.dirichlet_params[selected_class]
+            if selected_class != 2 and tumor_metric < 0.80:
+                self.success_counts[2] += alpha * self.tumor_boost * 0.5
+            if selected_class != 1 and liver_metric < 0.90:
+                self.success_counts[1] += alpha * 0.3
+
+        self.dirichlet_params = np.clip(self.dirichlet_params + self.success_counts - self.failure_counts, 1.0, 10.0)
+        self.weights = self.dirichlet_params / np.sum(self.dirichlet_params)
+        self.probabilities = self.weights.copy()
+
+        self.history.append({
+            'weights': self.weights.tolist(),
+            'dirichlet_params': self.dirichlet_params.tolist(),
+            'success_counts': self.success_counts.tolist(),
+            'failure_counts': self.failure_counts.tolist(),
+            'metric': float(metric),
+            'liver_metric': float(liver_metric),
+            'tumor_metric': float(tumor_metric),
+            'precision_liver': float(precision_liver),
+            'tumor_boost': float(self.tumor_boost)
+        })
+
+    def get_weights(self):
+        return self.weights
+
+    def get_best_weights(self):
+        return self.best_weights
+
+    def save_history(self, filepath):
+        with open(filepath, 'w') as f:
+            json.dump(self.history, f, indent=4)
+
+# تعریف تابع loss با BLA
+def combined_loss_with_bla(bla):
+    def loss(y_true, y_pred):
+        current_weights = bla.get_weights()
+        adjusted_weights = np.clip(current_weights, 1.0, 8.0)
+        adjusted_weights[2] *= bla.tumor_boost
+        ce_loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
+        weights = tf.cast(tf.gather(adjusted_weights, tf.cast(y_true, tf.int32)), tf.float32)
+        weighted_ce = tf.reduce_mean(ce_loss * weights)
+        focal = focal_loss(gamma=2., alpha=0.25)(y_true, y_pred)
+        tversky = tversky_loss(y_true, y_pred, alpha=0.6, beta=0.4)
+        return 0.25 * weighted_ce + 0.25 * focal + 0.5 * tversky
+    return loss
+
+# دیتاژنراتور بدون Data Augmentation
+def load_and_preprocess(vol_path, seg_path):
+    try:
+        vol_data = np.load(vol_path)
+        seg_data = np.load(seg_path)
+        if vol_data.size == 0 or seg_data.size == 0:
+            raise ValueError("فایل خالی است")
+        vol_resized = tf.image.resize(vol_data[..., np.newaxis], (128, 128)).numpy()
+        seg_resized = tf.image.resize(seg_data[..., np.newaxis], (128, 128), method='nearest').numpy()
+        vol_normalized = (vol_resized - vol_resized.min()) / (vol_resized.max() - vol_resized.min() + 1e-6)
+        seg_resized = np.round(seg_resized).astype(np.uint8)
+        seg_resized = np.clip(seg_resized[..., 0], 0, 2)
+        return vol_normalized, seg_resized
+    except Exception as e:
+        print(f"خطا در بارگذاری {vol_path}, {seg_path}: {e}")
+        return np.zeros((128, 128, 1)), np.zeros((128, 128))
+
+def data_generator(pairs, batch_size=8):
+    while True:
+        np.random.shuffle(pairs)
+        for i in range(0, len(pairs), batch_size):
+            batch_pairs = pairs[i:i + batch_size]
+            vol_batch = []
+            seg_batch = []
+            for vol_path, seg_path in batch_pairs:
+                vol_norm, seg = load_and_preprocess(vol_path, seg_path)
+                if np.any(seg > 2) or np.any(seg < 0):
+                    print(f"برچسب نامعتبر در {seg_path}")
+                    continue
+                vol_batch.append(vol_norm)
+                seg_batch.append(seg)
+            if len(vol_batch) == 0:
+                continue
+            yield (np.array(vol_batch), np.array(seg_batch))
+
+# معماری U-Net++
+def conv_block(x, filters, kernel_size=3):
+    x = layers.Conv2D(filters, kernel_size, padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    x = layers.Conv2D(filters, kernel_size, padding='same')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation('relu')(x)
+    return x
+
+def unet_plus_plus(input_shape=(128, 128, 1), num_classes=3):
+    inputs = layers.Input(input_shape)
+    x_0_0 = conv_block(inputs, 64)
+    p1 = layers.MaxPooling2D((2, 2))(x_0_0)
+    x_1_0 = conv_block(p1, 128)
+    p2 = layers.MaxPooling2D((2, 2))(x_1_0)
+    x_2_0 = conv_block(p2, 256)
+    p3 = layers.MaxPooling2D((2, 2))(x_2_0)
+    x_3_0 = conv_block(p3, 512)
+    p4 = layers.MaxPooling2D((2, 2))(x_3_0)
+    x_4_0 = conv_block(p4, 1024)
+    u3_0 = layers.Conv2DTranspose(512, (2, 2), strides=(2, 2), padding='same')(x_4_0)
+    x_3_1 = layers.Concatenate()([u3_0, x_3_0])
+    x_3_1 = conv_block(x_3_1, 512)
+    u2_0 = layers.Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(x_3_0)
+    x_2_1 = layers.Concatenate()([u2_0, x_2_0])
+    x_2_1 = conv_block(x_2_1, 256)
+    u2_1 = layers.Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(x_3_1)
+    x_2_2 = layers.Concatenate()([u2_1, x_2_0, x_2_1])
+    x_2_2 = conv_block(x_2_2, 256)
+    u1_0 = layers.Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(x_2_0)
+    x_1_1 = layers.Concatenate()([u1_0, x_1_0])
+    x_1_1 = conv_block(x_1_1, 128)
+    u1_1 = layers.Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(x_2_1)
+    x_1_2 = layers.Concatenate()([u1_1, x_1_0, x_1_1])
+    x_1_2 = conv_block(x_1_2, 128)
+    u1_2 = layers.Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(x_2_2)
+    x_1_3 = layers.Concatenate()([u1_2, x_1_0, x_1_1, x_1_2])
+    x_1_3 = conv_block(x_1_3, 128)
+    u0_0 = layers.Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(x_1_0)
+    x_0_1 = layers.Concatenate()([u0_0, x_0_0])
+    x_0_1 = conv_block(x_0_1, 64)
+    u0_1 = layers.Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(x_1_1)
+    x_0_2 = layers.Concatenate()([u0_1, x_0_0, x_0_1])
+    x_0_2 = conv_block(x_0_2, 64)
+    u0_2 = layers.Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(x_1_2)
+    x_0_3 = layers.Concatenate()([u0_2, x_0_0, x_0_1, x_0_2])
+    x_0_3 = conv_block(x_0_3, 64)
+    u0_3 = layers.Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(x_1_3)
+    x_0_4 = layers.Concatenate()([u0_3, x_0_0, x_0_1, x_0_2, x_0_3])
+    x_0_4 = conv_block(x_0_4, 64)
+    outputs = layers.Conv2D(num_classes, 1, activation='softmax')(x_0_4)
+    model = Model(inputs, outputs)
+    return Model(inputs, outputs)
+
+
+# بارگذاری داده‌ها
+base_path = "/content/drive/MyDrive/LITS/Preprocessed"
+seg_files = sorted([f for f in os.listdir(base_path) if f.startswith('seg_slice_')])
+vol_files = sorted([f for f in os.listdir(base_path) if f.startswith('vol_slice_')])
+tumor_pairs = []
+other_pairs = []
+for v, s in zip(vol_files, seg_files):
+    try:
+        seg_data = np.load(os.path.join(base_path, s))
+        if seg_data.size == 0:
+            continue
+        if np.any(seg_data == 2):
+            tumor_pairs.append((os.path.join(base_path, v), os.path.join(base_path, s)))
+        else:
+            other_pairs.append((os.path.join(base_path, v), os.path.join(base_path, s)))
+    except:
+        print(f"خطا در بررسی {s}")
+        continue
+
+tumor_pairs = tumor_pairs[:500]
+other_pairs = other_pairs[:500]
+pairs = tumor_pairs + other_pairs
+train_pairs, val_pairs = train_test_split(pairs, test_size=0.2, random_state=42)
+train_gen = data_generator(train_pairs, batch_size=8)
+val_gen = data_generator(val_pairs, batch_size=8)
+print(f"تعداد train: {len(train_pairs)}، تعداد validation: {len(val_pairs)}، اسلایس‌های تومور: {len(tumor_pairs)}")
+
+# انتخاب ۵ نمونه ثابت با تومور
+np.random.seed(42)
+if len(tumor_pairs) < 5:
+    raise ValueError(f"تعداد نمونه‌های حاوی تومور ({len(tumor_pairs)}) کمتر از ۵ است.")
+selected_pairs = np.random.choice(len(tumor_pairs), 5, replace=False)
+selected_inputs = []
+selected_true_labels = []
+for idx in selected_pairs:
+    vol_path, seg_path = tumor_pairs[idx]
+    vol_norm, seg = load_and_preprocess(vol_path, seg_path)
+    selected_inputs.append(vol_norm)
+    selected_true_labels.append(seg)
+selected_inputs = np.array(selected_inputs)
+selected_true_labels = np.array(selected_true_labels)
+
+# بررسی توزیع برچسب‌ها
+for i in range(5):
+    print(f"نمونه {i+1}: پیکسل‌های تومور واقعی = {np.sum(selected_true_labels[i] == 2)}, "
+          f"پیکسل‌های کبد واقعی = {np.sum(selected_true_labels[i] == 1)}")
+
+# ====================== Approximate GFLOPs Calculation ======================
+
+print("\nCalculating approximate GFLOPs...")
+model = unet_plus_plus(input_shape=(128, 128, 1), num_classes=3)
+gflops = (model.count_params() / 1_000_000) * 1.06
+print(f"Estimated GFLOPs : {gflops:.2f} GFLOPs")
+# ایجاد و کامپایل مدل
+bla = BayesianLearningAutomata(
+    num_classes=3,
+    initial_weights=[7.0, 7.0, 7.0],
+    alpha=0.18,
+    beta=0.09,
+    liver_priority=1.5,
+    tumor_priority=4.0
+)
+
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=4.2e-5),
+    loss=combined_loss_with_bla(bla),
+    metrics=['accuracy', dice_liver, dice_tumor, iou_liver, iou_tumor,
+             precision_liver, precision_tumor, recall_liver, recall_tumor, dice_avg]
+)
+
+# Callback‌ها
+class BayesianLearningAutomataCallback(callbacks.Callback):
+    def __init__(self, bla):
+        super().__init__()
+        self.bla = bla
+        self.best_val_combined = -np.inf
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.epoch_start = time.time()
+
+    def on_epoch_end(self, epoch, logs=None):
+        print(f"Epoch {epoch+1} زمان: {(time.time() - self.epoch_start):.2f} ثانیه")
+        val_dice_liver = logs.get('val_dice_liver', 0.0)
+        val_dice_tumor = logs.get('val_dice_tumor', 0.0)
+        val_precision_liver = logs.get('val_precision_liver', 0.0)
+        val_dice_avg = logs.get('val_dice_avg', 0.0)
+        
+        combined_metric = 0.3 * val_dice_liver + 0.5 * val_dice_tumor + 0.2 * val_precision_liver
+        moving_avg_dice_liver = np.mean(self.bla.moving_avg_dice_liver[-self.bla.window_size:]) if len(self.bla.moving_avg_dice_liver) >= self.bla.window_size else 0.90
+        moving_avg_dice_tumor = np.mean(self.bla.moving_avg_dice_tumor[-self.bla.window_size:]) if len(self.bla.moving_avg_dice_tumor) >= self.bla.window_size else 0.80
+        improvement = combined_metric - self.best_val_combined
+        reward = min(max(improvement * 10, -1.0), 1.0) if val_dice_liver > moving_avg_dice_liver * 0.95 and val_dice_tumor > moving_avg_dice_tumor * 0.95 else -0.5
+        
+        selected_class = self.bla.select_action()
+        self.bla.update_weights(selected_class, reward, val_dice_avg, val_dice_liver, val_dice_tumor, val_precision_liver, epoch)
+        
+        weights = self.bla.get_weights()
+        print(f"وزن‌ها: پس‌زمینه={weights[0]:.2f}, کبد={weights[1]:.2f}, تومور={weights[2]:.2f}, "
+              f"ضریب تقویت تومور={self.bla.tumor_boost:.2f}")
+        print(f"معیارها: Dice کبد={val_dice_liver:.4f}, Dice تومور={val_dice_tumor:.4f}, "
+              f"Precision کبد={val_precision_liver:.4f}, Dice متوسط={val_dice_avg:.4f}")
+        
+        if combined_metric > self.best_val_combined:
+            self.best_val_combined = combined_metric
+
+early_stopping = callbacks.EarlyStopping(monitor='val_dice_tumor', patience=20, min_delta=0.001, restore_best_weights=True, mode='max')
+reduce_lr = callbacks.ReduceLROnPlateau(monitor='val_dice_tumor', factor=0.5, patience=5, min_lr=1e-6, mode='max')
+checkpoint_best = callbacks.ModelCheckpoint('/content/drive/MyDrive/LITS/unet_plus_plus_dynamic_bla_best.keras',
+                                           monitor='val_dice_tumor', save_best_only=True, mode='max')
+history_saver = callbacks.CSVLogger('/content/drive/MyDrive/LITS/history_dynamic_bla_unet_plus_plus.csv', append=True)
+
+# آموزش
+train_start_time = time.time()
+print("Starting training...")
+try:
+    history = model.fit(
+        train_gen,
+        steps_per_epoch=len(train_pairs) // 8,
+        validation_data=val_gen,
+        validation_steps=len(val_pairs) // 8,
+        epochs=100,
+        callbacks=[early_stopping, reduce_lr, checkpoint_best, history_saver, BayesianLearningAutomataCallback(bla)]
+    )
+    total_training_time_minutes = (time.time() - train_start_time) / 60
+    print(f"Training completed in {total_training_time_minutes:.1f} minutes.")
+except Exception as e:
+    print(f"خطا در آموزش: {e}")
+
+print(f"زمان کل آموزش: {(time.time() - train_start_time) / 60:.2f} دقیقه")
+
+# ذخیره تاریخچه BLA
+try:
+    bla.save_history('/content/drive/MyDrive/LITS/bla_history_dynamic_bla_unet_plus_plus.json')
+    print("تاریخچه Bayesian Learning Automata ذخیره شد")
+except Exception as e:
+    print(f"خطا در ذخیره تاریخچه BLA: {e}")
+
+# پس‌پردازش
+def post_process_predictions(pred_probs, tumor_threshold=0.35, liver_min_size=30, tumor_min_size=3):
+    pred_labels = np.argmax(pred_probs, axis=-1).astype(np.uint8)
+    tumor_probs = pred_probs[..., 2]
+    tumor_pixels_before = np.sum(pred_labels == 2)
+    pred_labels[(pred_labels == 2) & (tumor_probs < tumor_threshold)] = 0
+    tumor_pixels_after_threshold = np.sum(pred_labels == 2)
+    num_small_liver = num_small_tumor = 0
+    for i in range(pred_labels.shape[0]):
+        liver_mask = (pred_labels[i] == 1).astype(np.uint8)
+        labeled_liver, num_features = measure.label(liver_mask, return_num=True)
+        for label in range(1, num_features + 1):
+            region_size = np.sum(labeled_liver == label)
+            if region_size < liver_min_size:
+                pred_labels[i][labeled_liver == label] = 0
+                num_small_liver += 1
+        tumor_mask = (pred_labels[i] == 2).astype(np.uint8)
+        labeled_tumor, num_features = measure.label(tumor_mask, return_num=True)
+        for label in range(1, num_features + 1):
+            region_size = np.sum(labeled_tumor == label)
+            if region_size < tumor_min_size:
+                pred_labels[i][labeled_tumor == label] = 0
+                num_small_tumor += 1
+    print(f"تعداد پیکسل‌های تومور قبل از آستانه: {tumor_pixels_before}")
+    print(f"تعداد پیکسل‌های تومور بعد از آستانه: {tumor_pixels_after_threshold}")
+    print(f"تعداد نواحی کوچک حذف‌شده (کبد): {num_small_liver}")
+    print(f"تعداد نواحی کوچک حذف‌شده (تومور): {num_small_tumor}")
+    return pred_labels
+
+# محاسبه معیارها
+def calculate_metrics(model, val_gen, num_samples, selected_inputs, selected_true_labels):
+    liver_dice_sum = tumor_dice_sum = liver_iou_sum = tumor_iou_sum = 0
+    liver_precision_sum = tumor_precision_sum = liver_recall_sum = tumor_recall_sum = 0
+    liver_voe_sum = tumor_voe_sum = liver_rvd_sum = tumor_rvd_sum = 0
+    liver_assd_sum = tumor_assd_sum = liver_msd_sum = tumor_msd_sum = 0
+    liver_count = tumor_count = 0
+    liver_vols_true = []
+    liver_vols_pred = []
+    tumor_vols_true = []
+    tumor_vols_pred = []
+    tumor_samples = []
+    tumor_inputs = []
+    tumor_true_labels = []
+    tumor_pred_labels = []
+
+    def volumetric_overlap_error(y_true, y_pred):
+        intersection = np.sum(y_true * y_pred)
+        union = np.sum(y_true) + np.sum(y_pred) - intersection
+        return 1 - (intersection / union) if union > 0 else 0
+
+    def relative_volume_difference(y_true, y_pred):
+        vol_true = np.sum(y_true)
+        vol_pred = np.sum(y_pred)
+        return abs(vol_pred - vol_true) / (vol_true + 1e-5) if vol_true > 0 else 0
+
+    def average_symmetric_surface_distance(y_true, y_pred):
+        true_border = np.array(np.where(np.abs(y_true - np.roll(y_true, 1, axis=0)) +
+                                       np.abs(y_true - np.roll(y_true, 1, axis=1)))).T
+        pred_border = np.array(np.where(np.abs(y_pred - np.roll(y_pred, 1, axis=0)) +
+                                       np.abs(y_pred - np.roll(y_pred, 1, axis=1)))).T
+        if true_border.size == 0 or pred_border.size == 0:
+            return 0
+        if len(true_border) > 1000:
+            indices = np.random.choice(len(true_border), 1000, replace=False)
+            true_border = true_border[indices]
+        if len(pred_border) > 1000:
+            indices = np.random.choice(len(pred_border), 1000, replace=False)
+            pred_border = pred_border[indices]
+        dist1 = np.mean(np.min(cdist(true_border, pred_border), axis=1))
+        dist2 = np.mean(np.min(cdist(pred_border, true_border), axis=1))
+        return (dist1 + dist2) / 2
+
+    def maximum_surface_distance(y_true, y_pred):
+        true_border = np.array(np.where(np.abs(y_true - np.roll(y_true, 1, axis=0)) +
+                                       np.abs(y_true - np.roll(y_true, 1, axis=1)))).T
+        pred_border = np.array(np.where(np.abs(y_pred - np.roll(y_pred, 1, axis=0)) +
+                                       np.abs(y_pred - np.roll(y_pred, 1, axis=1)))).T
+        if true_border.size == 0 or pred_border.size == 0:
+            return 0
+        if len(true_border) > 1000:
+            indices = np.random.choice(len(true_border), 1000, replace=False)
+            true_border = true_border[indices]
+        if len(pred_border) > 1000:
+            indices = np.random.choice(len(pred_border), 1000, replace=False)
+            pred_border = pred_border[indices]
+        dist1 = np.max(np.min(cdist(true_border, pred_border), axis=1))
+        dist2 = np.max(np.min(cdist(pred_border, true_border), axis=1))
+        return max(dist1, dist2)
+
+    # استفاده از نمونه‌های ثابت برای محاسبه معیارها و نمایش
+    try:
+        predictions = model.predict(selected_inputs, verbose=0)
+        pred_probs = tf.nn.softmax(predictions, axis=-1).numpy()
+        raw_pred_labels = np.argmax(pred_probs, axis=-1).astype(np.uint8)
+        print(f"توزیع پیش‌بینی‌ها (قبل از پس‌پردازش):", np.bincount(raw_pred_labels.flatten(), minlength=3))
+        pred_labels = post_process_predictions(pred_probs)
+        print(f"توزیع پیش‌بینی‌ها (بعد از پس‌پردازش):", np.bincount(pred_labels.flatten(), minlength=3))
+        true_labels = selected_true_labels
+
+        for j in range(len(true_labels)):
+            if np.sum(true_labels[j] == 2) > 0:
+                tumor_samples.append(j)
+                tumor_inputs.append(selected_inputs[j])
+                tumor_true_labels.append(true_labels[j])
+                tumor_pred_labels.append(pred_labels[j])
+            true_liver = (true_labels[j] == 1).astype(float)
+            pred_liver = (pred_labels[j] == 1).astype(float)
+            intersection_liver = np.sum(true_liver * pred_liver)
+            denominator_liver = np.sum(true_liver) + np.sum(pred_liver)
+            union_liver = np.sum(true_liver) + np.sum(pred_liver) - intersection_liver
+            if denominator_liver > 0:
+                liver_dice = (2. * intersection_liver + 1e-5) / (denominator_liver + 1e-5)
+                liver_iou = (intersection_liver + 1e-5) / (union_liver + 1e-5)
+                liver_precision = np.sum(true_liver * pred_liver) / (np.sum(pred_liver) + 1e-5)
+                liver_recall = np.sum(true_liver * pred_liver) / (np.sum(true_liver) + 1e-5)
+                liver_voe = volumetric_overlap_error(true_liver, pred_liver)
+                liver_rvd = relative_volume_difference(true_liver, pred_liver)
+                liver_assd = average_symmetric_surface_distance(true_liver, pred_liver)
+                liver_msd = maximum_surface_distance(true_liver, pred_liver)
+                liver_dice_sum += liver_dice
+                liver_iou_sum += liver_iou
+                liver_precision_sum += liver_precision
+                liver_recall_sum += liver_recall
+                liver_voe_sum += liver_voe
+                liver_rvd_sum += liver_rvd
+                liver_assd_sum += liver_assd
+                liver_msd_sum += liver_msd
+                liver_vols_true.append(np.sum(true_liver))
+                liver_vols_pred.append(np.sum(pred_liver))
+                liver_count += 1
+            true_tumor = (true_labels[j] == 2).astype(float)
+            pred_tumor = (pred_labels[j] == 2).astype(float)
+            intersection_tumor = np.sum(true_tumor * pred_tumor)
+            denominator_tumor = np.sum(true_tumor) + np.sum(pred_tumor)
+            union_tumor = np.sum(true_tumor) + np.sum(pred_tumor) - intersection_tumor
+            if denominator_tumor > 0:
+                tumor_dice = (2. * intersection_tumor + 1e-5) / (denominator_tumor + 1e-5)
+                tumor_iou = (intersection_tumor + 1e-5) / (union_tumor + 1e-5)
+                tumor_precision = np.sum(true_tumor * pred_tumor) / (np.sum(pred_tumor) + 1e-5)
+                tumor_recall = np.sum(true_tumor * pred_tumor) / (np.sum(true_tumor) + 1e-5)
+                tumor_voe = volumetric_overlap_error(true_tumor, pred_tumor)
+                tumor_rvd = relative_volume_difference(true_tumor, pred_tumor)
+                tumor_assd = average_symmetric_surface_distance(true_tumor, pred_tumor)
+                tumor_msd = maximum_surface_distance(true_tumor, pred_tumor)
+                tumor_dice_sum += tumor_dice
+                tumor_iou_sum += tumor_iou
+                tumor_precision_sum += tumor_precision
+                tumor_recall_sum += tumor_recall
+                tumor_voe_sum += tumor_voe
+                tumor_rvd_sum += tumor_rvd
+                tumor_assd_sum += tumor_assd
+                tumor_msd_sum += tumor_msd
+                tumor_vols_true.append(np.sum(true_tumor))
+                tumor_vols_pred.append(np.sum(pred_tumor))
+                tumor_count += 1
+
+    except Exception as e:
+        print(f"خطا در پردازش نمونه‌ها: {e}")
+
+    mean_dice_liver = liver_dice_sum / liver_count if liver_count > 0 else 0
+    mean_dice_tumor = tumor_dice_sum / tumor_count if tumor_count > 0 else 0
+    mean_iou_liver = liver_iou_sum / liver_count if liver_count > 0 else 0
+    mean_iou_tumor = tumor_iou_sum / tumor_count if tumor_count > 0 else 0
+    mean_precision_liver = liver_precision_sum / liver_count if liver_count > 0 else 0
+    mean_precision_tumor = tumor_precision_sum / tumor_count if tumor_count > 0 else 0
+    mean_recall_liver = liver_recall_sum / liver_count if liver_count > 0 else 0
+    mean_recall_tumor = tumor_recall_sum / tumor_count if tumor_count > 0 else 0
+    mean_voe_liver = liver_voe_sum / liver_count if liver_count > 0 else 0
+    mean_voe_tumor = tumor_voe_sum / tumor_count if tumor_count > 0 else 0
+    mean_rvd_liver = liver_rvd_sum / liver_count if liver_count > 0 else 0
+    mean_rvd_tumor = tumor_rvd_sum / tumor_count if tumor_count > 0 else 0
+    mean_assd_liver = liver_assd_sum / liver_count if liver_count > 0 else 0
+    mean_assd_tumor = tumor_assd_sum / tumor_count if tumor_count > 0 else 0
+    mean_msd_liver = liver_msd_sum / liver_count if liver_count > 0 else 0
+    mean_msd_tumor = tumor_msd_sum / tumor_count if tumor_count > 0 else 0
+    icc_liver = r2_score(liver_vols_true, liver_vols_pred) if liver_count > 0 and len(liver_vols_true) > 1 and np.var(liver_vols_true) > 0 else 0
+    icc_tumor = r2_score(tumor_vols_true, tumor_vols_pred) if tumor_count > 0 and len(tumor_vols_true) > 1 and np.var(tumor_vols_true) > 0 else 0
+    print(f"تعداد نمونه‌های Liver: {liver_count}, Tumor: {tumor_count}")
+    print(f"تعداد نمونه‌های حاوی تومور جمع‌آوری‌شده: {len(tumor_samples)}")
+    return (mean_dice_liver, mean_dice_tumor, mean_iou_liver, mean_iou_tumor,
+            mean_precision_liver, mean_precision_tumor, mean_recall_liver, mean_recall_tumor,
+            mean_voe_liver, mean_voe_tumor, mean_rvd_liver, mean_rvd_tumor,
+            mean_assd_liver, mean_assd_tumor, mean_msd_liver, mean_msd_tumor,
+            icc_liver, icc_tumor,
+            (np.array(tumor_inputs), np.array(tumor_true_labels)), np.array(tumor_pred_labels))
+
+# محاسبه معیارها
+try:
+    num_samples = len(val_pairs) // 8
+    metrics = calculate_metrics(model, val_gen, num_samples, selected_inputs, selected_true_labels)
+    print(f"میانگین DSC کبد: {metrics[0]:.4f}")
+    print(f"میانگین DSC تومور: {metrics[1]:.4f}")
+    print(f"میانگین IoU کبد: {metrics[2]:.4f}")
+    print(f"میانگین IoU تومور: {metrics[3]:.4f}")
+    print(f"میانگین Precision کبد: {metrics[4]:.4f}")
+    print(f"میانگین Precision تومور: {metrics[5]:.4f}")
+    print(f"میانگین Recall کبد: {metrics[6]:.4f}")
+    print(f"میانگین Recall تومور: {metrics[7]:.4f}")
+    print(f"میانگین VOE کبد: {metrics[8]:.4f}")
+    print(f"میانگین VOE تومور: {metrics[9]:.4f}")
+    print(f"میانگین RVD کبد: {metrics[10]:.4f}")
+    print(f"میانگین RVD تومور: {metrics[11]:.4f}")
+    print(f"میانگین ASSD کبد: {metrics[12]:.4f}")
+    print(f"میانگین ASSD تومور: {metrics[13]:.4f}")
+    print(f"میانگین MSD کبد: {metrics[14]:.4f}")
+    print(f"میانگین MSD تومور: {metrics[15]:.4f}")
+    print(f"ICC کبد: {metrics[16]:.4f}")
+    print(f"ICC تومور: {metrics[17]:.4f}")
+except Exception as e:
+    print(f"خطا در محاسبه معیارها: {e}")
+
+# نمایش نمونه
+try:
+    if metrics[18] is not None and metrics[19] is not None:
+        input_images, true_labels = metrics[18]
+        pred_labels = metrics[19]
+        
+        # تعریف نقشه رنگی سفارشی
+        colors = ['#FFFFFF', '#0000FF', '#FF0000']  # سفید (زمینه)، آبی (کبد)، قرمز (تومور)
+        cmap_custom = ListedColormap(colors)
+        
+        # بررسی برچسب‌ها برای اطمینان از صحت
+        print("توزیع برچسب‌های واقعی (کل نمونه‌ها):", np.bincount(true_labels.flatten(), minlength=3))
+        print("توزیع برچسب‌های پیش‌بینی‌شده (کل نمونه‌ها):", np.bincount(pred_labels.flatten(), minlength=3))
+        
+        if len(true_labels) < 5:
+            raise ValueError(f"تعداد نمونه‌های حاوی تومور ({len(true_labels)}) کمتر از ۵ است. لطفاً داده‌های بیشتری با تومور فراهم کنید.")
+        
+        # ایجاد شکل ۵x۵
+        fig, axes = plt.subplots(5, 5, figsize=(15, 15), constrained_layout=True)
+        fig.suptitle("Unet++ - BLA", fontsize=16)
+        
+        # عناوین ستون‌ها
+        titles = ["Input", "Ground Truth Liver", "Predicted Liver", "Ground Truth Tumor", "Predicted Tumor"]
+        for col, title in enumerate(titles):
+            axes[0, col].set_title(title, fontsize=10)
+        
+        # نمایش ۵ نمونه
+        for row, idx in enumerate(range(5)):
+            print(f"نمونه {idx}: پیکسل‌های تومور واقعی = {np.sum(true_labels[idx] == 2)}, "
+                  f"پیکسل‌های کبد واقعی = {np.sum(true_labels[idx] == 1)}, "
+                  f"پیکسل‌های تومور پیش‌بینی‌شده = {np.sum(pred_labels[idx] == 2)}, "
+                  f"پیکسل‌های کبد پیش‌بینی‌شده = {np.sum(pred_labels[idx] == 1)}")
+            
+            # ستون ۱: عکس اصلی
+            axes[row, 0].imshow(input_images[idx, :, :, 0], cmap='gray')
+            axes[row, 0].axis('off')
+            
+            # ستون ۲: ماسک کبد واقعی (آبی)
+            liver_true = (true_labels[idx] == 1).astype(np.uint8)
+            axes[row, 1].imshow(liver_true, cmap=cmap_custom, vmin=0, vmax=2)
+            axes[row, 1].axis('off')
+            
+            # ستون ۳: پیش‌بینی ماسک کبد (آبی)
+            liver_pred = (pred_labels[idx] == 1).astype(np.uint8)
+            axes[row, 2].imshow(liver_pred, cmap=cmap_custom, vmin=0, vmax=2)
+            axes[row, 2].axis('off')
+            
+            # ستون ۴: ماسک تومور واقعی (قرمز)
+            tumor_true = (true_labels[idx] == 2).astype(np.uint8) * 2
+            axes[row, 3].imshow(tumor_true, cmap=cmap_custom, vmin=0, vmax=2)
+            axes[row, 3].axis('off')
+            
+            # ستون ۵: پیش‌بینی ماسک تومور (قرمز)
+            tumor_pred = (pred_labels[idx] == 2).astype(np.uint8) * 2
+            axes[row, 4].imshow(tumor_pred, cmap=cmap_custom, vmin=0, vmax=2)
+            axes[row, 4].axis('off')
+        
+        # ذخیره تصویر با رزولوشن بالا
+        plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_bla_unet_plus_plus.png', dpi=300, bbox_inches='tight')
+        plt.show()
+    else:
+        print("داده‌های اعتبارسنجی یا پیش‌بینی‌ها در دسترس نیستند.")
+except ValueError as ve:
+    print(f"خطا: {ve}")
+except NameError:
+    print("نمونه‌ها قابل نمایش نیستند، زیرا معیارها محاسبه نشده‌اند.")
+except Exception as e:
+    print(f"خطا در نمایش: {e}")
+
+# ====================== COMPUTATIONAL COST ANALYSIS WITH ACCURATE FLOPs ======================
+print("\n" + "="*60)
+print("=== COMPUTATIONAL COST ANALYSIS ===")
+print("="*60)
+
+model_name = "UNet++ + BLA"
+
+
+print(f"Model: {model_name}")
+
+total_params = model.count_params() / 1_000_000
+
+print(f"Total Trainable Parameters : {total_params:.2f} M")
+print(f"Training Time : {total_training_time_minutes:.1f} minutes")
+# ====================== Load Volume Metadata ======================
+#فایل جیسون باید در فولدر LITS باشد
+metadata_path = "/content/drive/MyDrive/LITS/slice_metadata.json"
+
+with open(metadata_path, "r") as f:
+    metadata = json.load(f)
+
+num_slices_per_volume = [m["num_saved_slices"] for m in metadata]
+
+avg_slices_per_volume = np.mean(num_slices_per_volume)
+
+print(f"Average slices per volume : {avg_slices_per_volume:.2f}")
+print(f"Min slices : {np.min(num_slices_per_volume)}")
+print(f"Max slices : {np.max(num_slices_per_volume)}")
+# GPU Memory
+try:
+    mem_info = tf.config.experimental.get_memory_info('GPU:0')
+    peak_gb = mem_info['peak'] / (1024 ** 3)
+    print(f"Peak GPU Memory : {peak_gb:.2f} GB")
+except:
+    peak_gb = None
+
+# 4. Inference Time
+
+# ====================== Inference Time ======================
+
+inference_times = []
+
+# Warm-up (excluded from timing)
+dummy = next(val_gen)[0]
+_ = model.predict(dummy, verbose=0)
+
+# Measure inference time
+num_runs = 30
+
+for _ in range(num_runs):
+
+    batch = next(val_gen)[0]
+
+    start = time.perf_counter()
+
+    _ = model.predict(batch, verbose=0)
+
+    inference_times.append(time.perf_counter() - start)
+
+avg_batch_time = np.mean(inference_times)
+
+batch_size = batch.shape[0]
+
+time_per_slice = avg_batch_time / batch_size
+
+est_volume = time_per_slice * avg_slices_per_volume
+
+print(f"Average Inference Time per Batch : {avg_batch_time*1000:.2f} ms")
+print(f"Average Inference Time per Slice : {time_per_slice*1000:.2f} ms")
+print(f"Average Slices per Volume : {avg_slices_per_volume:.2f}")
+print(f"Inference Time per Volume : {est_volume:.2f} sec")
+# ====================== 5. Accurate FLOPs Calculation ======================
+from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2
+
+@tf.function
+def model_fn(x):
+    return model(x)
+
+concrete_func = model_fn.get_concrete_function(
+    tf.TensorSpec([1, 128, 128, 1], tf.float32)
+)
+
+frozen_func = convert_variables_to_constants_v2(concrete_func)
+
+graph = frozen_func.graph
+
+from tensorflow.python.profiler.model_analyzer import profile
+from tensorflow.python.profiler.option_builder import ProfileOptionBuilder
+
+opts = ProfileOptionBuilder.float_operation()
+
+graph_info = profile(
+    graph=graph,
+    options=opts
+)
+
+total_flops = graph_info.total_float_ops
+gflops = total_flops / 1e9
+
+print(f"Total FLOPs : {total_flops:,}")
+print(f"Approx. GFLOPs : {gflops:.2f}")
+
+# ====================== Parameters ======================
+total_params = model.count_params() / 1_000_000
+
+# ====================== Save Results ======================
+results = pd.DataFrame({
+
+    "Method":[model_name],
+
+    "Training Time (100 epochs)":[round(total_training_time_minutes,2)],
+
+    "Peak GPU Memory (GB)":[round(peak_gb,2)],
+
+    "Inference Time (sec/volume)":[round(est_volume,2)],
+
+    "Parameters (M)":[round(total_params,2)],
+
+    "Approx. FLOPs (GFLOPs)":[round(gflops,2)]
+
+})
+
+save_path = "/content/drive/MyDrive/LITS/computational_cost.csv"
+
+results.to_csv(save_path, index=False)
+
+print(results)
+
+print("Saved to:", save_path)
+
+hours = total_training_time_minutes / 60
+
+print(f"Training Time : {total_training_time_minutes:.1f} min ({hours:.2f} h)")
+# Save model
+# ذخیره مدل و وزن‌ها
+try:
+    model.save('/content/drive/MyDrive/LITS/unet_plus_plus_dynamic_bla_final.keras')
+    print("مدل نهایی ذخیره شد")
+    best_weights = bla.get_best_weights()
+    print(f"بهترین وزن‌ها: پس‌زمینه={best_weights[0]:.1f}, کبد={best_weights[1]:.1f}, تومور={best_weights[2]:.1f}")
+    with open('/content/drive/MyDrive/LITS/best_weights_dynamic_bla_unet_plus_plus.json', 'w') as f:
+        json.dump({'background': float(best_weights[0]), 'liver': float(best_weights[1]), 'tumor': float(best_weights[2]), 'tumor_boost': float(bla.tumor_boost)}, f)
+    print("وزن‌های BLA ذخیره شدند")
+except Exception as e:
+    print(f"خطا در ذخیره مدل یا وزن‌ها: {e}")
