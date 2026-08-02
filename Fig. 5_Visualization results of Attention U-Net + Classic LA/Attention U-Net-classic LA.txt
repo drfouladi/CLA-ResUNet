@@ -657,12 +657,12 @@ try:
             print("نمونه‌ای با ماسک تومور یافت نشد.")
         else:
             # ایجاد شکل 5x5
-            fig, axes = plt.subplots(5, 5, figsize=(15, 15), constrained_layout=True)
-            fig.suptitle("Attention U-Net-classic LA", fontsize=16)
+            fig, axes = plt.subplots(5, 5, figsize=(24, 24), constrained_layout=True)
+            fig.suptitle("Attention U-Net-classic LA", fontsize=30)
             # عناوین ستون‌ها
             titles = ["Input", "Ground Truth Liver", "Predicted Liver", "Ground Truth Tumor", "Predicted Tumor"]
             for col, title in enumerate(titles):
-                axes[0, col].set_title(title, fontsize=10)
+                axes[0, col].set_title(title, fontsize=20)
 
             # نمایش حداکثر 5 نمونه
             for row, sample_idx in enumerate(tumor_samples[:5]):
@@ -696,9 +696,9 @@ try:
                     axes[row, col].axis('off')
 
             # ذخیره تصویر با رزولوشن بالا
-            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.png', dpi=600, bbox_inches='tight')
-            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.pdf', format="pdf", bbox_inches='tight')
-            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.svg', format="svg", bbox_inches='tight')
+            fig.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.png', dpi=600, bbox_inches='tight')
+            fig.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.pdf', format="pdf", bbox_inches='tight')
+            fig.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.svg', format="svg", bbox_inches='tight')
             plt.show()
     else:
         print("داده‌های اعتبارسنجی یا پیش‌بینی‌ها در دسترس نیستند.")
