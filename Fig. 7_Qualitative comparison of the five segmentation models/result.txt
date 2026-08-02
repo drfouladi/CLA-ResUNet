@@ -1,0 +1,39 @@
+TensorFlow Version: 2.20.0
+Mounted at /content/drive
+Small tumor candidates: 1710
+چک کردن: /content/drive/MyDrive/LITS/models/resunet_swin_dynamic_hla_final.keras, وجود دارد؟ True
+چک کردن: /content/drive/MyDrive/LITS/models/attention_unet_dynamic_la_final_fixed.keras, وجود دارد؟ True
+چک کردن: /content/drive/MyDrive/LITS/models/resunet_attention_dynamic_bla_final.keras, وجود دارد؟ True
+چک کردن: /content/drive/MyDrive/LITS/models/unet_plus_plus_dynamic_bla_final.keras, وجود دارد؟ True
+چک کردن: /content/drive/MyDrive/LITS/models/resunet_dynamic_cla_final.keras, وجود دارد؟ True
+خطا در بررسی فایل مدل HLA: Unable to synchronously open file (file signature not found)
+لطفاً مطمئن شوید که مدل جدید در مسیر صحیح ذخیره شده است.
+Small-tumor candidates: 1710
+Loading ResUNet + Swin Transformer Encoder + HLA
+Loading Attention U-Net + Classic LA
+Loading ResUNet + Attention + BLA
+Loading UNet++ + BLA
+Loading The Proposed Method: ResUNet + Continuous LA
+All models loaded successfully.
+WARNING:tensorflow:5 out of the last 5 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x7e3bdf321120> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+نمونه انتخاب‌شده: پیکسل‌های تومور واقعی = 8
+نمونه انتخاب‌شده: پیکسل‌های کبد واقعی = 1228
+محدوده تصویر: [0.0, 0.9999987483024597]
+
+============================================================
+BEST SHOWCASE SLICE FOUND
+============================================================
+Tumor pixels : 8
+Score        : 1176.67
+ResUNet + Swin Transformer Encoder + HLA      Dice=0.0000 Detected=False
+Attention U-Net + Classic LA                  Dice=0.0000 Detected=False
+ResUNet + Attention + BLA                     Dice=0.0000 Detected=False
+UNet++ + BLA                                  Dice=0.0000 Detected=False
+The Proposed Method: ResUNet + Continuous LA  Dice=0.6667 Detected=True
+============================================================
+معیارها: {'ResUNet + Swin Transformer Encoder + HLA': {'Dice_Liver': 0.7180823087692261, 'Dice_Tumor': 1.2499984904934536e-06, 'IoU_Liver': 0.5601626038551331, 'IoU_Tumor': 1.2499984904934536e-06}, 'Attention U-Net + Classic LA': {'Dice_Liver': 0.9597989916801453, 'Dice_Tumor': 1.2499984904934536e-06, 'IoU_Liver': 0.9227052927017212, 'IoU_Tumor': 1.2499984904934536e-06}, 'ResUNet + Attention + BLA': {'Dice_Liver': 0.9556114077568054, 'Dice_Tumor': 1.2499984904934536e-06, 'IoU_Liver': 0.9149959683418274, 'IoU_Tumor': 1.2499984904934536e-06}, 'UNet++ + BLA': {'Dice_Liver': 0.9685586094856262, 'Dice_Tumor': 1.2499984904934536e-06, 'IoU_Liver': 0.9390340447425842, 'IoU_Tumor': 1.2499984904934536e-06}, 'The Proposed Method: ResUNet + Continuous LA': {'Dice_Liver': 0.9585947394371033, 'Dice_Tumor': 0.6666668653488159, 'IoU_Liver': 0.9204819202423096, 'IoU_Tumor': 0.500000536441803}}
+تصویر ترکیبی با موفقیت ذخیره شد.
+
+تصویر به‌صورت PDF ذخیره شد.
+تصویر به‌صورت SVG ذخیره شد.
+<Figure size 640x480 with 0 Axes>

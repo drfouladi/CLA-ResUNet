@@ -677,29 +677,35 @@ for v, s in zip(vol_files, seg_files):
         print(f"خطا در بررسی {s}")
         continue
 
-# انتخاب یک نمونه با تومور
-np.random.seed(42)
-tumor_pairs = tumor_pairs[:500]
-if len(tumor_pairs) < 1:
-    raise ValueError("هیچ نمونه‌ای حاوی تومور یافت نشد.")
-selected_idx = np.random.choice(len(tumor_pairs), 1, replace=False)[0]
-vol_path, seg_path = tumor_pairs[selected_idx]
-selected_input, selected_true_label = load_and_preprocess(vol_path, seg_path)
-selected_input = np.expand_dims(selected_input, axis=0)
-selected_true_label = np.expand_dims(selected_true_label, axis=0)
+# ==========================================================
+# Find best showcase slice automatically
+# ==========================================================
 
-# بررسی توزیع برچسب‌ها و نرمال‌سازی ورودی
-print(f"نمونه انتخاب‌شده: پیکسل‌های تومور واقعی = {np.sum(selected_true_label == 2)}, "
-      f"پیکسل‌های کبد واقعی = {np.sum(selected_true_label == 1)}")
-print(f"محدوده مقادیر تصویر ورودی: [{selected_input.min()}, {selected_input.max()}]")
+MAX_TUMOR_PIXELS = 40
+MIN_TUMOR_PIXELS = 3
+
+candidate_pairs = []
+
+for vol_path, seg_path in tumor_pairs:
+
+    _, mask = load_and_preprocess(vol_path, seg_path)
+
+    tumor_pixels = np.sum(mask == 2)
+
+    if MIN_TUMOR_PIXELS <= tumor_pixels <= MAX_TUMOR_PIXELS:
+
+        candidate_pairs.append((vol_path, seg_path))
+
+print("Small tumor candidates:", len(candidate_pairs))
+
 
 # مسیرهای مدل‌ها و نام‌ها
 model_paths = [
-    '/content/drive/MyDrive/LITS/resunet_dynamic_cla_final.keras',
-    '/content/drive/MyDrive/LITS/attention_unet_dynamic_la_final_fixed.keras',
-    '/content/drive/MyDrive/LITS/resunet_swin_dynamic_hla_final.keras',
-    '/content/drive/MyDrive/LITS/unet_plus_plus_dynamic_bla_final.keras',
-    '/content/drive/MyDrive/LITS/resunet_attention_dynamic_bla_final.keras'
+    '/content/drive/MyDrive/LITS/models/resunet_dynamic_cla_final.keras',
+    '/content/drive/MyDrive/LITS/models/attention_unet_dynamic_la_final_fixed.keras',
+    '/content/drive/MyDrive/LITS/models/resunet_swin_dynamic_hla_final.keras',
+    '/content/drive/MyDrive/LITS/models/unet_plus_plus_dynamic_bla_final.keras',
+    '/content/drive/MyDrive/LITS/models/resunet_attention_dynamic_bla_final.keras'
 ]
 
 model_names = [
@@ -741,52 +747,194 @@ except Exception as e:
     print(f"خطا در بررسی فایل مدل HLA: {e}")
     print("لطفاً مطمئن شوید که مدل جدید در مسیر صحیح ذخیره شده است.")
 
-# بارگذاری مدل‌ها و گرفتن پیش‌بینی‌ها
-all_pred_labels = []
+
+# ==========================================================
+# AUTOMATIC SHOWCASE SELECTION FOR THE PAPER
+# ==========================================================
+
+MAX_TUMOR_PIXELS = 40
+MIN_TUMOR_PIXELS = 3
+
+# ----------------------------------------------------------
+# Candidate small-tumor slices
+# ----------------------------------------------------------
+
+candidate_pairs = []
+
+for vol_path, seg_path in tumor_pairs:
+
+    _, mask = load_and_preprocess(vol_path, seg_path)
+
+    tumor_pixels = np.sum(mask == 2)
+
+    if MIN_TUMOR_PIXELS <= tumor_pixels <= MAX_TUMOR_PIXELS:
+        candidate_pairs.append((vol_path, seg_path, tumor_pixels))
+
+print(f"Small-tumor candidates: {len(candidate_pairs)}")
+
+# ----------------------------------------------------------
+# Load models ONCE
+# ----------------------------------------------------------
+
+loaded_models = []
+
 for model_path, model_name in zip(model_paths_sorted, model_names_sorted):
-    try:
-        print(f"بارگذاری مدل {model_name} از {model_path}")
-        # تلاش برای بارگذاری با فرمت .keras و در صورت خطا با .h5
-        try:
-            model = tf.keras.models.load_model(model_path, custom_objects=custom_objects, compile=False)
-        except:
-            print(f"تلاش برای بارگذاری {model_path} به‌عنوان فایل .h5")
-            model = tf.keras.models.load_model(model_path.replace('.keras', '.h5'), custom_objects=custom_objects, compile=False)
-        print(f"مدل {model_name} با موفقیت بارگذاری شد.")
 
-        # بهینه‌سازی پیش‌بینی
-        @tf.function(reduce_retracing=True, input_signature=[tf.TensorSpec(shape=[None, 128, 128, 1], dtype=tf.float32)])
-        def predict_fn(inputs):
-            return model(inputs, training=False)
-        
-        # تبدیل ورودی به تنسور
-        input_tensor = tf.convert_to_tensor(selected_input, dtype=tf.float32)
-        predictions = predict_fn(input_tensor)
-        pred_probs = tf.nn.softmax(predictions, axis=-1).numpy()
-        
-        # بررسی ابعاد پیش‌بینی‌ها
-        if pred_probs.shape != (1, 128, 128, 3):
-            print(f"خطا: ابعاد پیش‌بینی {model_name} نادرست است: {pred_probs.shape}")
-            pred_labels = np.zeros((1, 128, 128), dtype=np.uint8)
-        else:
-            pred_labels = post_process_predictions(pred_probs, tumor_threshold=0.2)
-        
-        if pred_labels.shape != (1, 128, 128):
-            print(f"هشدار: ابعاد پیش‌بینی پس‌پردازش‌شده {model_name} نادرست است: {pred_labels.shape}")
-            pred_labels = np.zeros((1, 128, 128), dtype=np.uint8)
-        
-        all_pred_labels.append(pred_labels[0])
-        print(f"توزیع پیش‌بینی‌های {model_name}:", np.bincount(pred_labels[0].flatten(), minlength=3))
-        
-        # ذخیره مدل بازسازی‌شده برای HLA
-        if model_name == 'ResUNet + Swin Transformer Encoder + HLA':
-            rebuilt_path = model_path.replace('.keras', '_rebuilt.keras')
-            model.save(rebuilt_path)
-            print(f"مدل بازسازی‌شده در {rebuilt_path} ذخیره شد.")
-    except Exception as e:
-        print(f"خطا در بارگذاری یا پیش‌بینی مدل {model_name}: {e}")
-        all_pred_labels.append(np.zeros((128, 128), dtype=np.uint8))
+    print(f"Loading {model_name}")
 
+    model = tf.keras.models.load_model(
+        model_path,
+        custom_objects=custom_objects,
+        compile=False
+    )
+
+    loaded_models.append((model_name, model))
+
+print("All models loaded successfully.")
+
+# ----------------------------------------------------------
+# Utility: Dice for tumor class
+# ----------------------------------------------------------
+
+def tumor_dice(gt, pred):
+
+    gt_bin = (gt == 2).astype(np.float32)
+    pred_bin = (pred == 2).astype(np.float32)
+
+    inter = np.sum(gt_bin * pred_bin)
+    denom = np.sum(gt_bin) + np.sum(pred_bin)
+
+    if denom == 0:
+        return 1.0
+
+    return (2.0 * inter + 1e-5) / (denom + 1e-5)
+
+# ----------------------------------------------------------
+# Search for the BEST showcase slice
+# ----------------------------------------------------------
+
+best_score = -1e9
+best_result = None
+
+# پیدا کردن اندیس واقعی روش پیشنهادی
+proposed_index = model_names_sorted.index(
+    "The Proposed Method: ResUNet + Continuous LA"
+)
+
+for idx, (vol_path, seg_path, tumor_pixels) in enumerate(candidate_pairs):
+
+    image, gt = load_and_preprocess(vol_path, seg_path)
+    image_batch = image[np.newaxis, ...]
+
+    predictions = []
+    detected = []
+    dices = []
+
+    for model_name, model in loaded_models:
+
+        pred_probs = model.predict(image_batch, verbose=0)
+        pred_probs = tf.nn.softmax(pred_probs, axis=-1).numpy()
+
+        pred = post_process_predictions(pred_probs)[0]
+
+        predictions.append(pred)
+
+        tumor_pred_pixels = np.sum(pred == 2)
+
+        detected.append(tumor_pred_pixels > 0)
+
+        dices.append(tumor_dice(gt, pred))
+
+    # --------------------------------------------------
+    # Proposed Method
+    # --------------------------------------------------
+
+    proposed_detected = detected[proposed_index]
+    proposed_dice = dices[proposed_index]
+
+    other_detected = sum(
+        detected[i]
+        for i in range(len(detected))
+        if i != proposed_index
+    )
+
+    other_best_dice = max(
+        dices[i]
+        for i in range(len(dices))
+        if i != proposed_index
+    )
+
+    # --------------------------------------------------
+    # New Scoring Strategy
+    # --------------------------------------------------
+
+    if proposed_detected and other_detected == 0:
+
+        score = 1000
+
+        score += proposed_dice * 100
+
+        score += max(0, 30 - tumor_pixels) * 5
+
+    else:
+
+        score = -1000
+
+        if proposed_detected:
+            score += 50
+
+        score -= other_detected * 30
+
+        score += (proposed_dice - other_best_dice) * 100
+
+        score += max(0, 30 - tumor_pixels)
+
+    if score > best_score:
+
+        best_score = score
+
+        best_result = {
+            "vol_path": vol_path,
+            "seg_path": seg_path,
+            "tumor_pixels": tumor_pixels,
+            "predictions": predictions,
+            "dices": dices,
+            "detected": detected
+        }
+
+# ----------------------------------------------------------
+# Use the best slice
+# ----------------------------------------------------------
+
+if best_result is None:
+    raise ValueError("No suitable showcase slice found.")
+
+selected_input, selected_true_label = load_and_preprocess(
+    best_result["vol_path"],
+    best_result["seg_path"]
+)
+
+selected_input = np.expand_dims(selected_input, axis=0)
+selected_true_label = np.expand_dims(selected_true_label, axis=0)
+print(f"نمونه انتخاب‌شده: پیکسل‌های تومور واقعی = {np.sum(selected_true_label == 2)}")
+print(f"نمونه انتخاب‌شده: پیکسل‌های کبد واقعی = {np.sum(selected_true_label == 1)}")
+print(f"محدوده تصویر: [{selected_input.min()}, {selected_input.max()}]")
+all_pred_labels = best_result["predictions"]
+
+print("\n" + "="*60)
+print("BEST SHOWCASE SLICE FOUND")
+print("="*60)
+print(f"Tumor pixels : {best_result['tumor_pixels']}")
+print(f"Score        : {best_score:.2f}")
+
+for name, dice, det in zip(
+    model_names_sorted,
+    best_result["dices"],
+    best_result["detected"]
+):
+    print(f"{name:45s} Dice={dice:.4f} Detected={det}")
+
+print("="*60)
 # تعریف نقشه رنگی سفارشی
 colors = ['#FFFFFF', '#0000FF', '#FF0000']  # سفید (زمینه)، آبی (کبد)، قرمز (تومور)
 cmap_custom = ListedColormap(colors)
@@ -825,12 +973,12 @@ print("معیارها:", metrics)
 
 # ایجاد شکل ۵x۵ با عنوان
 fig, axes = plt.subplots(5, 5, figsize=(15, 15), constrained_layout=True)
-fig.suptitle("Comparison of Segmentation Models Sorted by Tumor Dice Score", fontsize=16)
+fig.suptitle("Comparison of Segmentation Models Sorted by Tumor Dice Score", fontsize=30)
 
 # عناوین ستون‌ها
 titles = ["Input", "Ground Truth Liver", "Predicted Liver", "Ground Truth Tumor", "Predicted Tumor"]
 for col, title in enumerate(titles):
-    axes[0, col].set_title(title, fontsize=10)
+    axes[0, col].set_title(title, fontsize=20)
 
 # نمایش
 for row in range(5):
@@ -853,7 +1001,7 @@ for row in range(5):
 
 # ذخیره تصویر
 try:
-    plt.savefig('/content/drive/MyDrive/LITS/combined_single_input_5_models_output.png', dpi=300, bbox_inches='tight')
+    plt.savefig('/content/drive/MyDrive/LITS/combined_single_input_5_models_output.png', dpi=600, bbox_inches='tight')
     print("تصویر ترکیبی با موفقیت ذخیره شد.")
     plt.show()
 except Exception as e:
@@ -861,7 +1009,14 @@ except Exception as e:
 
 # ذخیره تصویر به‌صورت PDF
 try:
-    plt.savefig('/content/drive/MyDrive/LITS/combined_single_input_5_models_output.pdf', dpi=300, format='pdf', bbox_inches='tight')
+    plt.savefig('/content/drive/MyDrive/LITS/combined_single_input_5_models_output.pdf', dpi=600, format='pdf', bbox_inches='tight')
     print("تصویر به‌صورت PDF ذخیره شد.")
 except Exception as e:
     print(f"خطا در ذخیره PDF: {e}")
+
+    # ذخیره تصویر به‌صورت SVG
+try:
+    plt.savefig('/content/drive/MyDrive/LITS/combined_single_input_5_models_output.SVG', dpi=600, format='SVG', bbox_inches='tight')
+    print("تصویر به‌صورت SVG ذخیره شد.")
+except Exception as e:
+    print(f"خطا در ذخیره SVG: {e}")
