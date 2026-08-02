@@ -620,85 +620,7 @@ try:
 except Exception as e:
     print(f"خطا در محاسبه معیارها: {e}")
 
-# نمایش نمونه‌ها
-try:
-    if metrics[18] is not None and metrics[19] is not None:
-        val_batch = metrics[18]  # آخرین بچ اعتبارسنجی
-        pred_labels = metrics[19]  # برچسب‌های پیش‌بینی‌شده
-        true_labels = val_batch[1]  # برچسب‌های واقعی
-        input_images = val_batch[0]  # تصاویر ورودی
-        
-        # تعریف نقشه رنگی سفارشی
-        colors = ['#FFFFFF', '#0000FF', '#FF0000']  # سفید (زمینه)، آبی (کبد)، قرمز (تومور)
-        cmap_custom = ListedColormap(colors)
-        
-        # انتخاب نمونه‌هایی که ماسک تومور حاوی تومور است
-        tumor_samples = []
-        for j in range(len(true_labels)):
-            if np.sum(true_labels[j] == 2) > 0:  # بررسی وجود تومور
-                tumor_samples.append(j)
-            if len(tumor_samples) >= 5:  # حداکثر 5 نمونه
-                break
-        
-        if len(tumor_samples) == 0:
-            print("نمونه‌ای با ماسک تومور یافت نشد.")
-        else:
-            # ایجاد شکل 5x5
-            fig, axes = plt.subplots(5, 5, figsize=(15, 15), constrained_layout=True)
-            
-            # عناوین ستون‌ها
-            titles = ["Input", "Ground Truth Liver", "Predicted Liver", "Ground Truth Tumor", "Predicted Tumor"]
-            for col, title in enumerate(titles):
-                axes[0, col].set_title(title, fontsize=10)
-            
-            # نمایش حداکثر 5 نمونه
-            for row, sample_idx in enumerate(tumor_samples[:5]):
-                # ستون 1: عکس اصلی
-                axes[row, 0].imshow(input_images[sample_idx, :, :, 0], cmap='gray')
-                axes[row, 0].axis('off')
-                
-                # ستون 2: ماسک کبد واقعی
-                liver_true = (true_labels[sample_idx] == 1).astype(np.uint8)
-                axes[row, 1].imshow(liver_true, cmap=cmap_custom, vmin=0, vmax=2)
-                axes[row, 1].axis('off')
-                
-                # ستون 3: پیش‌بینی ماسک کبد
-                liver_pred = (pred_labels[sample_idx] == 1).astype(np.uint8)
-                axes[row, 2].imshow(liver_pred, cmap=cmap_custom, vmin=0, vmax=2)
-                axes[row, 2].axis('off')
-                
-                # ستون 4: ماسک تومور واقعی
-                tumor_true = (true_labels[sample_idx] == 2).astype(np.uint8)
-                axes[row, 3].imshow(tumor_true, cmap=cmap_custom, vmin=0, vmax=2)
-                axes[row, 3].axis('off')
-                
-                # ستون 5: پیش‌بینی ماسک تومور
-                tumor_pred = (pred_labels[sample_idx] == 2).astype(np.uint8)
-                axes[row, 4].imshow(tumor_pred, cmap=cmap_custom, vmin=0, vmax=2)
-                axes[row, 4].axis('off')
-            
-            # غیرفعال کردن محورهای خالی (اگر نمونه‌ها کمتر از 5 باشند)
-            for row in range(len(tumor_samples), 5):
-                for col in range(5):
-                    axes[row, col].axis('off')
-            
-            # ذخیره تصویر با رزولوشن بالا
-            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.png', dpi=300, bbox_inches='tight')
-            plt.show()
-except NameError:
-    print("نمونه‌ها قابل نمایش نیستند، زیرا معیارها محاسبه نشده‌اند.")
 
-# ذخیره مدل و وزن‌ها
-try:
-    model.save('/content/drive/MyDrive/LITS/attention_unet_dynamic_la_final_fixed.keras')
-    print("مدل نهایی ذخیره شد")
-    best_weights = la.get_best_weights()
-    print(f"بهترین وزن‌ها: پس‌زمینه: {best_weights[0]:.1f}, کبد: {best_weights[1]:.1f}, تومور: {best_weights[2]:.1f}")
-    with open('/content/drive/MyDrive/LITS/best_weights_dynamic_la_attention_unet_fixed.json', 'w') as f:
-        json.dump({'background': float(best_weights[0]), 'liver': float(best_weights[1]), 'tumor': float(best_weights[2]), 'tumor_boost': float(la.tumor_boost)}, f)
-    print("وزن‌های LA ذخیره شدند")
-except Exception as e:
-    print(f"خطا در ذخیره مدل یا وزن‌ها: {e}")
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
@@ -710,15 +632,15 @@ try:
         pred_labels = metrics[19]  # برچسب‌های پیش‌بینی‌شده
         true_labels = val_batch[1]  # برچسب‌های واقعی
         input_images = val_batch[0]  # تصاویر ورودی
-        
+
         # تعریف نقشه رنگی سفارشی
         colors = ['#FFFFFF', '#0000FF', '#FF0000']  # سفید (زمینه)، آبی (کبد)، قرمز (تومور)
         cmap_custom = ListedColormap(colors)
-        
+
         # بررسی برچسب‌ها برای اطمینان از صحت
         print("توزیع برچسب‌های واقعی:", np.bincount(true_labels.flatten(), minlength=3))
         print("توزیع برچسب‌های پیش‌بینی‌شده:", np.bincount(pred_labels.flatten(), minlength=3))
-        
+
         # انتخاب نمونه‌هایی که ماسک تومور حاوی تومور است
         tumor_samples = []
         for j in range(len(true_labels)):
@@ -730,7 +652,7 @@ try:
                       f"پیکسل‌های کبد پیش‌بینی‌شده = {np.sum(pred_labels[j] == 1)}")
             if len(tumor_samples) >= 5:  # حداکثر 5 نمونه
                 break
-        
+
         if len(tumor_samples) == 0:
             print("نمونه‌ای با ماسک تومور یافت نشد.")
         else:
@@ -741,40 +663,42 @@ try:
             titles = ["Input", "Ground Truth Liver", "Predicted Liver", "Ground Truth Tumor", "Predicted Tumor"]
             for col, title in enumerate(titles):
                 axes[0, col].set_title(title, fontsize=10)
-            
+
             # نمایش حداکثر 5 نمونه
             for row, sample_idx in enumerate(tumor_samples[:5]):
                 # ستون 1: عکس اصلی
                 axes[row, 0].imshow(input_images[sample_idx, :, :, 0], cmap='gray')
                 axes[row, 0].axis('off')
-                
+
                 # ستون 2: ماسک کبد واقعی (فقط کلاس 1)
                 liver_true = (true_labels[sample_idx] == 1).astype(np.uint8)
                 axes[row, 1].imshow(liver_true, cmap=cmap_custom, vmin=0, vmax=2)
                 axes[row, 1].axis('off')
-                
+
                 # ستون 3: پیش‌بینی ماسک کبد (فقط کلاس 1)
                 liver_pred = (pred_labels[sample_idx] == 1).astype(np.uint8)
                 axes[row, 2].imshow(liver_pred, cmap=cmap_custom, vmin=0, vmax=2)
                 axes[row, 2].axis('off')
-                
+
                 # ستون 4: ماسک تومور واقعی (فقط کلاس 2)
                 tumor_true = (true_labels[sample_idx] == 2).astype(np.uint8) * 2  # تبدیل به 2 برای نگاشت قرمز
                 axes[row, 3].imshow(tumor_true, cmap=cmap_custom, vmin=0, vmax=2)
                 axes[row, 3].axis('off')
-                
+
                 # ستون 5: پیش‌بینی ماسک تومور (فقط کلاس 2)
                 tumor_pred = (pred_labels[sample_idx] == 2).astype(np.uint8) * 2  # تبدیل به 2 برای نگاشت قرمز
                 axes[row, 4].imshow(tumor_pred, cmap=cmap_custom, vmin=0, vmax=2)
                 axes[row, 4].axis('off')
-            
+
             # غیرفعال کردن محورهای خالی (اگر نمونه‌ها کمتر از 5 باشند)
             for row in range(len(tumor_samples), 5):
                 for col in range(5):
                     axes[row, col].axis('off')
-            
+
             # ذخیره تصویر با رزولوشن بالا
-            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.png', dpi=300, bbox_inches='tight')
+            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.png', dpi=600, bbox_inches='tight')
+            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.pdf', format="pdf", bbox_inches='tight')
+            plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_la_attention_unet_fixed.svg', format="svg", bbox_inches='tight')
             plt.show()
     else:
         print("داده‌های اعتبارسنجی یا پیش‌بینی‌ها در دسترس نیستند.")
