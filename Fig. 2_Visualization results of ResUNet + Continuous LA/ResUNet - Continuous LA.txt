@@ -662,12 +662,12 @@ try:
         
         # ایجاد شکل 5x5
         fig, axes = plt.subplots(5, 5, figsize=(15, 15), constrained_layout=True)
-        fig.suptitle("ResUNet - Continuous LA", fontsize=16)
+        fig.suptitle("ResUNet - Continuous LA", fontsize=30)
         
         # عناوین ستون‌ها
         titles = ["Input", "Ground Truth Liver", "Predicted Liver", "Ground Truth Tumor", "Predicted Tumor"]
         for col, title in enumerate(titles):
-            axes[0, col].set_title(title, fontsize=10)
+            axes[0, col].set_title(title, fontsize=20)
         
         # نمایش 5 نمونه
         for row, idx in enumerate(range(5)):
@@ -701,7 +701,9 @@ try:
             axes[row, 4].axis('off')
         
         # ذخیره تصویر با رزولوشن بالا
-        plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_cla.png', dpi=300, bbox_inches='tight')
+        plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_cla.png', dpi=600, bbox_inches='tight')
+        plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_cla.pdf', dpi=600, format="pdf", bbox_inches='tight')
+        plt.savefig('/content/drive/MyDrive/LITS/output_dynamic_cla.svg', dpi=600, format="svg", bbox_inches='tight')
         plt.show()
     else:
         print("داده‌های اعتبارسنجی یا پیش‌بینی‌ها در دسترس نیستند.")
