@@ -1,0 +1,63 @@
+import os
+import nibabel as nib
+import numpy as np
+import re
+
+# مسیرهای اصلی
+base_path = "/content/drive/MyDrive/LITS"
+batch1_path = os.path.join(base_path, "LITS Challenge/Training Batch 1")
+batch2_path = os.path.join(base_path, "LITS Challenge/Training Batch 2")
+output_path = os.path.join(base_path, "Preprocessed")
+
+# ایجاد فولدر خروجی
+os.makedirs(output_path, exist_ok=True)
+
+# تابع برای استخراج شماره از نام فایل
+def extract_number(filename):
+    match = re.search(r'\d+', filename)
+    return int(match.group()) if match else -1
+
+# جمع‌آوری فایل‌های آموزشی
+train_volumes = []
+train_segmentations = []
+for folder in [batch1_path, batch2_path]:
+    files = os.listdir(folder)
+    for file in sorted(files, key=extract_number):
+        file_path = os.path.join(folder, file)
+        if "volume" in file.lower():
+            train_volumes.append(file_path)
+        elif "segmentation" in file.lower():
+            train_segmentations.append(file_path)
+
+# تابع پیش‌پردازش و ذخیره‌سازی
+def preprocess_and_save(volume_path, segmentation_path, start_idx):
+    vol_img = nib.load(volume_path).get_fdata()
+    seg_img = nib.load(segmentation_path).get_fdata()
+    
+    # نرمال‌سازی volume به بازه [0, 1]
+    vol_img = (vol_img - vol_img.min()) / (vol_img.max() - vol_img.min() + 1e-6)
+    
+    # فقط برش‌هایی که شامل کبد یا تومور هستن
+    vol_slices = [vol_img[:, :, i] for i in range(vol_img.shape[2]) if np.any(seg_img[:, :, i] > 0)]
+    seg_slices = [seg_img[:, :, i] for i in range(seg_img.shape[2]) if np.any(seg_img[:, :, i] > 0)]
+    
+    # ذخیره‌سازی برش‌ها
+    for j, (vol_slice, seg_slice) in enumerate(zip(vol_slices, seg_slices)):
+        np.save(os.path.join(output_path, f"vol_slice_{start_idx + j}.npy"), vol_slice.astype(np.float32))
+        np.save(os.path.join(output_path, f"seg_slice_{start_idx + j}.npy"), seg_slice.astype(np.uint8))
+    
+    return len(vol_slices)  # تعداد برش‌های این نمونه
+
+# پردازش نمونه‌ها و ذخیره‌سازی
+total_slices = 0
+batch_size = 5  # کاهش اندازه دسته برای احتیاط بیشتر
+for i in range(0, len(train_volumes), batch_size):
+    batch_volumes = train_volumes[i:i + batch_size]
+    batch_segmentations = train_segmentations[i:i + batch_size]
+    for vol_path, seg_path in zip(batch_volumes, batch_segmentations):
+        num_slices = preprocess_and_save(vol_path, seg_path, total_slices)
+        total_slices += num_slices
+    print(f"پردازش دسته {i // batch_size + 1} از {len(train_volumes) // batch_size + 1} انجام شد.")
+
+print(f"تعداد کل برش‌های آموزشی: {total_slices}")
+print("پیش‌پردازش و ذخیره‌سازی تکمیل شد.")
