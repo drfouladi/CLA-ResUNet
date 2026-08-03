@@ -1,0 +1,32 @@
+Mounted at /content/drive
+Batch 1 processed.
+Batch 2 processed.
+Batch 3 processed.
+Batch 4 processed.
+Batch 5 processed.
+Batch 6 processed.
+Batch 7 processed.
+Batch 8 processed.
+Batch 9 processed.
+Batch 10 processed.
+Batch 11 processed.
+Batch 12 processed.
+Batch 13 processed.
+Batch 14 processed.
+Batch 15 processed.
+Batch 16 processed.
+Batch 17 processed.
+Batch 18 processed.
+Batch 19 processed.
+Batch 20 processed.
+Batch 21 processed.
+Batch 22 processed.
+Batch 23 processed.
+Batch 24 processed.
+Batch 25 processed.
+Batch 26 processed.
+Batch 27 processed.
+
+Total saved slices: 19163
+Metadata saved successfully.
+Preprocessing completed.

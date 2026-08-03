@@ -1,0 +1,148 @@
+import os
+import re
+import json
+import nibabel as nib
+import numpy as np
+from google.colab import drive
+drive.mount('/content/drive')
+
+# ===================== Paths =====================
+base_path = "/content/drive/MyDrive/LITS"
+batch1_path = os.path.join(base_path, "LITS Challenge/Training Batch 1")
+batch2_path = os.path.join(base_path, "LITS Challenge/Training Batch 2")
+output_path = os.path.join(base_path, "Preprocessed")
+
+os.makedirs(output_path, exist_ok=True)
+
+# ===================== Helper =====================
+def extract_number(filename):
+    match = re.search(r"\d+", filename)
+    return int(match.group()) if match else -1
+
+# ===================== Collect Files =====================
+train_volumes = []
+train_segmentations = []
+
+for folder in [batch1_path, batch2_path]:
+
+    files = sorted(os.listdir(folder), key=extract_number)
+
+    for file in files:
+
+        file_path = os.path.join(folder, file)
+
+        if "volume" in file.lower():
+            train_volumes.append(file_path)
+
+        elif "segmentation" in file.lower():
+            train_segmentations.append(file_path)
+
+metadata = []
+
+# ===================== Preprocessing =====================
+def preprocess_and_save(volume_path,
+                        segmentation_path,
+                        start_idx,
+                        volume_id):
+
+    vol_img = nib.load(volume_path).get_fdata()
+    seg_img = nib.load(segmentation_path).get_fdata()
+
+    # Normalize CT
+    vol_img = (vol_img - vol_img.min()) / (vol_img.max() - vol_img.min() + 1e-6)
+
+    # Iterate over slices
+    for original_slice in range(seg_img.shape[2]):
+
+        # keep only slices containing liver or tumor
+        if not np.any(seg_img[:, :, original_slice] > 0):
+            continue
+
+        vol_slice = vol_img[:, :, original_slice]
+        seg_slice = seg_img[:, :, original_slice]
+
+        slice_id = start_idx
+
+        np.save(
+            os.path.join(output_path,
+                         f"vol_slice_{slice_id}.npy"),
+            vol_slice.astype(np.float32)
+        )
+
+        np.save(
+            os.path.join(output_path,
+                         f"seg_slice_{slice_id}.npy"),
+            seg_slice.astype(np.uint8)
+        )
+
+        metadata.append({
+
+            "slice_id": int(slice_id),
+
+            "volume_id": int(volume_id),
+
+            "volume_name": os.path.basename(volume_path),
+
+            "segmentation_name": os.path.basename(segmentation_path),
+
+            "original_slice": int(original_slice),
+
+            "contains_liver": bool(np.any(seg_slice == 1)),
+
+            "contains_tumor": bool(np.any(seg_slice == 2)),
+
+            "liver_pixels": int(np.sum(seg_slice == 1)),
+
+            "tumor_pixels": int(np.sum(seg_slice == 2)),
+
+            "slice_filename": f"vol_slice_{slice_id}.npy",
+
+            "slice_index_saved": int(slice_id),
+
+        })
+
+        start_idx += 1
+
+    return start_idx
+
+
+# ===================== Process Dataset =====================
+total_slices = 0
+volume_counter = 0
+batch_size = 5
+
+for i in range(0, len(train_volumes), batch_size):
+
+    batch_volumes = train_volumes[i:i + batch_size]
+    batch_segmentations = train_segmentations[i:i + batch_size]
+
+    for vol_path, seg_path in zip(batch_volumes,
+                                  batch_segmentations):
+
+        new_start = preprocess_and_save(
+            vol_path,
+            seg_path,
+            total_slices,
+            volume_counter
+        )
+
+        total_slices = new_start
+        volume_counter += 1
+
+    print(f"Batch {i // batch_size + 1} processed.")
+
+print(f"\nTotal saved slices: {total_slices}")
+
+# ===================== Save Metadata =====================
+metadata_path = os.path.join(output_path,
+                             "slice_metadata.json")
+
+with open(metadata_path,
+          "w") as f:
+
+    json.dump(metadata,
+              f,
+              indent=4)
+
+print("Metadata saved successfully.")
+print("Preprocessing completed.")
