@@ -1,0 +1,1253 @@
+# ============================================================
+# FINAL METADATA-BASED REPRESENTATIVENESS ANALYSIS
+# ============================================================
+# IMPORTANT:
+# - Does NOT modify training code
+# - Does NOT modify model
+# - Does NOT retrain anything
+# - Uses ALL 19,163 metadata records
+# - Anatomical and tumor-size analysis is based on metadata only
+# - Training subset is reconstructed using the same sampling/split logic
+# ============================================================
+
+import os
+import json
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from scipy.stats import chi2_contingency, ks_2samp, mannwhitneyu
+from sklearn.model_selection import train_test_split
+
+
+# ============================================================
+# 1. PATHS
+# ============================================================
+
+BASE_PATH = "/content/drive/MyDrive/LITS"
+
+METADATA_PATH = os.path.join(
+    BASE_PATH,
+    "json",
+    "slice_metadata.json"
+)
+
+OUTPUT_PATH = os.path.join(
+    BASE_PATH,
+    "Final_Metadata_Representativeness"
+)
+
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+
+print("=" * 75)
+print("FINAL METADATA-BASED REPRESENTATIVENESS ANALYSIS")
+print("=" * 75)
+
+print("Metadata:", METADATA_PATH)
+print("Output:", OUTPUT_PATH)
+
+
+# ============================================================
+# 2. LOAD COMPLETE METADATA
+# ============================================================
+
+with open(METADATA_PATH, "r", encoding="utf-8") as f:
+    metadata = json.load(f)
+
+df = pd.DataFrame(metadata)
+
+print("\nTotal metadata records:", len(df))
+print("Unique volumes:", df["volume_id"].nunique())
+
+
+# ============================================================
+# 3. BASIC DATA VALIDATION
+# ============================================================
+
+required_columns = [
+    "slice_id",
+    "volume_id",
+    "volume_name",
+    "original_slice",
+    "contains_liver",
+    "contains_tumor",
+    "liver_pixels",
+    "tumor_pixels",
+    "slice_filename",
+    "slice_index_saved"
+]
+
+missing_columns = [
+    c for c in required_columns
+    if c not in df.columns
+]
+
+if missing_columns:
+    raise ValueError(
+        f"Missing required metadata columns: {missing_columns}"
+    )
+
+print("\nAll required metadata fields are present.")
+
+
+# ============================================================
+# 4. NORMALIZE BOOLEAN VARIABLES
+# ============================================================
+
+df["contains_tumor"] = (
+    df["contains_tumor"]
+    .astype(bool)
+)
+
+df["contains_liver"] = (
+    df["contains_liver"]
+    .astype(bool)
+)
+
+
+# ============================================================
+# 5. WITHIN-VOLUME NORMALIZED ANATOMICAL POSITION
+# ============================================================
+# IMPORTANT:
+# Anatomical position is calculated separately for each volume.
+# This avoids bias caused by different numbers of slices per volume.
+
+group_min = (
+    df.groupby("volume_id")["original_slice"]
+    .transform("min")
+)
+
+group_max = (
+    df.groupby("volume_id")["original_slice"]
+    .transform("max")
+)
+
+denominator = group_max - group_min
+
+df["normalized_anatomical_position"] = np.where(
+    denominator > 0,
+    (df["original_slice"] - group_min) / denominator,
+    0.5
+)
+
+
+# ============================================================
+# 6. FIVE ANATOMICAL REGIONS
+# ============================================================
+
+bins = [-0.001, 0.20, 0.40, 0.60, 0.80, 1.001]
+
+region_labels = [
+    "Region 1 (0–20%)",
+    "Region 2 (20–40%)",
+    "Region 3 (40–60%)",
+    "Region 4 (60–80%)",
+    "Region 5 (80–100%)"
+]
+
+df["anatomical_region"] = pd.cut(
+    df["normalized_anatomical_position"],
+    bins=bins,
+    labels=region_labels,
+    include_lowest=True
+)
+
+
+# ============================================================
+# 7. RECONSTRUCT THE ORIGINAL 500 + 500 SAMPLING
+# ============================================================
+# This follows the same logic as the working training code:
+#
+# tumor_pairs = tumor_pairs[:500]
+# other_pairs = other_pairs[:500]
+# pairs_selected = tumor_pairs + other_pairs
+#
+# Then:
+#
+# train_test_split(
+#     pairs_selected,
+#     test_size=0.2,
+#     random_state=42
+# )
+#
+# We reproduce this using slice_index_saved as the stable identifier.
+
+tumor_df = df[
+    df["contains_tumor"] == True
+].copy()
+
+non_tumor_df = df[
+    df["contains_tumor"] == False
+].copy()
+
+print("\nTumor-containing metadata records:",
+      len(tumor_df))
+
+print("Non-tumor metadata records:",
+      len(non_tumor_df))
+
+
+# Sort to reproduce deterministic first-500 selection
+tumor_df = tumor_df.sort_values(
+    "slice_index_saved"
+).reset_index(drop=True)
+
+non_tumor_df = non_tumor_df.sort_values(
+    "slice_index_saved"
+).reset_index(drop=True)
+
+
+tumor_selected = tumor_df.head(500).copy()
+
+non_tumor_selected = non_tumor_df.head(500).copy()
+
+
+selected = pd.concat(
+    [
+        tumor_selected,
+        non_tumor_selected
+    ],
+    ignore_index=True
+)
+
+
+print("\nSelected tumor slices:",
+      len(tumor_selected))
+
+print("Selected non-tumor slices:",
+      len(non_tumor_selected))
+
+print("Total selected:",
+      len(selected))
+
+
+# ============================================================
+# 8. ORIGINAL 80/20 TRAIN/VALIDATION SPLIT
+# ============================================================
+
+train_df, val_df = train_test_split(
+    selected,
+    test_size=0.2,
+    random_state=42
+)
+
+train_df = train_df.copy()
+val_df = val_df.copy()
+
+train_ids = set(
+    train_df["slice_index_saved"]
+)
+
+val_ids = set(
+    val_df["slice_index_saved"]
+)
+
+print("\nTraining slices:", len(train_df))
+print("Validation slices:", len(val_df))
+
+
+# ============================================================
+# 9. LABEL ALL 19,163 METADATA RECORDS
+# ============================================================
+
+df["group"] = "Remainder"
+
+df.loc[
+    df["slice_index_saved"].isin(train_ids),
+    "group"
+] = "Training"
+
+df.loc[
+    df["slice_index_saved"].isin(val_ids),
+    "group"
+] = "Validation"
+
+
+print("\nGroup distribution:")
+print(
+    df["group"]
+    .value_counts()
+)
+
+
+# ============================================================
+# 10. TUMOR-SIZE CATEGORIES
+# ============================================================
+# Empirical tertiles based on ALL tumor-containing metadata records.
+#
+# These are NOT clinical thresholds.
+
+tumor_all = df[
+    df["contains_tumor"] == True
+].copy()
+
+q33 = tumor_all[
+    "tumor_pixels"
+].quantile(1/3)
+
+q66 = tumor_all[
+    "tumor_pixels"
+].quantile(2/3)
+
+print("\nTumor-size percentile thresholds:")
+print("33rd percentile:", q33)
+print("66th percentile:", q66)
+
+
+def size_category(x):
+    if x <= q33:
+        return "Small"
+    elif x <= q66:
+        return "Medium"
+    else:
+        return "Large"
+
+
+tumor_all["tumor_size_category"] = (
+    tumor_all["tumor_pixels"]
+    .apply(size_category)
+)
+
+
+# ============================================================
+# 11. TUMOR SIZE DISTRIBUTION
+# ============================================================
+
+size_table = pd.crosstab(
+    tumor_all["tumor_size_category"],
+    tumor_all["group"]
+)
+
+size_table = size_table.reindex(
+    ["Small", "Medium", "Large"],
+    fill_value=0
+)
+
+# Only Training vs Remainder for inferential comparison
+size_inferential = size_table[
+    ["Training", "Remainder"]
+]
+
+size_percent = (
+    size_inferential
+    .div(
+        size_inferential.sum(axis=0),
+        axis=1
+    )
+    * 100
+)
+
+chi2_size, p_size, df_size, expected_size = (
+    chi2_contingency(size_inferential)
+)
+
+cramers_v_size = np.sqrt(
+    chi2_size /
+    (
+        size_inferential.values.sum()
+        * min(
+            size_inferential.shape[0] - 1,
+            size_inferential.shape[1] - 1
+        )
+    )
+)
+
+print("\n" + "=" * 75)
+print("TUMOR SIZE DISTRIBUTION")
+print("=" * 75)
+
+print(size_percent.round(2))
+
+print(
+    f"\nChi-square = {chi2_size:.4f}"
+)
+
+print(
+    f"df = {df_size}"
+)
+
+print(
+    f"p-value = {p_size:.8g}"
+)
+
+print(
+    f"Cramer's V = {cramers_v_size:.4f}"
+)
+
+
+# ============================================================
+# 12. TUMOR AREA — TRAINING VS REMAINDER
+# ============================================================
+
+tumor_train = tumor_all[
+    tumor_all["group"] == "Training"
+]["tumor_pixels"].astype(float)
+
+tumor_remainder = tumor_all[
+    tumor_all["group"] == "Remainder"
+]["tumor_pixels"].astype(float)
+
+
+ks_stat, ks_p = ks_2samp(
+    tumor_train,
+    tumor_remainder
+)
+
+mw_stat, mw_p = mannwhitneyu(
+    tumor_train,
+    tumor_remainder,
+    alternative="two-sided"
+)
+
+pooled_sd = np.sqrt(
+    (
+        np.var(tumor_train, ddof=1)
+        +
+        np.var(tumor_remainder, ddof=1)
+    ) / 2
+)
+
+smd = (
+    (
+        np.mean(tumor_train)
+        -
+        np.mean(tumor_remainder)
+    )
+    /
+    pooled_sd
+)
+
+print("\nTumor area comparison:")
+print(
+    f"Training median = {np.median(tumor_train):.2f}"
+)
+
+print(
+    f"Remainder median = {np.median(tumor_remainder):.2f}"
+)
+
+print(
+    f"KS statistic = {ks_stat:.4f}"
+)
+
+print(
+    f"KS p-value = {ks_p:.8g}"
+)
+
+print(
+    f"Mann-Whitney p-value = {mw_p:.8g}"
+)
+
+print(
+    f"SMD = {smd:.4f}"
+)
+
+
+# ============================================================
+# 13. ANATOMICAL DISTRIBUTION
+# ============================================================
+
+anat_table = pd.crosstab(
+    df["anatomical_region"],
+    df["group"]
+)
+
+anat_table = anat_table.reindex(
+    region_labels,
+    fill_value=0
+)
+
+anat_inferential = anat_table[
+    ["Training", "Remainder"]
+]
+
+anat_percent = (
+    anat_inferential
+    .div(
+        anat_inferential.sum(axis=0),
+        axis=1
+    )
+    * 100
+)
+
+chi2_anat, p_anat, df_anat, expected_anat = (
+    chi2_contingency(anat_inferential)
+)
+
+cramers_v_anat = np.sqrt(
+    chi2_anat /
+    (
+        anat_inferential.values.sum()
+        *
+        min(
+            anat_inferential.shape[0] - 1,
+            anat_inferential.shape[1] - 1
+        )
+    )
+)
+
+print("\n" + "=" * 75)
+print("ANATOMICAL DISTRIBUTION")
+print("=" * 75)
+
+print(anat_percent.round(2))
+
+print(
+    f"\nChi-square = {chi2_anat:.4f}"
+)
+
+print(
+    f"df = {df_anat}"
+)
+
+print(
+    f"p-value = {p_anat:.8g}"
+)
+
+print(
+    f"Cramer's V = {cramers_v_anat:.4f}"
+)
+
+
+# ============================================================
+# 14. TUMOR PRESENCE BY ANATOMICAL REGION
+# ============================================================
+
+tumor_presence = pd.crosstab(
+    df["anatomical_region"],
+    df["contains_tumor"]
+)
+
+tumor_presence = tumor_presence.reindex(
+    region_labels,
+    fill_value=0
+)
+
+tumor_presence.columns = [
+    "Non-tumor",
+    "Tumor"
+]
+
+tumor_presence_percent = (
+    tumor_presence
+    .div(
+        tumor_presence.sum(axis=1),
+        axis=0
+    )
+    * 100
+)
+
+chi2_presence, p_presence, df_presence, expected_presence = (
+    chi2_contingency(tumor_presence)
+)
+
+cramers_v_presence = np.sqrt(
+    chi2_presence /
+    (
+        tumor_presence.values.sum()
+        *
+        min(
+            tumor_presence.shape[0] - 1,
+            tumor_presence.shape[1] - 1
+        )
+    )
+)
+
+print("\n" + "=" * 75)
+print("TUMOR PRESENCE BY ANATOMICAL REGION")
+print("=" * 75)
+
+print(
+    tumor_presence_percent.round(2)
+)
+
+print(
+    f"\nChi-square = {chi2_presence:.4f}"
+)
+
+print(
+    f"df = {df_presence}"
+)
+
+print(
+    f"p-value = {p_presence:.8g}"
+)
+
+print(
+    f"Cramer's V = {cramers_v_presence:.4f}"
+)
+
+
+# ============================================================
+# 15. FIGURE 1 — TUMOR SIZE DISTRIBUTION
+# ============================================================
+
+plt.figure(figsize=(8, 5))
+
+categories = [
+    "Small",
+    "Medium",
+    "Large"
+]
+
+x = np.arange(len(categories))
+width = 0.36
+
+plt.bar(
+    x - width / 2,
+    size_percent["Training"],
+    width,
+    label="Training subset"
+)
+
+plt.bar(
+    x + width / 2,
+    size_percent["Remainder"],
+    width,
+    label="Remainder"
+)
+
+plt.xticks(
+    x,
+    categories
+)
+
+plt.ylabel(
+    "Tumor-containing slices (%)"
+)
+
+plt.xlabel(
+    "Tumor size category"
+)
+
+plt.title(
+    "Tumor Size Distribution"
+)
+
+plt.legend()
+
+plt.tight_layout()
+
+fig1 = os.path.join(
+    OUTPUT_PATH,
+    "Figure_1_Tumor_Size_Distribution.png"
+)
+
+plt.savefig(
+    fig1,
+    dpi=600,
+    bbox_inches="tight"
+)
+
+plt.show()
+
+
+# ============================================================
+# 16. FIGURE 2 — ANATOMICAL DISTRIBUTION
+# ============================================================
+
+plt.figure(figsize=(9, 5))
+
+x = np.arange(len(region_labels))
+
+plt.bar(
+    x - width / 2,
+    anat_percent["Training"],
+    width,
+    label="Training subset"
+)
+
+plt.bar(
+    x + width / 2,
+    anat_percent["Remainder"],
+    width,
+    label="Remainder"
+)
+
+plt.xticks(
+    x,
+    [
+        "0–20%",
+        "20–40%",
+        "40–60%",
+        "60–80%",
+        "80–100%"
+    ]
+)
+
+plt.ylabel(
+    "Slices (%)"
+)
+
+plt.xlabel(
+    "Normalized within-volume anatomical position"
+)
+
+plt.title(
+    "Anatomical Distribution"
+)
+
+plt.legend()
+
+plt.tight_layout()
+
+fig2 = os.path.join(
+    OUTPUT_PATH,
+    "Figure_2_Anatomical_Distribution.png"
+)
+
+plt.savefig(
+    fig2,
+    dpi=600,
+    bbox_inches="tight"
+)
+
+plt.show()
+
+
+# ============================================================
+# 17. FIGURE 3 — TUMOR PRESENCE BY ANATOMICAL REGION
+# ============================================================
+
+plt.figure(figsize=(9, 5))
+
+plt.bar(
+    np.arange(len(region_labels)),
+    tumor_presence_percent["Tumor"]
+)
+
+plt.xticks(
+    np.arange(len(region_labels)),
+    [
+        "0–20%",
+        "20–40%",
+        "40–60%",
+        "60–80%",
+        "80–100%"
+    ]
+)
+
+plt.ylabel(
+    "Tumor-containing slices (%)"
+)
+
+plt.xlabel(
+    "Normalized within-volume anatomical position"
+)
+
+plt.title(
+    "Tumor Presence Across Anatomical Regions"
+)
+
+plt.tight_layout()
+
+fig3 = os.path.join(
+    OUTPUT_PATH,
+    "Figure_3_Tumor_Presence_by_Anatomy.png"
+)
+
+plt.savefig(
+    fig3,
+    dpi=600,
+    bbox_inches="tight"
+)
+
+plt.show()
+
+
+# ============================================================
+# 18. FIGURE 4 — TUMOR AREA DISTRIBUTION
+# ============================================================
+
+plt.figure(figsize=(8, 5))
+
+plt.hist(
+    tumor_train,
+    bins=40,
+    density=True,
+    alpha=0.6,
+    label="Training subset"
+)
+
+plt.hist(
+    tumor_remainder,
+    bins=40,
+    density=True,
+    alpha=0.6,
+    label="Remainder"
+)
+
+plt.xlabel(
+    "Tumor area (pixels)"
+)
+
+plt.ylabel(
+    "Density"
+)
+
+plt.title(
+    "Tumor Area Distribution"
+)
+
+plt.legend()
+
+plt.tight_layout()
+
+fig4 = os.path.join(
+    OUTPUT_PATH,
+    "Figure_4_Tumor_Area_Distribution.png"
+)
+
+plt.savefig(
+    fig4,
+    dpi=600,
+    bbox_inches="tight"
+)
+
+plt.show()
+
+
+# ============================================================
+# 19. MANUSCRIPT TABLE
+# ============================================================
+
+manuscript_table = pd.DataFrame({
+
+    "Characteristic": [
+        "Total metadata records",
+        "Number of CT volumes",
+        "Training subset",
+        "Validation subset",
+        "Non-training remainder",
+        "Tumor-containing slices in training",
+        "Tumor-containing slices in remainder",
+        "Small tumors (%)",
+        "Medium tumors (%)",
+        "Large tumors (%)",
+        "Anatomical Region 1 (%)",
+        "Anatomical Region 2 (%)",
+        "Anatomical Region 3 (%)",
+        "Anatomical Region 4 (%)",
+        "Anatomical Region 5 (%)"
+    ],
+
+    "Training": [
+        len(df),
+        df["volume_id"].nunique(),
+        len(train_df),
+        len(val_df),
+        np.nan,
+        len(
+            train_df[
+                train_df["contains_tumor"] == True
+            ]
+        ),
+        np.nan,
+        size_percent.loc["Small", "Training"],
+        size_percent.loc["Medium", "Training"],
+        size_percent.loc["Large", "Training"],
+        anat_percent.loc[region_labels[0], "Training"],
+        anat_percent.loc[region_labels[1], "Training"],
+        anat_percent.loc[region_labels[2], "Training"],
+        anat_percent.loc[region_labels[3], "Training"],
+        anat_percent.loc[region_labels[4], "Training"]
+    ],
+
+    "Remainder": [
+        np.nan,
+        np.nan,
+        np.nan,
+        np.nan,
+        len(
+            df[
+                df["group"] == "Remainder"
+            ]
+        ),
+        np.nan,
+        len(
+            df[
+                (df["group"] == "Remainder")
+                &
+                (df["contains_tumor"] == True)
+            ]
+        ),
+        size_percent.loc["Small", "Remainder"],
+        size_percent.loc["Medium", "Remainder"],
+        size_percent.loc["Large", "Remainder"],
+        anat_percent.loc[region_labels[0], "Remainder"],
+        anat_percent.loc[region_labels[1], "Remainder"],
+        anat_percent.loc[region_labels[2], "Remainder"],
+        anat_percent.loc[region_labels[3], "Remainder"],
+        anat_percent.loc[region_labels[4], "Remainder"]
+    ]
+})
+
+
+# ============================================================
+# 20. STATISTICAL SUMMARY TABLE
+# ============================================================
+
+statistical_summary = pd.DataFrame({
+
+    "Analysis": [
+        "Tumor area",
+        "Tumor size categories",
+        "Anatomical distribution",
+        "Tumor presence across anatomical regions"
+    ],
+
+    "Test": [
+        "Kolmogorov-Smirnov + Mann-Whitney U",
+        "Chi-square",
+        "Chi-square",
+        "Chi-square"
+    ],
+
+    "Statistic": [
+        ks_stat,
+        chi2_size,
+        chi2_anat,
+        chi2_presence
+    ],
+
+    "p-value": [
+        ks_p,
+        p_size,
+        p_anat,
+        p_presence
+    ],
+
+    "Effect size": [
+        smd,
+        cramers_v_size,
+        cramers_v_anat,
+        cramers_v_presence
+    ],
+
+    "Effect metric": [
+        "SMD",
+        "Cramer's V",
+        "Cramer's V",
+        "Cramer's V"
+    ]
+})
+
+
+# ============================================================
+# 21. SAVE EXCEL WORKBOOK
+# ============================================================
+
+excel_path = os.path.join(
+    OUTPUT_PATH,
+    "Final_Metadata_Representativeness_Analysis.xlsx"
+)
+
+with pd.ExcelWriter(
+    excel_path,
+    engine="openpyxl"
+) as writer:
+
+    manuscript_table.to_excel(
+        writer,
+        sheet_name="Manuscript_Table",
+        index=False
+    )
+
+    statistical_summary.to_excel(
+        writer,
+        sheet_name="Statistical_Summary",
+        index=False
+    )
+
+    size_table.to_excel(
+        writer,
+        sheet_name="Tumor_Size_Counts"
+    )
+
+    size_percent.to_excel(
+        writer,
+        sheet_name="Tumor_Size_Percent"
+    )
+
+    anat_inferential.to_excel(
+        writer,
+        sheet_name="Anatomical_Counts"
+    )
+
+    anat_percent.to_excel(
+        writer,
+        sheet_name="Anatomical_Percent"
+    )
+
+    tumor_presence.to_excel(
+        writer,
+        sheet_name="Tumor_Presence_Counts"
+    )
+
+    tumor_presence_percent.to_excel(
+        writer,
+        sheet_name="Tumor_Presence_Percent"
+    )
+
+
+# ============================================================
+# 22. SAVE CSV FILES
+# ============================================================
+
+manuscript_csv = os.path.join(
+    OUTPUT_PATH,
+    "Manuscript_Table.csv"
+)
+
+summary_csv = os.path.join(
+    OUTPUT_PATH,
+    "Statistical_Summary.csv"
+)
+
+manuscript_table.to_csv(
+    manuscript_csv,
+    index=False
+)
+
+statistical_summary.to_csv(
+    summary_csv,
+    index=False
+)
+
+
+# ============================================================
+# 23. SAVE COMPLETE METADATA ANALYSIS SUMMARY
+# ============================================================
+
+txt_path = os.path.join(
+    OUTPUT_PATH,
+    "Reviewer_Analysis_Summary.txt"
+)
+
+with open(
+    txt_path,
+    "w",
+    encoding="utf-8"
+) as f:
+
+    f.write(
+        "FINAL METADATA-BASED REPRESENTATIVENESS ANALYSIS\n"
+    )
+
+    f.write("=" * 75 + "\n\n")
+
+    f.write(
+        f"Total metadata records: {len(df)}\n"
+    )
+
+    f.write(
+        f"Unique CT volumes: {df['volume_id'].nunique()}\n"
+    )
+
+    f.write(
+        f"Tumor-containing slices: {len(tumor_df)}\n"
+    )
+
+    f.write(
+        f"Non-tumor slices: {len(non_tumor_df)}\n\n"
+    )
+
+    f.write(
+        f"Training subset: {len(train_df)}\n"
+    )
+
+    f.write(
+        f"Validation subset: {len(val_df)}\n"
+    )
+
+    f.write(
+        f"Remainder: "
+        f"{(df['group'] == 'Remainder').sum()}\n\n"
+    )
+
+    f.write(
+        "TUMOR SIZE DISTRIBUTION\n"
+    )
+
+    f.write("-" * 50 + "\n")
+
+    f.write(
+        size_percent.round(2).to_string()
+    )
+
+    f.write(
+        f"\n\nChi-square = {chi2_size:.6f}\n"
+    )
+
+    f.write(
+        f"p-value = {p_size:.8g}\n"
+    )
+
+    f.write(
+        f"Cramer's V = {cramers_v_size:.6f}\n\n"
+    )
+
+    f.write(
+        "ANATOMICAL DISTRIBUTION\n"
+    )
+
+    f.write("-" * 50 + "\n")
+
+    f.write(
+        anat_percent.round(2).to_string()
+    )
+
+    f.write(
+        f"\n\nChi-square = {chi2_anat:.6f}\n"
+    )
+
+    f.write(
+        f"p-value = {p_anat:.8g}\n"
+    )
+
+    f.write(
+        f"Cramer's V = {cramers_v_anat:.6f}\n\n"
+    )
+
+    f.write(
+        "TUMOR PRESENCE BY ANATOMICAL REGION\n"
+    )
+
+    f.write("-" * 50 + "\n")
+
+    f.write(
+        tumor_presence_percent.round(2).to_string()
+    )
+
+    f.write(
+        f"\n\nChi-square = {chi2_presence:.6f}\n"
+    )
+
+    f.write(
+        f"p-value = {p_presence:.8g}\n"
+    )
+
+    f.write(
+        f"Cramer's V = {cramers_v_presence:.6f}\n\n"
+    )
+
+    f.write(
+        "TUMOR AREA\n"
+    )
+
+    f.write("-" * 50 + "\n")
+
+    f.write(
+        f"Training median: {np.median(tumor_train):.4f}\n"
+    )
+
+    f.write(
+        f"Remainder median: {np.median(tumor_remainder):.4f}\n"
+    )
+
+    f.write(
+        f"KS statistic: {ks_stat:.6f}\n"
+    )
+
+    f.write(
+        f"KS p-value: {ks_p:.8g}\n"
+    )
+
+    f.write(
+        f"Mann-Whitney p-value: {mw_p:.8g}\n"
+    )
+
+    f.write(
+        f"SMD: {smd:.6f}\n"
+    )
+
+    f.write("\n\nNOTES\n")
+    f.write("-" * 50 + "\n")
+
+    f.write(
+        "1. Anatomical and tumor-size analyses use all "
+        "metadata records available in slice_metadata.json.\n"
+    )
+
+    f.write(
+        "2. The metadata contains 19,163 records independently "
+        "of the number of physically retained .npy arrays.\n"
+    )
+
+    f.write(
+        "3. Inferential comparisons use Training vs Remainder "
+        "because Training is contained within the selected dataset.\n"
+    )
+
+    f.write(
+        "4. Anatomical position is normalized independently "
+        "within each CT volume.\n"
+    )
+
+    f.write(
+        "5. Tumor-size categories are empirical tertiles and "
+        "are not clinical size thresholds.\n"
+    )
+
+    f.write(
+        "6. Statistical significance should be interpreted together "
+        "with effect size because of the large number of metadata records.\n"
+    )
+
+
+# ============================================================
+# 24. FINAL RESULTS
+# ============================================================
+
+print("\n" + "=" * 75)
+print("ANALYSIS COMPLETE")
+print("=" * 75)
+
+print("\nALL METADATA RECORDS USED:", len(df))
+
+print("\nTraining:", len(train_df))
+print("Validation:", len(val_df))
+print(
+    "Remainder:",
+    (df["group"] == "Remainder").sum()
+)
+
+print("\n--- Tumor size ---")
+print(
+    f"Chi-square = {chi2_size:.4f}, "
+    f"p = {p_size:.8g}, "
+    f"Cramer's V = {cramers_v_size:.4f}"
+)
+
+print("\n--- Anatomical distribution ---")
+print(
+    f"Chi-square = {chi2_anat:.4f}, "
+    f"p = {p_anat:.8g}, "
+    f"Cramer's V = {cramers_v_anat:.4f}"
+)
+
+print("\n--- Tumor presence by anatomy ---")
+print(
+    f"Chi-square = {chi2_presence:.4f}, "
+    f"p = {p_presence:.8g}, "
+    f"Cramer's V = {cramers_v_presence:.4f}"
+)
+
+print("\n--- Tumor area ---")
+print(
+    f"KS p = {ks_p:.8g}, "
+    f"Mann-Whitney p = {mw_p:.8g}, "
+    f"SMD = {smd:.4f}"
+)
+
+print("\nGenerated files:")
+print(fig1)
+print(fig2)
+print(fig3)
+print(fig4)
+print(excel_path)
+print(manuscript_csv)
+print(summary_csv)
+print(txt_path)
+
+print("\n" + "=" * 75)

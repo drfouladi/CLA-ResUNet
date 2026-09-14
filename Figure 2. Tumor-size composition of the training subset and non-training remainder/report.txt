@@ -1,0 +1,123 @@
+===========================================================================
+FINAL METADATA-BASED REPRESENTATIVENESS ANALYSIS
+===========================================================================
+Metadata: /content/drive/MyDrive/LITS/json/slice_metadata.json
+Output: /content/drive/MyDrive/LITS/Final_Metadata_Representativeness
+
+Total metadata records: 19163
+Unique volumes: 131
+
+All required metadata fields are present.
+
+Tumor-containing metadata records: 7190
+Non-tumor metadata records: 11973
+
+Selected tumor slices: 500
+Selected non-tumor slices: 500
+Total selected: 1000
+
+Training slices: 800
+Validation slices: 200
+
+Group distribution:
+group
+Remainder     18163
+Training        800
+Validation      200
+Name: count, dtype: int64
+
+Tumor-size percentile thresholds:
+33rd percentile: 396.3333333333326
+66th percentile: 2227.3333333333303
+
+===========================================================================
+TUMOR SIZE DISTRIBUTION
+===========================================================================
+group                Training  Remainder
+tumor_size_category                     
+Small                   34.90      33.21
+Medium                  26.73      33.84
+Large                   38.37      32.94
+
+Chi-square = 9.4517
+df = 2
+p-value = 0.0088632443
+Cramer's V = 0.0365
+
+Tumor area comparison:
+Training median = 740.50
+Remainder median = 972.00
+KS statistic = 0.0934
+KS p-value = 0.0024017063
+Mann-Whitney p-value = 0.42960522
+SMD = 0.1818
+
+===========================================================================
+ANATOMICAL DISTRIBUTION
+===========================================================================
+group               Training  Remainder
+anatomical_region                      
+Region 1 (0–20%)       19.12      20.07
+Region 2 (20–40%)      23.75      19.77
+Region 3 (40–60%)      21.25      19.80
+Region 4 (60–80%)      17.62      20.10
+Region 5 (80–100%)     18.25      20.26
+
+Chi-square = 11.1175
+df = 4
+p-value = 0.025275108
+Cramer's V = 0.0242
+
+===========================================================================
+TUMOR PRESENCE BY ANATOMICAL REGION
+===========================================================================
+                    Non-tumor  Tumor
+anatomical_region                   
+Region 1 (0–20%)        83.46  16.54
+Region 2 (20–40%)       57.85  42.15
+Region 3 (40–60%)       50.79  49.21
+Region 4 (60–80%)       51.65  48.35
+Region 5 (80–100%)      68.40  31.60
+
+Chi-square = 1228.3344
+df = 4
+p-value = 1.1470185e-264
+Cramer's V = 0.2532
+
+
+
+
+
+===========================================================================
+ANALYSIS COMPLETE
+===========================================================================
+
+ALL METADATA RECORDS USED: 19163
+
+Training: 800
+Validation: 200
+Remainder: 18163
+
+--- Tumor size ---
+Chi-square = 9.4517, p = 0.0088632443, Cramer's V = 0.0365
+
+--- Anatomical distribution ---
+Chi-square = 11.1175, p = 0.025275108, Cramer's V = 0.0242
+
+--- Tumor presence by anatomy ---
+Chi-square = 1228.3344, p = 1.1470185e-264, Cramer's V = 0.2532
+
+--- Tumor area ---
+KS p = 0.0024017063, Mann-Whitney p = 0.42960522, SMD = 0.1818
+
+Generated files:
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Figure_1_Tumor_Size_Distribution.png
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Figure_2_Anatomical_Distribution.png
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Figure_3_Tumor_Presence_by_Anatomy.png
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Figure_4_Tumor_Area_Distribution.png
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Final_Metadata_Representativeness_Analysis.xlsx
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Manuscript_Table.csv
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Statistical_Summary.csv
+/content/drive/MyDrive/LITS/Final_Metadata_Representativeness/Reviewer_Analysis_Summary.txt
+
+===========================================================================
