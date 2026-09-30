@@ -1,0 +1,2706 @@
+Mounted at /content/drive
+======================================================================
+LiTS - 3D VOLUME-PRESERVING PREPROCESSING
+For CLA-ResUNet volume-level evaluation
+======================================================================
+
+Paths:
+BASE_DIR   : /content/drive/MyDrive/LITS
+BATCH1_DIR : /content/drive/MyDrive/LITS/LITS Challenge/Training Batch 1
+BATCH2_DIR : /content/drive/MyDrive/LITS/LITS Challenge/Training Batch 2
+OUTPUT_DIR : /content/drive/MyDrive/LITS/Preprocessed3D_CLA
+
+Random seed = 42
+
+======================================================================
+CHECKING SOURCE DIRECTORIES
+======================================================================
+✓ /content/drive/MyDrive/LITS
+✓ /content/drive/MyDrive/LITS/LITS Challenge/Training Batch 1
+✓ /content/drive/MyDrive/LITS/LITS Challenge/Training Batch 2
+
+✓ Source directory check completed.
+
+======================================================================
+COLLECTING ORIGINAL NIFTI VOLUMES
+======================================================================
+
+Original volume files       : 131
+Original segmentation files : 131
+
+✓ Volume/segmentation count matches.
+
+======================================================================
+VERIFYING VOLUME / SEGMENTATION PAIRING
+======================================================================
+✓ Verified 131 volume/segmentation pairs.
+
+======================================================================
+PROCESSING ORIGINAL 3D NIFTI VOLUMES
+======================================================================
+
+----------------------------------------------------------------------
+[1/131] Processing Volume 0
+----------------------------------------------------------------------
+Image: volume-0.nii
+Label: segmentation-0.nii
+Original image shape : (512, 512, 75)
+Original label shape : (512, 512, 75)
+Voxel spacing: (0.703125, 0.703125, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_0.npy
+Saved label : label_0.npy
+Shape       : (512, 512, 75)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 550,036
+Tumor voxels : 2,591
+Time        : 7.33 sec
+
+----------------------------------------------------------------------
+[2/131] Processing Volume 1
+----------------------------------------------------------------------
+Image: volume-1.nii
+Label: segmentation-1.nii
+Original image shape : (512, 512, 123)
+Original label shape : (512, 512, 123)
+Voxel spacing: (0.6757810115814209, 0.6757810115814209, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_1.npy
+Saved label : label_1.npy
+Shape       : (512, 512, 123)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 643,779
+Tumor voxels : 7,194
+Time        : 8.47 sec
+
+----------------------------------------------------------------------
+[3/131] Processing Volume 2
+----------------------------------------------------------------------
+Image: volume-2.nii
+Label: segmentation-2.nii
+Original image shape : (512, 512, 517)
+Original label shape : (512, 512, 517)
+Voxel spacing: (0.775390625, 0.775390625, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_2.npy
+Saved label : label_2.npy
+Shape       : (512, 512, 517)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,186,716
+Tumor voxels : 14,131
+Time        : 27.66 sec
+
+----------------------------------------------------------------------
+[4/131] Processing Volume 3
+----------------------------------------------------------------------
+Image: volume-3.nii
+Label: segmentation-3.nii
+Original image shape : (512, 512, 534)
+Original label shape : (512, 512, 534)
+Voxel spacing: (0.693359375, 0.693359375, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_3.npy
+Saved label : label_3.npy
+Shape       : (512, 512, 534)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,243,946
+Tumor voxels : 2,793
+Time        : 24.08 sec
+
+----------------------------------------------------------------------
+[5/131] Processing Volume 4
+----------------------------------------------------------------------
+Image: volume-4.nii
+Label: segmentation-4.nii
+Original image shape : (512, 512, 841)
+Original label shape : (512, 512, 841)
+Voxel spacing: (0.9023439884185791, 0.9023439884185791, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_4.npy
+Saved label : label_4.npy
+Shape       : (512, 512, 841)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,310,959
+Tumor voxels : 1,516,253
+Time        : 39.90 sec
+
+----------------------------------------------------------------------
+[6/131] Processing Volume 5
+----------------------------------------------------------------------
+Image: volume-5.nii
+Label: segmentation-5.nii
+Original image shape : (512, 512, 537)
+Original label shape : (512, 512, 537)
+Voxel spacing: (0.96875, 0.96875, 0.7999879717826843)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_5.npy
+Saved label : label_5.npy
+Shape       : (512, 512, 537)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,912,013
+Tumor voxels : 540
+Time        : 24.12 sec
+
+----------------------------------------------------------------------
+[7/131] Processing Volume 6
+----------------------------------------------------------------------
+Image: volume-6.nii
+Label: segmentation-6.nii
+Original image shape : (512, 512, 518)
+Original label shape : (512, 512, 518)
+Voxel spacing: (0.873046875, 0.873046875, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_6.npy
+Saved label : label_6.npy
+Shape       : (512, 512, 518)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,443,764
+Tumor voxels : 31,467
+Time        : 22.12 sec
+
+----------------------------------------------------------------------
+[8/131] Processing Volume 7
+----------------------------------------------------------------------
+Image: volume-7.nii
+Label: segmentation-7.nii
+Original image shape : (512, 512, 541)
+Original label shape : (512, 512, 541)
+Voxel spacing: (0.748046875, 0.748046875, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_7.npy
+Saved label : label_7.npy
+Shape       : (512, 512, 541)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,033,572
+Tumor voxels : 32,422
+Time        : 22.54 sec
+
+----------------------------------------------------------------------
+[9/131] Processing Volume 8
+----------------------------------------------------------------------
+Image: volume-8.nii
+Label: segmentation-8.nii
+Original image shape : (512, 512, 541)
+Original label shape : (512, 512, 541)
+Voxel spacing: (0.84765625, 0.84765625, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_8.npy
+Saved label : label_8.npy
+Shape       : (512, 512, 541)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,623,110
+Tumor voxels : 20,827
+Time        : 25.06 sec
+
+----------------------------------------------------------------------
+[10/131] Processing Volume 9
+----------------------------------------------------------------------
+Image: volume-9.nii
+Label: segmentation-9.nii
+Original image shape : (512, 512, 549)
+Original label shape : (512, 512, 549)
+Voxel spacing: (0.8203125, 0.8203125, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_9.npy
+Saved label : label_9.npy
+Shape       : (512, 512, 549)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,278,892
+Tumor voxels : 22,179
+Time        : 24.06 sec
+
+----------------------------------------------------------------------
+[11/131] Processing Volume 10
+----------------------------------------------------------------------
+Image: volume-10.nii
+Label: segmentation-10.nii
+Original image shape : (512, 512, 501)
+Original label shape : (512, 512, 501)
+Voxel spacing: (0.76953125, 0.76953125, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_10.npy
+Saved label : label_10.npy
+Shape       : (512, 512, 501)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,857,366
+Tumor voxels : 24,310
+Time        : 20.64 sec
+
+----------------------------------------------------------------------
+[12/131] Processing Volume 11
+----------------------------------------------------------------------
+Image: volume-11.nii
+Label: segmentation-11.nii
+Original image shape : (512, 512, 466)
+Original label shape : (512, 512, 466)
+Voxel spacing: (0.671875, 0.671875, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_11.npy
+Saved label : label_11.npy
+Shape       : (512, 512, 466)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,253,446
+Tumor voxels : 10,549
+Time        : 22.11 sec
+
+----------------------------------------------------------------------
+[13/131] Processing Volume 12
+----------------------------------------------------------------------
+Image: volume-12.nii
+Label: segmentation-12.nii
+Original image shape : (512, 512, 455)
+Original label shape : (512, 512, 455)
+Voxel spacing: (0.654296875, 0.654296875, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_12.npy
+Saved label : label_12.npy
+Shape       : (512, 512, 455)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,205,057
+Tumor voxels : 790
+Time        : 19.20 sec
+
+----------------------------------------------------------------------
+[14/131] Processing Volume 13
+----------------------------------------------------------------------
+Image: volume-13.nii
+Label: segmentation-13.nii
+Original image shape : (512, 512, 605)
+Original label shape : (512, 512, 605)
+Voxel spacing: (0.84765625, 0.84765625, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_13.npy
+Saved label : label_13.npy
+Shape       : (512, 512, 605)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,876,901
+Tumor voxels : 23,651
+Time        : 26.78 sec
+
+----------------------------------------------------------------------
+[15/131] Processing Volume 14
+----------------------------------------------------------------------
+Image: volume-14.nii
+Label: segmentation-14.nii
+Original image shape : (512, 512, 588)
+Original label shape : (512, 512, 588)
+Voxel spacing: (0.685546875, 0.685546875, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_14.npy
+Saved label : label_14.npy
+Shape       : (512, 512, 588)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,041,924
+Tumor voxels : 2,612
+Time        : 31.16 sec
+
+----------------------------------------------------------------------
+[16/131] Processing Volume 15
+----------------------------------------------------------------------
+Image: volume-15.nii
+Label: segmentation-15.nii
+Original image shape : (512, 512, 565)
+Original label shape : (512, 512, 565)
+Voxel spacing: (0.654296875, 0.654296875, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_15.npy
+Saved label : label_15.npy
+Shape       : (512, 512, 565)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,236,299
+Tumor voxels : 875
+Time        : 25.77 sec
+
+----------------------------------------------------------------------
+[17/131] Processing Volume 16
+----------------------------------------------------------------------
+Image: volume-16.nii
+Label: segmentation-16.nii
+Original image shape : (512, 512, 689)
+Original label shape : (512, 512, 689)
+Voxel spacing: (0.703125, 0.703125, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_16.npy
+Saved label : label_16.npy
+Shape       : (512, 512, 689)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,165,361
+Tumor voxels : 373,122
+Time        : 43.94 sec
+
+----------------------------------------------------------------------
+[18/131] Processing Volume 17
+----------------------------------------------------------------------
+Image: volume-17.nii
+Label: segmentation-17.nii
+Original image shape : (512, 512, 826)
+Original label shape : (512, 512, 826)
+Voxel spacing: (0.7441409826278687, 0.7441409826278687, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_17.npy
+Saved label : label_17.npy
+Shape       : (512, 512, 826)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,582,734
+Tumor voxels : 37,676
+Time        : 52.73 sec
+
+----------------------------------------------------------------------
+[19/131] Processing Volume 18
+----------------------------------------------------------------------
+Image: volume-18.nii
+Label: segmentation-18.nii
+Original image shape : (512, 512, 845)
+Original label shape : (512, 512, 845)
+Voxel spacing: (0.921875, 0.921875, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_18.npy
+Saved label : label_18.npy
+Shape       : (512, 512, 845)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,932,415
+Tumor voxels : 10,210
+Time        : 81.90 sec
+
+----------------------------------------------------------------------
+[20/131] Processing Volume 19
+----------------------------------------------------------------------
+Image: volume-19.nii
+Label: segmentation-19.nii
+Original image shape : (512, 512, 547)
+Original label shape : (512, 512, 547)
+Voxel spacing: (0.751953125, 0.751953125, 0.7999879717826843)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_19.npy
+Saved label : label_19.npy
+Shape       : (512, 512, 547)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,861,552
+Tumor voxels : 18,528
+Time        : 62.40 sec
+
+----------------------------------------------------------------------
+[21/131] Processing Volume 20
+----------------------------------------------------------------------
+Image: volume-20.nii
+Label: segmentation-20.nii
+Original image shape : (512, 512, 574)
+Original label shape : (512, 512, 574)
+Voxel spacing: (0.802734375, 0.802734375, 0.7999879717826843)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_20.npy
+Saved label : label_20.npy
+Shape       : (512, 512, 574)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,655,683
+Tumor voxels : 1,669
+Time        : 71.03 sec
+
+----------------------------------------------------------------------
+[22/131] Processing Volume 21
+----------------------------------------------------------------------
+Image: volume-21.nii
+Label: segmentation-21.nii
+Original image shape : (512, 512, 437)
+Original label shape : (512, 512, 437)
+Voxel spacing: (0.767578125, 0.767578125, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_21.npy
+Saved label : label_21.npy
+Shape       : (512, 512, 437)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,988,990
+Tumor voxels : 36,271
+Time        : 53.44 sec
+
+----------------------------------------------------------------------
+[23/131] Processing Volume 22
+----------------------------------------------------------------------
+Image: volume-22.nii
+Label: segmentation-22.nii
+Original image shape : (512, 512, 247)
+Original label shape : (512, 512, 247)
+Voxel spacing: (0.9765620231628418, 0.9765620231628418, 3.2699999809265137)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_22.npy
+Saved label : label_22.npy
+Shape       : (512, 512, 247)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 421,735
+Tumor voxels : 9,424
+Time        : 37.97 sec
+
+----------------------------------------------------------------------
+[24/131] Processing Volume 23
+----------------------------------------------------------------------
+Image: volume-23.nii
+Label: segmentation-23.nii
+Original image shape : (512, 512, 391)
+Original label shape : (512, 512, 391)
+Voxel spacing: (0.66015625, 0.66015625, 1.2000000476837158)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_23.npy
+Saved label : label_23.npy
+Shape       : (512, 512, 391)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,351,958
+Tumor voxels : 42,904
+Time        : 48.24 sec
+
+----------------------------------------------------------------------
+[25/131] Processing Volume 24
+----------------------------------------------------------------------
+Image: volume-24.nii
+Label: segmentation-24.nii
+Original image shape : (512, 512, 276)
+Original label shape : (512, 512, 276)
+Voxel spacing: (0.669921875, 0.669921875, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_24.npy
+Saved label : label_24.npy
+Shape       : (512, 512, 276)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,040,878
+Tumor voxels : 1,422
+Time        : 31.79 sec
+
+----------------------------------------------------------------------
+[26/131] Processing Volume 25
+----------------------------------------------------------------------
+Image: volume-25.nii
+Label: segmentation-25.nii
+Original image shape : (512, 512, 601)
+Original label shape : (512, 512, 601)
+Voxel spacing: (0.767578125, 0.767578125, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_25.npy
+Saved label : label_25.npy
+Shape       : (512, 512, 601)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,024,759
+Tumor voxels : 454
+Time        : 42.64 sec
+
+----------------------------------------------------------------------
+[27/131] Processing Volume 26
+----------------------------------------------------------------------
+Image: volume-26.nii
+Label: segmentation-26.nii
+Original image shape : (512, 512, 668)
+Original label shape : (512, 512, 668)
+Voxel spacing: (0.86328125, 0.86328125, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_26.npy
+Saved label : label_26.npy
+Shape       : (512, 512, 668)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,286,734
+Tumor voxels : 51,809
+Time        : 48.93 sec
+
+----------------------------------------------------------------------
+[28/131] Processing Volume 27
+----------------------------------------------------------------------
+Image: volume-27.nii
+Label: segmentation-27.nii
+Original image shape : (512, 512, 861)
+Original label shape : (512, 512, 861)
+Voxel spacing: (0.73828125, 0.73828125, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_27.npy
+Saved label : label_27.npy
+Shape       : (512, 512, 861)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,182,992
+Tumor voxels : 187,743
+Time        : 65.82 sec
+
+----------------------------------------------------------------------
+[29/131] Processing Volume 28
+----------------------------------------------------------------------
+Image: volume-28.nii
+Label: segmentation-28.nii
+Original image shape : (512, 512, 129)
+Original label shape : (512, 512, 129)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_28.npy
+Saved label : label_28.npy
+Shape       : (512, 512, 129)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,650,863
+Tumor voxels : 214,268
+Time        : 26.15 sec
+
+----------------------------------------------------------------------
+[30/131] Processing Volume 29
+----------------------------------------------------------------------
+Image: volume-29.nii
+Label: segmentation-29.nii
+Original image shape : (512, 512, 172)
+Original label shape : (512, 512, 172)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_29.npy
+Saved label : label_29.npy
+Shape       : (512, 512, 172)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,633,962
+Tumor voxels : 14,062
+Time        : 28.52 sec
+
+----------------------------------------------------------------------
+[31/131] Processing Volume 30
+----------------------------------------------------------------------
+Image: volume-30.nii
+Label: segmentation-30.nii
+Original image shape : (512, 512, 200)
+Original label shape : (512, 512, 200)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_30.npy
+Saved label : label_30.npy
+Shape       : (512, 512, 200)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,360,827
+Tumor voxels : 14,252
+Time        : 28.87 sec
+
+----------------------------------------------------------------------
+[32/131] Processing Volume 31
+----------------------------------------------------------------------
+Image: volume-31.nii
+Label: segmentation-31.nii
+Original image shape : (512, 512, 91)
+Original label shape : (512, 512, 91)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_31.npy
+Saved label : label_31.npy
+Shape       : (512, 512, 91)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,125,696
+Tumor voxels : 6,736
+Time        : 26.93 sec
+
+----------------------------------------------------------------------
+[33/131] Processing Volume 32
+----------------------------------------------------------------------
+Image: volume-32.nii
+Label: segmentation-32.nii
+Original image shape : (512, 512, 139)
+Original label shape : (512, 512, 139)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1]
+
+Saved image : volume_32.npy
+Saved label : label_32.npy
+Shape       : (512, 512, 139)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,124,505
+Tumor voxels : 0
+Time        : 30.07 sec
+
+----------------------------------------------------------------------
+[34/131] Processing Volume 33
+----------------------------------------------------------------------
+Image: volume-33.nii
+Label: segmentation-33.nii
+Original image shape : (512, 512, 135)
+Original label shape : (512, 512, 135)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_33.npy
+Saved label : label_33.npy
+Shape       : (512, 512, 135)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,393,772
+Tumor voxels : 434,721
+Time        : 27.36 sec
+
+----------------------------------------------------------------------
+[35/131] Processing Volume 34
+----------------------------------------------------------------------
+Image: volume-34.nii
+Label: segmentation-34.nii
+Original image shape : (512, 512, 151)
+Original label shape : (512, 512, 151)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1]
+
+Saved image : volume_34.npy
+Saved label : label_34.npy
+Shape       : (512, 512, 151)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,461,944
+Tumor voxels : 0
+Time        : 27.12 sec
+
+----------------------------------------------------------------------
+[36/131] Processing Volume 35
+----------------------------------------------------------------------
+Image: volume-35.nii
+Label: segmentation-35.nii
+Original image shape : (512, 512, 124)
+Original label shape : (512, 512, 124)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_35.npy
+Saved label : label_35.npy
+Shape       : (512, 512, 124)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,194,772
+Tumor voxels : 20,318
+Time        : 16.21 sec
+
+----------------------------------------------------------------------
+[37/131] Processing Volume 36
+----------------------------------------------------------------------
+Image: volume-36.nii
+Label: segmentation-36.nii
+Original image shape : (512, 512, 111)
+Original label shape : (512, 512, 111)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_36.npy
+Saved label : label_36.npy
+Shape       : (512, 512, 111)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,225,936
+Tumor voxels : 39,484
+Time        : 29.11 sec
+
+----------------------------------------------------------------------
+[38/131] Processing Volume 37
+----------------------------------------------------------------------
+Image: volume-37.nii
+Label: segmentation-37.nii
+Original image shape : (512, 512, 122)
+Original label shape : (512, 512, 122)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_37.npy
+Saved label : label_37.npy
+Shape       : (512, 512, 122)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,857,041
+Tumor voxels : 14,981
+Time        : 30.57 sec
+
+----------------------------------------------------------------------
+[39/131] Processing Volume 38
+----------------------------------------------------------------------
+Image: volume-38.nii
+Label: segmentation-38.nii
+Original image shape : (512, 512, 132)
+Original label shape : (512, 512, 132)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1]
+
+Saved image : volume_38.npy
+Saved label : label_38.npy
+Shape       : (512, 512, 132)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,692,716
+Tumor voxels : 0
+Time        : 28.70 sec
+
+----------------------------------------------------------------------
+[40/131] Processing Volume 39
+----------------------------------------------------------------------
+Image: volume-39.nii
+Label: segmentation-39.nii
+Original image shape : (512, 512, 260)
+Original label shape : (512, 512, 260)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_39.npy
+Saved label : label_39.npy
+Shape       : (512, 512, 260)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,992,447
+Tumor voxels : 348,986
+Time        : 30.92 sec
+
+----------------------------------------------------------------------
+[41/131] Processing Volume 40
+----------------------------------------------------------------------
+Image: volume-40.nii
+Label: segmentation-40.nii
+Original image shape : (512, 512, 122)
+Original label shape : (512, 512, 122)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_40.npy
+Saved label : label_40.npy
+Shape       : (512, 512, 122)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,940,629
+Tumor voxels : 122,480
+Time        : 28.77 sec
+
+----------------------------------------------------------------------
+[42/131] Processing Volume 41
+----------------------------------------------------------------------
+Image: volume-41.nii
+Label: segmentation-41.nii
+Original image shape : (512, 512, 113)
+Original label shape : (512, 512, 113)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1]
+
+Saved image : volume_41.npy
+Saved label : label_41.npy
+Shape       : (512, 512, 113)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,633,641
+Tumor voxels : 0
+Time        : 28.50 sec
+
+----------------------------------------------------------------------
+[43/131] Processing Volume 42
+----------------------------------------------------------------------
+Image: volume-42.nii
+Label: segmentation-42.nii
+Original image shape : (512, 512, 125)
+Original label shape : (512, 512, 125)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_42.npy
+Saved label : label_42.npy
+Shape       : (512, 512, 125)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,387,934
+Tumor voxels : 1,638
+Time        : 27.08 sec
+
+----------------------------------------------------------------------
+[44/131] Processing Volume 43
+----------------------------------------------------------------------
+Image: volume-43.nii
+Label: segmentation-43.nii
+Original image shape : (512, 512, 155)
+Original label shape : (512, 512, 155)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_43.npy
+Saved label : label_43.npy
+Shape       : (512, 512, 155)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,709,848
+Tumor voxels : 7,337
+Time        : 28.55 sec
+
+----------------------------------------------------------------------
+[45/131] Processing Volume 44
+----------------------------------------------------------------------
+Image: volume-44.nii
+Label: segmentation-44.nii
+Original image shape : (512, 512, 119)
+Original label shape : (512, 512, 119)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_44.npy
+Saved label : label_44.npy
+Shape       : (512, 512, 119)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,920,507
+Tumor voxels : 185,990
+Time        : 29.46 sec
+
+----------------------------------------------------------------------
+[46/131] Processing Volume 45
+----------------------------------------------------------------------
+Image: volume-45.nii
+Label: segmentation-45.nii
+Original image shape : (512, 512, 74)
+Original label shape : (512, 512, 74)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_45.npy
+Saved label : label_45.npy
+Shape       : (512, 512, 74)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,216,025
+Tumor voxels : 4,539
+Time        : 14.12 sec
+
+----------------------------------------------------------------------
+[47/131] Processing Volume 46
+----------------------------------------------------------------------
+Image: volume-46.nii
+Label: segmentation-46.nii
+Original image shape : (512, 512, 124)
+Original label shape : (512, 512, 124)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_46.npy
+Saved label : label_46.npy
+Shape       : (512, 512, 124)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 541,792
+Tumor voxels : 41,416
+Time        : 26.67 sec
+
+----------------------------------------------------------------------
+[48/131] Processing Volume 47
+----------------------------------------------------------------------
+Image: volume-47.nii
+Label: segmentation-47.nii
+Original image shape : (512, 512, 225)
+Original label shape : (512, 512, 225)
+Voxel spacing: (1.0, 1.0, 1.0)
+Segmentation labels: [0, 1]
+
+Saved image : volume_47.npy
+Saved label : label_47.npy
+Shape       : (512, 512, 225)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,359,697
+Tumor voxels : 0
+Time        : 41.12 sec
+
+----------------------------------------------------------------------
+[49/131] Processing Volume 48
+----------------------------------------------------------------------
+Image: volume-48.nii
+Label: segmentation-48.nii
+Original image shape : (512, 512, 244)
+Original label shape : (512, 512, 244)
+Voxel spacing: (0.9765620231628418, 0.9765620231628418, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_48.npy
+Saved label : label_48.npy
+Shape       : (512, 512, 244)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 853,316
+Tumor voxels : 35,478
+Time        : 29.32 sec
+
+----------------------------------------------------------------------
+[50/131] Processing Volume 49
+----------------------------------------------------------------------
+Image: volume-49.nii
+Label: segmentation-49.nii
+Original image shape : (512, 512, 254)
+Original label shape : (512, 512, 254)
+Voxel spacing: (0.955078125, 0.955078125, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_49.npy
+Saved label : label_49.npy
+Shape       : (512, 512, 254)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 720,798
+Tumor voxels : 8,015
+Time        : 28.55 sec
+
+----------------------------------------------------------------------
+[51/131] Processing Volume 50
+----------------------------------------------------------------------
+Image: volume-50.nii
+Label: segmentation-50.nii
+Original image shape : (512, 512, 240)
+Original label shape : (512, 512, 240)
+Voxel spacing: (0.90625, 0.90625, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_50.npy
+Saved label : label_50.npy
+Shape       : (512, 512, 240)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 707,982
+Tumor voxels : 3,014
+Time        : 28.75 sec
+
+----------------------------------------------------------------------
+[52/131] Processing Volume 51
+----------------------------------------------------------------------
+Image: volume-51.nii
+Label: segmentation-51.nii
+Original image shape : (512, 512, 227)
+Original label shape : (512, 512, 227)
+Voxel spacing: (0.90234375, 0.90234375, 3.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_51.npy
+Saved label : label_51.npy
+Shape       : (512, 512, 227)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 656,295
+Tumor voxels : 124,895
+Time        : 32.80 sec
+
+----------------------------------------------------------------------
+[53/131] Processing Volume 52
+----------------------------------------------------------------------
+Image: volume-52.nii
+Label: segmentation-52.nii
+Original image shape : (512, 512, 237)
+Original label shape : (512, 512, 237)
+Voxel spacing: (0.8359379768371582, 0.8359379768371582, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_52.npy
+Saved label : label_52.npy
+Shape       : (512, 512, 237)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 741,298
+Tumor voxels : 18,296
+Time        : 28.61 sec
+
+----------------------------------------------------------------------
+[54/131] Processing Volume 53
+----------------------------------------------------------------------
+Image: volume-53.nii
+Label: segmentation-53.nii
+Original image shape : (512, 512, 105)
+Original label shape : (512, 512, 105)
+Voxel spacing: (0.8500000238418579, 0.8500000238418579, 4.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_53.npy
+Saved label : label_53.npy
+Shape       : (512, 512, 105)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 556,890
+Tumor voxels : 2,261
+Time        : 27.37 sec
+
+----------------------------------------------------------------------
+[55/131] Processing Volume 54
+----------------------------------------------------------------------
+Image: volume-54.nii
+Label: segmentation-54.nii
+Original image shape : (512, 512, 96)
+Original label shape : (512, 512, 96)
+Voxel spacing: (0.828125, 0.828125, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_54.npy
+Saved label : label_54.npy
+Shape       : (512, 512, 96)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 525,493
+Tumor voxels : 513
+Time        : 16.21 sec
+
+----------------------------------------------------------------------
+[56/131] Processing Volume 55
+----------------------------------------------------------------------
+Image: volume-55.nii
+Label: segmentation-55.nii
+Original image shape : (512, 512, 192)
+Original label shape : (512, 512, 192)
+Voxel spacing: (0.6660159826278687, 0.6660159826278687, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_55.npy
+Saved label : label_55.npy
+Shape       : (512, 512, 192)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,698,920
+Tumor voxels : 2,797
+Time        : 31.88 sec
+
+----------------------------------------------------------------------
+[57/131] Processing Volume 56
+----------------------------------------------------------------------
+Image: volume-56.nii
+Label: segmentation-56.nii
+Original image shape : (512, 512, 239)
+Original label shape : (512, 512, 239)
+Voxel spacing: (0.8027340173721313, 0.8027340173721313, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_56.npy
+Saved label : label_56.npy
+Shape       : (512, 512, 239)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,468,108
+Tumor voxels : 268,297
+Time        : 35.38 sec
+
+----------------------------------------------------------------------
+[58/131] Processing Volume 57
+----------------------------------------------------------------------
+Image: volume-57.nii
+Label: segmentation-57.nii
+Original image shape : (512, 512, 366)
+Original label shape : (512, 512, 366)
+Voxel spacing: (0.703125, 0.703125, 1.25)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_57.npy
+Saved label : label_57.npy
+Shape       : (512, 512, 366)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,002,392
+Tumor voxels : 6,604
+Time        : 49.06 sec
+
+----------------------------------------------------------------------
+[59/131] Processing Volume 58
+----------------------------------------------------------------------
+Image: volume-58.nii
+Label: segmentation-58.nii
+Original image shape : (512, 512, 212)
+Original label shape : (512, 512, 212)
+Voxel spacing: (0.6835939884185791, 0.6835939884185791, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_58.npy
+Saved label : label_58.npy
+Shape       : (512, 512, 212)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,335,401
+Tumor voxels : 1,443
+Time        : 31.93 sec
+
+----------------------------------------------------------------------
+[60/131] Processing Volume 59
+----------------------------------------------------------------------
+Image: volume-59.nii
+Label: segmentation-59.nii
+Original image shape : (512, 512, 216)
+Original label shape : (512, 512, 216)
+Voxel spacing: (0.6835939884185791, 0.6835939884185791, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_59.npy
+Saved label : label_59.npy
+Shape       : (512, 512, 216)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,501,488
+Tumor voxels : 697
+Time        : 32.49 sec
+
+----------------------------------------------------------------------
+[61/131] Processing Volume 60
+----------------------------------------------------------------------
+Image: volume-60.nii
+Label: segmentation-60.nii
+Original image shape : (512, 512, 244)
+Original label shape : (512, 512, 244)
+Voxel spacing: (0.7988280057907104, 0.7988280057907104, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_60.npy
+Saved label : label_60.npy
+Shape       : (512, 512, 244)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,869,578
+Tumor voxels : 11,368
+Time        : 33.67 sec
+
+----------------------------------------------------------------------
+[62/131] Processing Volume 61
+----------------------------------------------------------------------
+Image: volume-61.nii
+Label: segmentation-61.nii
+Original image shape : (512, 512, 193)
+Original label shape : (512, 512, 193)
+Voxel spacing: (0.7578120231628418, 0.7578120231628418, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_61.npy
+Saved label : label_61.npy
+Shape       : (512, 512, 193)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,129,592
+Tumor voxels : 2,916
+Time        : 29.05 sec
+
+----------------------------------------------------------------------
+[63/131] Processing Volume 62
+----------------------------------------------------------------------
+Image: volume-62.nii
+Label: segmentation-62.nii
+Original image shape : (512, 512, 188)
+Original label shape : (512, 512, 188)
+Voxel spacing: (0.6445310115814209, 0.6445310115814209, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_62.npy
+Saved label : label_62.npy
+Shape       : (512, 512, 188)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,423,214
+Tumor voxels : 3,196
+Time        : 28.97 sec
+
+----------------------------------------------------------------------
+[64/131] Processing Volume 63
+----------------------------------------------------------------------
+Image: volume-63.nii
+Label: segmentation-63.nii
+Original image shape : (512, 512, 104)
+Original label shape : (512, 512, 104)
+Voxel spacing: (0.7402340173721313, 0.7402340173721313, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_63.npy
+Saved label : label_63.npy
+Shape       : (512, 512, 104)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 635,709
+Tumor voxels : 688
+Time        : 27.97 sec
+
+----------------------------------------------------------------------
+[65/131] Processing Volume 64
+----------------------------------------------------------------------
+Image: volume-64.nii
+Label: segmentation-64.nii
+Original image shape : (512, 512, 230)
+Original label shape : (512, 512, 230)
+Voxel spacing: (0.7773439884185791, 0.7773439884185791, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_64.npy
+Saved label : label_64.npy
+Shape       : (512, 512, 230)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,635,708
+Tumor voxels : 179,093
+Time        : 29.24 sec
+
+----------------------------------------------------------------------
+[66/131] Processing Volume 65
+----------------------------------------------------------------------
+Image: volume-65.nii
+Label: segmentation-65.nii
+Original image shape : (512, 512, 513)
+Original label shape : (512, 512, 513)
+Voxel spacing: (0.625, 0.625, 0.7989500164985657)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_65.npy
+Saved label : label_65.npy
+Shape       : (512, 512, 513)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,786,649
+Tumor voxels : 1,670
+Time        : 41.46 sec
+
+----------------------------------------------------------------------
+[67/131] Processing Volume 66
+----------------------------------------------------------------------
+Image: volume-66.nii
+Label: segmentation-66.nii
+Original image shape : (512, 512, 86)
+Original label shape : (512, 512, 86)
+Voxel spacing: (0.7128909826278687, 0.7128909826278687, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_66.npy
+Saved label : label_66.npy
+Shape       : (512, 512, 86)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 672,006
+Tumor voxels : 2,333
+Time        : 26.95 sec
+
+----------------------------------------------------------------------
+[68/131] Processing Volume 67
+----------------------------------------------------------------------
+Image: volume-67.nii
+Label: segmentation-67.nii
+Original image shape : (512, 512, 165)
+Original label shape : (512, 512, 165)
+Voxel spacing: (0.7109379768371582, 0.7109379768371582, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_67.npy
+Saved label : label_67.npy
+Shape       : (512, 512, 165)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,101,934
+Tumor voxels : 525
+Time        : 18.12 sec
+
+----------------------------------------------------------------------
+[69/131] Processing Volume 68
+----------------------------------------------------------------------
+Image: volume-68.nii
+Label: segmentation-68.nii
+Original image shape : (512, 512, 266)
+Original label shape : (512, 512, 266)
+Voxel spacing: (0.6660159826278687, 0.6660159826278687, 2.49993896484375)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_68.npy
+Saved label : label_68.npy
+Shape       : (512, 512, 266)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,264,814
+Tumor voxels : 4,888
+Time        : 40.38 sec
+
+----------------------------------------------------------------------
+[70/131] Processing Volume 69
+----------------------------------------------------------------------
+Image: volume-69.nii
+Label: segmentation-69.nii
+Original image shape : (512, 512, 245)
+Original label shape : (512, 512, 245)
+Voxel spacing: (0.75390625, 0.75390625, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_69.npy
+Saved label : label_69.npy
+Shape       : (512, 512, 245)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,622,732
+Tumor voxels : 3,113
+Time        : 36.22 sec
+
+----------------------------------------------------------------------
+[71/131] Processing Volume 70
+----------------------------------------------------------------------
+Image: volume-70.nii
+Label: segmentation-70.nii
+Original image shape : (512, 512, 333)
+Original label shape : (512, 512, 333)
+Voxel spacing: (0.5976560115814209, 0.5976560115814209, 1.25)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_70.npy
+Saved label : label_70.npy
+Shape       : (512, 512, 333)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,242,523
+Tumor voxels : 120,665
+Time        : 35.39 sec
+
+----------------------------------------------------------------------
+[72/131] Processing Volume 71
+----------------------------------------------------------------------
+Image: volume-71.nii
+Label: segmentation-71.nii
+Original image shape : (512, 512, 94)
+Original label shape : (512, 512, 94)
+Voxel spacing: (0.556640625, 0.556640625, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_71.npy
+Saved label : label_71.npy
+Shape       : (512, 512, 94)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 934,751
+Tumor voxels : 142,741
+Time        : 29.73 sec
+
+----------------------------------------------------------------------
+[73/131] Processing Volume 72
+----------------------------------------------------------------------
+Image: volume-72.nii
+Label: segmentation-72.nii
+Original image shape : (512, 512, 93)
+Original label shape : (512, 512, 93)
+Voxel spacing: (0.6777340173721313, 0.6777340173721313, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_72.npy
+Saved label : label_72.npy
+Shape       : (512, 512, 93)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,221,191
+Tumor voxels : 22,364
+Time        : 28.19 sec
+
+----------------------------------------------------------------------
+[74/131] Processing Volume 73
+----------------------------------------------------------------------
+Image: volume-73.nii
+Label: segmentation-73.nii
+Original image shape : (512, 512, 121)
+Original label shape : (512, 512, 121)
+Voxel spacing: (0.951171875, 0.951171875, 4.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_73.npy
+Saved label : label_73.npy
+Shape       : (512, 512, 121)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 561,461
+Tumor voxels : 592
+Time        : 32.87 sec
+
+----------------------------------------------------------------------
+[75/131] Processing Volume 74
+----------------------------------------------------------------------
+Image: volume-74.nii
+Label: segmentation-74.nii
+Original image shape : (512, 512, 107)
+Original label shape : (512, 512, 107)
+Voxel spacing: (0.8261719942092896, 0.8261719942092896, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_74.npy
+Saved label : label_74.npy
+Shape       : (512, 512, 107)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 707,237
+Tumor voxels : 37,144
+Time        : 29.92 sec
+
+----------------------------------------------------------------------
+[76/131] Processing Volume 75
+----------------------------------------------------------------------
+Image: volume-75.nii
+Label: segmentation-75.nii
+Original image shape : (512, 512, 89)
+Original label shape : (512, 512, 89)
+Voxel spacing: (0.7578125, 0.7578125, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_75.npy
+Saved label : label_75.npy
+Shape       : (512, 512, 89)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 609,134
+Tumor voxels : 2,703
+Time        : 28.21 sec
+
+----------------------------------------------------------------------
+[77/131] Processing Volume 76
+----------------------------------------------------------------------
+Image: volume-76.nii
+Label: segmentation-76.nii
+Original image shape : (512, 512, 168)
+Original label shape : (512, 512, 168)
+Voxel spacing: (0.7421879768371582, 0.7421879768371582, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_76.npy
+Saved label : label_76.npy
+Shape       : (512, 512, 168)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,242,705
+Tumor voxels : 193,508
+Time        : 29.03 sec
+
+----------------------------------------------------------------------
+[78/131] Processing Volume 77
+----------------------------------------------------------------------
+Image: volume-77.nii
+Label: segmentation-77.nii
+Original image shape : (512, 512, 94)
+Original label shape : (512, 512, 94)
+Voxel spacing: (0.781000018119812, 0.781000018119812, 5.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_77.npy
+Saved label : label_77.npy
+Shape       : (512, 512, 94)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 618,684
+Tumor voxels : 4,234
+Time        : 33.51 sec
+
+----------------------------------------------------------------------
+[79/131] Processing Volume 78
+----------------------------------------------------------------------
+Image: volume-78.nii
+Label: segmentation-78.nii
+Original image shape : (512, 512, 198)
+Original label shape : (512, 512, 198)
+Voxel spacing: (0.7851560115814209, 0.7851560115814209, 2.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_78.npy
+Saved label : label_78.npy
+Shape       : (512, 512, 198)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,000,912
+Tumor voxels : 12,265
+Time        : 34.72 sec
+
+----------------------------------------------------------------------
+[80/131] Processing Volume 79
+----------------------------------------------------------------------
+Image: volume-79.nii
+Label: segmentation-79.nii
+Original image shape : (512, 512, 147)
+Original label shape : (512, 512, 147)
+Voxel spacing: (0.796875, 0.796875, 3.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_79.npy
+Saved label : label_79.npy
+Shape       : (512, 512, 147)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 651,009
+Tumor voxels : 9,085
+Time        : 29.10 sec
+
+----------------------------------------------------------------------
+[81/131] Processing Volume 80
+----------------------------------------------------------------------
+Image: volume-80.nii
+Label: segmentation-80.nii
+Original image shape : (512, 512, 217)
+Original label shape : (512, 512, 217)
+Voxel spacing: (0.68359375, 0.68359375, 2.0)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_80.npy
+Saved label : label_80.npy
+Shape       : (512, 512, 217)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,395,850
+Tumor voxels : 88,269
+Time        : 32.91 sec
+
+----------------------------------------------------------------------
+[82/131] Processing Volume 81
+----------------------------------------------------------------------
+Image: volume-81.nii
+Label: segmentation-81.nii
+Original image shape : (512, 512, 343)
+Original label shape : (512, 512, 343)
+Voxel spacing: (0.703125, 0.703125, 1.25)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_81.npy
+Saved label : label_81.npy
+Shape       : (512, 512, 343)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,340,769
+Tumor voxels : 5,130
+Time        : 40.68 sec
+
+----------------------------------------------------------------------
+[83/131] Processing Volume 82
+----------------------------------------------------------------------
+Image: volume-82.nii
+Label: segmentation-82.nii
+Original image shape : (512, 512, 519)
+Original label shape : (512, 512, 519)
+Voxel spacing: (0.625, 0.625, 0.8009999990463257)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_82.npy
+Saved label : label_82.npy
+Shape       : (512, 512, 519)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,726,373
+Tumor voxels : 141,610
+Time        : 44.89 sec
+
+----------------------------------------------------------------------
+[84/131] Processing Volume 83
+----------------------------------------------------------------------
+Image: volume-83.nii
+Label: segmentation-83.nii
+Original image shape : (512, 512, 871)
+Original label shape : (512, 512, 871)
+Voxel spacing: (0.7421875, 0.7421875, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_83.npy
+Saved label : label_83.npy
+Shape       : (512, 512, 871)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,955,487
+Tumor voxels : 98
+Time        : 69.68 sec
+
+----------------------------------------------------------------------
+[85/131] Processing Volume 84
+----------------------------------------------------------------------
+Image: volume-84.nii
+Label: segmentation-84.nii
+Original image shape : (512, 512, 733)
+Original label shape : (512, 512, 733)
+Voxel spacing: (0.7578125, 0.7578125, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_84.npy
+Saved label : label_84.npy
+Shape       : (512, 512, 733)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,892,550
+Tumor voxels : 541,305
+Time        : 45.36 sec
+
+----------------------------------------------------------------------
+[86/131] Processing Volume 85
+----------------------------------------------------------------------
+Image: volume-85.nii
+Label: segmentation-85.nii
+Original image shape : (512, 512, 630)
+Original label shape : (512, 512, 630)
+Voxel spacing: (0.64453125, 0.64453125, 0.7000000476837158)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_85.npy
+Saved label : label_85.npy
+Shape       : (512, 512, 630)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 7,076,467
+Tumor voxels : 15,544
+Time        : 41.38 sec
+
+----------------------------------------------------------------------
+[87/131] Processing Volume 86
+----------------------------------------------------------------------
+Image: volume-86.nii
+Label: segmentation-86.nii
+Original image shape : (512, 512, 647)
+Original label shape : (512, 512, 647)
+Voxel spacing: (0.68359375, 0.68359375, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_86.npy
+Saved label : label_86.npy
+Shape       : (512, 512, 647)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 5,358,063
+Tumor voxels : 6,051
+Time        : 44.60 sec
+
+----------------------------------------------------------------------
+[88/131] Processing Volume 87
+----------------------------------------------------------------------
+Image: volume-87.nii
+Label: segmentation-87.nii
+Original image shape : (512, 512, 896)
+Original label shape : (512, 512, 896)
+Voxel spacing: (0.8539999723434448, 0.8539999723434448, 0.800000011920929)
+Segmentation labels: [0, 1]
+
+Saved image : volume_87.npy
+Saved label : label_87.npy
+Shape       : (512, 512, 896)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,908,622
+Tumor voxels : 0
+Time        : 52.94 sec
+
+----------------------------------------------------------------------
+[89/131] Processing Volume 88
+----------------------------------------------------------------------
+Image: volume-88.nii
+Label: segmentation-88.nii
+Original image shape : (512, 512, 811)
+Original label shape : (512, 512, 811)
+Voxel spacing: (0.7559999823570251, 0.7559999823570251, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_88.npy
+Saved label : label_88.npy
+Shape       : (512, 512, 811)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,148,644
+Tumor voxels : 254,141
+Time        : 66.32 sec
+
+----------------------------------------------------------------------
+[90/131] Processing Volume 89
+----------------------------------------------------------------------
+Image: volume-89.nii
+Label: segmentation-89.nii
+Original image shape : (512, 512, 766)
+Original label shape : (512, 512, 766)
+Voxel spacing: (0.6370000243186951, 0.6370000243186951, 0.800000011920929)
+Segmentation labels: [0, 1]
+
+Saved image : volume_89.npy
+Saved label : label_89.npy
+Shape       : (512, 512, 766)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,821,209
+Tumor voxels : 0
+Time        : 56.45 sec
+
+----------------------------------------------------------------------
+[91/131] Processing Volume 90
+----------------------------------------------------------------------
+Image: volume-90.nii
+Label: segmentation-90.nii
+Original image shape : (512, 512, 751)
+Original label shape : (512, 512, 751)
+Voxel spacing: (0.781000018119812, 0.781000018119812, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_90.npy
+Saved label : label_90.npy
+Shape       : (512, 512, 751)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,263,211
+Tumor voxels : 250,893
+Time        : 69.61 sec
+
+----------------------------------------------------------------------
+[92/131] Processing Volume 91
+----------------------------------------------------------------------
+Image: volume-91.nii
+Label: segmentation-91.nii
+Original image shape : (512, 512, 751)
+Original label shape : (512, 512, 751)
+Voxel spacing: (0.8579999804496765, 0.8579999804496765, 0.800000011920929)
+Segmentation labels: [0, 1]
+
+Saved image : volume_91.npy
+Saved label : label_91.npy
+Shape       : (512, 512, 751)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,781,769
+Tumor voxels : 0
+Time        : 72.45 sec
+
+----------------------------------------------------------------------
+[93/131] Processing Volume 92
+----------------------------------------------------------------------
+Image: volume-92.nii
+Label: segmentation-92.nii
+Original image shape : (512, 512, 836)
+Original label shape : (512, 512, 836)
+Voxel spacing: (0.6710000038146973, 0.6710000038146973, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_92.npy
+Saved label : label_92.npy
+Shape       : (512, 512, 836)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,373,372
+Tumor voxels : 2,632
+Time        : 54.74 sec
+
+----------------------------------------------------------------------
+[94/131] Processing Volume 93
+----------------------------------------------------------------------
+Image: volume-93.nii
+Label: segmentation-93.nii
+Original image shape : (512, 512, 696)
+Original label shape : (512, 512, 696)
+Voxel spacing: (0.6620000004768372, 0.6620000004768372, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_93.npy
+Saved label : label_93.npy
+Shape       : (512, 512, 696)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,290,558
+Tumor voxels : 348,088
+Time        : 46.24 sec
+
+----------------------------------------------------------------------
+[95/131] Processing Volume 94
+----------------------------------------------------------------------
+Image: volume-94.nii
+Label: segmentation-94.nii
+Original image shape : (512, 512, 917)
+Original label shape : (512, 512, 917)
+Voxel spacing: (0.837890625, 0.837890625, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_94.npy
+Saved label : label_94.npy
+Shape       : (512, 512, 917)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,960,488
+Tumor voxels : 62,525
+Time        : 52.59 sec
+
+----------------------------------------------------------------------
+[96/131] Processing Volume 95
+----------------------------------------------------------------------
+Image: volume-95.nii
+Label: segmentation-95.nii
+Original image shape : (512, 512, 841)
+Original label shape : (512, 512, 841)
+Voxel spacing: (0.7379999756813049, 0.7379999756813049, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_95.npy
+Saved label : label_95.npy
+Shape       : (512, 512, 841)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,068,117
+Tumor voxels : 2,581
+Time        : 42.64 sec
+
+----------------------------------------------------------------------
+[97/131] Processing Volume 96
+----------------------------------------------------------------------
+Image: volume-96.nii
+Label: segmentation-96.nii
+Original image shape : (512, 512, 722)
+Original label shape : (512, 512, 722)
+Voxel spacing: (0.74609375, 0.74609375, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_96.npy
+Saved label : label_96.npy
+Shape       : (512, 512, 722)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 5,710,555
+Tumor voxels : 40,533
+Time        : 48.92 sec
+
+----------------------------------------------------------------------
+[98/131] Processing Volume 97
+----------------------------------------------------------------------
+Image: volume-97.nii
+Label: segmentation-97.nii
+Original image shape : (512, 512, 671)
+Original label shape : (512, 512, 671)
+Voxel spacing: (0.72265625, 0.72265625, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_97.npy
+Saved label : label_97.npy
+Shape       : (512, 512, 671)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,588,123
+Tumor voxels : 725,310
+Time        : 36.44 sec
+
+----------------------------------------------------------------------
+[99/131] Processing Volume 98
+----------------------------------------------------------------------
+Image: volume-98.nii
+Label: segmentation-98.nii
+Original image shape : (512, 512, 645)
+Original label shape : (512, 512, 645)
+Voxel spacing: (0.734375, 0.734375, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_98.npy
+Saved label : label_98.npy
+Shape       : (512, 512, 645)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,514,870
+Tumor voxels : 608,639
+Time        : 54.65 sec
+
+----------------------------------------------------------------------
+[100/131] Processing Volume 99
+----------------------------------------------------------------------
+Image: volume-99.nii
+Label: segmentation-99.nii
+Original image shape : (512, 512, 629)
+Original label shape : (512, 512, 629)
+Voxel spacing: (0.78125, 0.78125, 0.699984073638916)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_99.npy
+Saved label : label_99.npy
+Shape       : (512, 512, 629)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,681,200
+Tumor voxels : 12,253
+Time        : 87.99 sec
+
+----------------------------------------------------------------------
+[101/131] Processing Volume 100
+----------------------------------------------------------------------
+Image: volume-100.nii
+Label: segmentation-100.nii
+Original image shape : (512, 512, 685)
+Original label shape : (512, 512, 685)
+Voxel spacing: (0.69921875, 0.69921875, 0.6999999284744263)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_100.npy
+Saved label : label_100.npy
+Shape       : (512, 512, 685)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 5,003,071
+Tumor voxels : 1,569,689
+Time        : 48.09 sec
+
+----------------------------------------------------------------------
+[102/131] Processing Volume 101
+----------------------------------------------------------------------
+Image: volume-101.nii
+Label: segmentation-101.nii
+Original image shape : (512, 512, 683)
+Original label shape : (512, 512, 683)
+Voxel spacing: (0.705078125, 0.705078125, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_101.npy
+Saved label : label_101.npy
+Shape       : (512, 512, 683)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 6,481,591
+Tumor voxels : 378,439
+Time        : 49.28 sec
+
+----------------------------------------------------------------------
+[103/131] Processing Volume 102
+----------------------------------------------------------------------
+Image: volume-102.nii
+Label: segmentation-102.nii
+Original image shape : (512, 512, 677)
+Original label shape : (512, 512, 677)
+Voxel spacing: (0.716796875, 0.716796875, 0.6999852061271667)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_102.npy
+Saved label : label_102.npy
+Shape       : (512, 512, 677)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 5,061,264
+Tumor voxels : 47,754
+Time        : 47.20 sec
+
+----------------------------------------------------------------------
+[104/131] Processing Volume 103
+----------------------------------------------------------------------
+Image: volume-103.nii
+Label: segmentation-103.nii
+Original image shape : (512, 512, 683)
+Original label shape : (512, 512, 683)
+Voxel spacing: (0.85546875, 0.85546875, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_103.npy
+Saved label : label_103.npy
+Shape       : (512, 512, 683)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,374,639
+Tumor voxels : 75,787
+Time        : 51.02 sec
+
+----------------------------------------------------------------------
+[105/131] Processing Volume 104
+----------------------------------------------------------------------
+Image: volume-104.nii
+Label: segmentation-104.nii
+Original image shape : (512, 512, 781)
+Original label shape : (512, 512, 781)
+Voxel spacing: (0.781000018119812, 0.781000018119812, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_104.npy
+Saved label : label_104.npy
+Shape       : (512, 512, 781)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,951,625
+Tumor voxels : 275,918
+Time        : 92.98 sec
+
+----------------------------------------------------------------------
+[106/131] Processing Volume 105
+----------------------------------------------------------------------
+Image: volume-105.nii
+Label: segmentation-105.nii
+Original image shape : (512, 512, 986)
+Original label shape : (512, 512, 986)
+Voxel spacing: (0.84375, 0.84375, 0.699999988079071)
+Segmentation labels: [0, 1]
+
+Saved image : volume_105.npy
+Saved label : label_105.npy
+Shape       : (512, 512, 986)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,520,581
+Tumor voxels : 0
+Time        : 66.74 sec
+
+----------------------------------------------------------------------
+[107/131] Processing Volume 106
+----------------------------------------------------------------------
+Image: volume-106.nii
+Label: segmentation-106.nii
+Original image shape : (512, 512, 771)
+Original label shape : (512, 512, 771)
+Voxel spacing: (0.7289999723434448, 0.7289999723434448, 0.800000011920929)
+Segmentation labels: [0, 1]
+
+Saved image : volume_106.npy
+Saved label : label_106.npy
+Shape       : (512, 512, 771)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,312,280
+Tumor voxels : 0
+Time        : 62.36 sec
+
+----------------------------------------------------------------------
+[108/131] Processing Volume 107
+----------------------------------------------------------------------
+Image: volume-107.nii
+Label: segmentation-107.nii
+Original image shape : (512, 512, 771)
+Original label shape : (512, 512, 771)
+Voxel spacing: (0.7820000052452087, 0.7820000052452087, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_107.npy
+Saved label : label_107.npy
+Shape       : (512, 512, 771)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,140,434
+Tumor voxels : 5,953
+Time        : 62.51 sec
+
+----------------------------------------------------------------------
+[109/131] Processing Volume 108
+----------------------------------------------------------------------
+Image: volume-108.nii
+Label: segmentation-108.nii
+Original image shape : (512, 512, 856)
+Original label shape : (512, 512, 856)
+Voxel spacing: (0.7289999723434448, 0.7289999723434448, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_108.npy
+Saved label : label_108.npy
+Shape       : (512, 512, 856)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,402,280
+Tumor voxels : 1,455,033
+Time        : 54.82 sec
+
+----------------------------------------------------------------------
+[110/131] Processing Volume 109
+----------------------------------------------------------------------
+Image: volume-109.nii
+Label: segmentation-109.nii
+Original image shape : (512, 512, 756)
+Original label shape : (512, 512, 756)
+Voxel spacing: (0.7630000114440918, 0.7630000114440918, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_109.npy
+Saved label : label_109.npy
+Shape       : (512, 512, 756)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,120,254
+Tumor voxels : 72,822
+Time        : 59.19 sec
+
+----------------------------------------------------------------------
+[111/131] Processing Volume 110
+----------------------------------------------------------------------
+Image: volume-110.nii
+Label: segmentation-110.nii
+Original image shape : (512, 512, 816)
+Original label shape : (512, 512, 816)
+Voxel spacing: (0.7200000286102295, 0.7200000286102295, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_110.npy
+Saved label : label_110.npy
+Shape       : (512, 512, 816)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,097,843
+Tumor voxels : 124,406
+Time        : 55.65 sec
+
+----------------------------------------------------------------------
+[112/131] Processing Volume 111
+----------------------------------------------------------------------
+Image: volume-111.nii
+Label: segmentation-111.nii
+Original image shape : (512, 512, 761)
+Original label shape : (512, 512, 761)
+Voxel spacing: (0.7820000052452087, 0.7820000052452087, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_111.npy
+Saved label : label_111.npy
+Shape       : (512, 512, 761)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,599,573
+Tumor voxels : 7,300
+Time        : 74.49 sec
+
+----------------------------------------------------------------------
+[113/131] Processing Volume 112
+----------------------------------------------------------------------
+Image: volume-112.nii
+Label: segmentation-112.nii
+Original image shape : (512, 512, 751)
+Original label shape : (512, 512, 751)
+Voxel spacing: (0.6399999856948853, 0.6399999856948853, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_112.npy
+Saved label : label_112.npy
+Shape       : (512, 512, 751)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,976,313
+Tumor voxels : 1,181
+Time        : 54.13 sec
+
+----------------------------------------------------------------------
+[114/131] Processing Volume 113
+----------------------------------------------------------------------
+Image: volume-113.nii
+Label: segmentation-113.nii
+Original image shape : (512, 512, 836)
+Original label shape : (512, 512, 836)
+Voxel spacing: (0.781000018119812, 0.781000018119812, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_113.npy
+Saved label : label_113.npy
+Shape       : (512, 512, 836)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,286,066
+Tumor voxels : 84,270
+Time        : 54.65 sec
+
+----------------------------------------------------------------------
+[115/131] Processing Volume 114
+----------------------------------------------------------------------
+Image: volume-114.nii
+Label: segmentation-114.nii
+Original image shape : (512, 512, 846)
+Original label shape : (512, 512, 846)
+Voxel spacing: (0.7820000052452087, 0.7820000052452087, 0.800000011920929)
+Segmentation labels: [0, 1]
+
+Saved image : volume_114.npy
+Saved label : label_114.npy
+Shape       : (512, 512, 846)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,696,170
+Tumor voxels : 0
+Time        : 89.44 sec
+
+----------------------------------------------------------------------
+[116/131] Processing Volume 115
+----------------------------------------------------------------------
+Image: volume-115.nii
+Label: segmentation-115.nii
+Original image shape : (512, 512, 846)
+Original label shape : (512, 512, 846)
+Voxel spacing: (0.7559999823570251, 0.7559999823570251, 0.800000011920929)
+Segmentation labels: [0, 1]
+
+Saved image : volume_115.npy
+Saved label : label_115.npy
+Shape       : (512, 512, 846)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,309,518
+Tumor voxels : 0
+Time        : 58.61 sec
+
+----------------------------------------------------------------------
+[117/131] Processing Volume 116
+----------------------------------------------------------------------
+Image: volume-116.nii
+Label: segmentation-116.nii
+Original image shape : (512, 512, 908)
+Original label shape : (512, 512, 908)
+Voxel spacing: (0.7890625, 0.7890625, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_116.npy
+Saved label : label_116.npy
+Shape       : (512, 512, 908)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,649,978
+Tumor voxels : 611,132
+Time        : 58.26 sec
+
+----------------------------------------------------------------------
+[118/131] Processing Volume 117
+----------------------------------------------------------------------
+Image: volume-117.nii
+Label: segmentation-117.nii
+Original image shape : (512, 512, 836)
+Original label shape : (512, 512, 836)
+Voxel spacing: (0.6800000071525574, 0.6800000071525574, 0.800000011920929)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_117.npy
+Saved label : label_117.npy
+Shape       : (512, 512, 836)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 4,009,641
+Tumor voxels : 1,034,092
+Time        : 57.15 sec
+
+----------------------------------------------------------------------
+[119/131] Processing Volume 118
+----------------------------------------------------------------------
+Image: volume-118.nii
+Label: segmentation-118.nii
+Original image shape : (512, 512, 427)
+Original label shape : (512, 512, 427)
+Voxel spacing: (0.744140625, 0.744140625, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_118.npy
+Saved label : label_118.npy
+Shape       : (512, 512, 427)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,138,650
+Tumor voxels : 419,119
+Time        : 34.82 sec
+
+----------------------------------------------------------------------
+[120/131] Processing Volume 119
+----------------------------------------------------------------------
+Image: volume-119.nii
+Label: segmentation-119.nii
+Original image shape : (512, 512, 461)
+Original label shape : (512, 512, 461)
+Voxel spacing: (0.84375, 0.84375, 1.5)
+Segmentation labels: [0, 1]
+
+Saved image : volume_119.npy
+Saved label : label_119.npy
+Shape       : (512, 512, 461)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,360,092
+Tumor voxels : 0
+Time        : 34.31 sec
+
+----------------------------------------------------------------------
+[121/131] Processing Volume 120
+----------------------------------------------------------------------
+Image: volume-120.nii
+Label: segmentation-120.nii
+Original image shape : (512, 512, 424)
+Original label shape : (512, 512, 424)
+Voxel spacing: (0.744140625, 0.744140625, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_120.npy
+Saved label : label_120.npy
+Shape       : (512, 512, 424)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,910,010
+Tumor voxels : 5,231
+Time        : 29.03 sec
+
+----------------------------------------------------------------------
+[122/131] Processing Volume 121
+----------------------------------------------------------------------
+Image: volume-121.nii
+Label: segmentation-121.nii
+Original image shape : (512, 512, 463)
+Original label shape : (512, 512, 463)
+Voxel spacing: (0.794921875, 0.794921875, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_121.npy
+Saved label : label_121.npy
+Shape       : (512, 512, 463)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,905,575
+Tumor voxels : 2,123
+Time        : 30.10 sec
+
+----------------------------------------------------------------------
+[123/131] Processing Volume 122
+----------------------------------------------------------------------
+Image: volume-122.nii
+Label: segmentation-122.nii
+Original image shape : (512, 512, 422)
+Original label shape : (512, 512, 422)
+Voxel spacing: (0.689453125, 0.689453125, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_122.npy
+Saved label : label_122.npy
+Shape       : (512, 512, 422)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,775,382
+Tumor voxels : 79,803
+Time        : 30.16 sec
+
+----------------------------------------------------------------------
+[124/131] Processing Volume 123
+----------------------------------------------------------------------
+Image: volume-123.nii
+Label: segmentation-123.nii
+Original image shape : (512, 512, 432)
+Original label shape : (512, 512, 432)
+Voxel spacing: (0.748046875, 0.748046875, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_123.npy
+Saved label : label_123.npy
+Shape       : (512, 512, 432)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,662,589
+Tumor voxels : 228,251
+Time        : 28.31 sec
+
+----------------------------------------------------------------------
+[125/131] Processing Volume 124
+----------------------------------------------------------------------
+Image: volume-124.nii
+Label: segmentation-124.nii
+Original image shape : (512, 512, 407)
+Original label shape : (512, 512, 407)
+Voxel spacing: (0.69921875, 0.69921875, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_124.npy
+Saved label : label_124.npy
+Shape       : (512, 512, 407)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 1,423,640
+Tumor voxels : 72,092
+Time        : 46.73 sec
+
+----------------------------------------------------------------------
+[126/131] Processing Volume 125
+----------------------------------------------------------------------
+Image: volume-125.nii
+Label: segmentation-125.nii
+Original image shape : (512, 512, 410)
+Original label shape : (512, 512, 410)
+Voxel spacing: (0.712890625, 0.712890625, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_125.npy
+Saved label : label_125.npy
+Shape       : (512, 512, 410)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,126,819
+Tumor voxels : 754
+Time        : 34.51 sec
+
+----------------------------------------------------------------------
+[127/131] Processing Volume 126
+----------------------------------------------------------------------
+Image: volume-126.nii
+Label: segmentation-126.nii
+Original image shape : (512, 512, 401)
+Original label shape : (512, 512, 401)
+Voxel spacing: (0.6640625, 0.6640625, 1.5)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_126.npy
+Saved label : label_126.npy
+Shape       : (512, 512, 401)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 2,658,803
+Tumor voxels : 5,090
+Time        : 33.10 sec
+
+----------------------------------------------------------------------
+[128/131] Processing Volume 127
+----------------------------------------------------------------------
+Image: volume-127.nii
+Label: segmentation-127.nii
+Original image shape : (512, 512, 987)
+Original label shape : (512, 512, 987)
+Voxel spacing: (0.771484375, 0.771484375, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_127.npy
+Saved label : label_127.npy
+Shape       : (512, 512, 987)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,915,126
+Tumor voxels : 298
+Time        : 62.40 sec
+
+----------------------------------------------------------------------
+[129/131] Processing Volume 128
+----------------------------------------------------------------------
+Image: volume-128.nii
+Label: segmentation-128.nii
+Original image shape : (512, 512, 654)
+Original label shape : (512, 512, 654)
+Voxel spacing: (0.78125, 0.78125, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_128.npy
+Saved label : label_128.npy
+Shape       : (512, 512, 654)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 5,218,227
+Tumor voxels : 326,553
+Time        : 48.76 sec
+
+----------------------------------------------------------------------
+[130/131] Processing Volume 129
+----------------------------------------------------------------------
+Image: volume-129.nii
+Label: segmentation-129.nii
+Original image shape : (512, 512, 338)
+Original label shape : (512, 512, 338)
+Voxel spacing: (0.705078125, 0.705078125, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_129.npy
+Saved label : label_129.npy
+Shape       : (512, 512, 338)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 7,623,450
+Tumor voxels : 1,909,785
+Time        : 34.24 sec
+
+----------------------------------------------------------------------
+[131/131] Processing Volume 130
+----------------------------------------------------------------------
+Image: volume-130.nii
+Label: segmentation-130.nii
+Original image shape : (512, 512, 624)
+Original label shape : (512, 512, 624)
+Voxel spacing: (0.68359375, 0.68359375, 0.699999988079071)
+Segmentation labels: [0, 1, 2]
+
+Saved image : volume_130.npy
+Saved label : label_130.npy
+Shape       : (512, 512, 624)
+Dtype image : float32
+Dtype label : uint8
+Liver voxels : 3,878,659
+Tumor voxels : 1,383,692
+Time        : 47.30 sec
+
+======================================================================
+SAVING DATASET METADATA
+======================================================================
+✓ Metadata saved:
+/content/drive/MyDrive/LITS/Preprocessed3D_CLA/volume_metadata.json
+
+======================================================================
+FINAL VERIFICATION
+======================================================================
+✓ All generated 3D volumes verified.
+
+======================================================================
+GENERATED 3D DATASET
+======================================================================
+Volume   0 | Shape = (512, 512, 75) | Slices =  75 | Liver = 550,036 | Tumor = 2,591 | Spacing = (0.7031, 0.7031, 5.0)
+Volume   1 | Shape = (512, 512, 123) | Slices = 123 | Liver = 643,779 | Tumor = 7,194 | Spacing = (0.6758, 0.6758, 5.0)
+Volume   2 | Shape = (512, 512, 517) | Slices = 517 | Liver = 3,186,716 | Tumor = 14,131 | Spacing = (0.7754, 0.7754, 1.0)
+Volume   3 | Shape = (512, 512, 534) | Slices = 534 | Liver = 3,243,946 | Tumor = 2,793 | Spacing = (0.6934, 0.6934, 1.0)
+Volume   4 | Shape = (512, 512, 841) | Slices = 841 | Liver = 3,310,959 | Tumor = 1,516,253 | Spacing = (0.9023, 0.9023, 0.8)
+Volume   5 | Shape = (512, 512, 537) | Slices = 537 | Liver = 1,912,013 | Tumor = 540 | Spacing = (0.9688, 0.9688, 0.8)
+Volume   6 | Shape = (512, 512, 518) | Slices = 518 | Liver = 2,443,764 | Tumor = 31,467 | Spacing = (0.873, 0.873, 1.0)
+Volume   7 | Shape = (512, 512, 541) | Slices = 541 | Liver = 3,033,572 | Tumor = 32,422 | Spacing = (0.748, 0.748, 1.0)
+Volume   8 | Shape = (512, 512, 541) | Slices = 541 | Liver = 2,623,110 | Tumor = 20,827 | Spacing = (0.8477, 0.8477, 1.0)
+Volume   9 | Shape = (512, 512, 549) | Slices = 549 | Liver = 2,278,892 | Tumor = 22,179 | Spacing = (0.8203, 0.8203, 1.0)
+Volume  10 | Shape = (512, 512, 501) | Slices = 501 | Liver = 2,857,366 | Tumor = 24,310 | Spacing = (0.7695, 0.7695, 1.0)
+Volume  11 | Shape = (512, 512, 466) | Slices = 466 | Liver = 3,253,446 | Tumor = 10,549 | Spacing = (0.6719, 0.6719, 1.0)
+Volume  12 | Shape = (512, 512, 455) | Slices = 455 | Liver = 4,205,057 | Tumor = 790 | Spacing = (0.6543, 0.6543, 1.0)
+Volume  13 | Shape = (512, 512, 605) | Slices = 605 | Liver = 1,876,901 | Tumor = 23,651 | Spacing = (0.8477, 0.8477, 1.0)
+Volume  14 | Shape = (512, 512, 588) | Slices = 588 | Liver = 3,041,924 | Tumor = 2,612 | Spacing = (0.6855, 0.6855, 1.0)
+Volume  15 | Shape = (512, 512, 565) | Slices = 565 | Liver = 3,236,299 | Tumor = 875 | Spacing = (0.6543, 0.6543, 1.0)
+Volume  16 | Shape = (512, 512, 689) | Slices = 689 | Liver = 3,165,361 | Tumor = 373,122 | Spacing = (0.7031, 0.7031, 0.8)
+Volume  17 | Shape = (512, 512, 826) | Slices = 826 | Liver = 3,582,734 | Tumor = 37,676 | Spacing = (0.7441, 0.7441, 0.8)
+Volume  18 | Shape = (512, 512, 845) | Slices = 845 | Liver = 1,932,415 | Tumor = 10,210 | Spacing = (0.9219, 0.9219, 0.8)
+Volume  19 | Shape = (512, 512, 547) | Slices = 547 | Liver = 3,861,552 | Tumor = 18,528 | Spacing = (0.752, 0.752, 0.8)
+Volume  20 | Shape = (512, 512, 574) | Slices = 574 | Liver = 3,655,683 | Tumor = 1,669 | Spacing = (0.8027, 0.8027, 0.8)
+Volume  21 | Shape = (512, 512, 437) | Slices = 437 | Liver = 2,988,990 | Tumor = 36,271 | Spacing = (0.7676, 0.7676, 1.0)
+Volume  22 | Shape = (512, 512, 247) | Slices = 247 | Liver = 421,735 | Tumor = 9,424 | Spacing = (0.9766, 0.9766, 3.27)
+Volume  23 | Shape = (512, 512, 391) | Slices = 391 | Liver = 2,351,958 | Tumor = 42,904 | Spacing = (0.6602, 0.6602, 1.2)
+Volume  24 | Shape = (512, 512, 276) | Slices = 276 | Liver = 2,040,878 | Tumor = 1,422 | Spacing = (0.6699, 0.6699, 1.5)
+Volume  25 | Shape = (512, 512, 601) | Slices = 601 | Liver = 3,024,759 | Tumor = 454 | Spacing = (0.7676, 0.7676, 0.7)
+Volume  26 | Shape = (512, 512, 668) | Slices = 668 | Liver = 2,286,734 | Tumor = 51,809 | Spacing = (0.8633, 0.8633, 0.7)
+Volume  27 | Shape = (512, 512, 861) | Slices = 861 | Liver = 3,182,992 | Tumor = 187,743 | Spacing = (0.7383, 0.7383, 0.7)
+Volume  28 | Shape = (512, 512, 129) | Slices = 129 | Liver = 2,650,863 | Tumor = 214,268 | Spacing = (1.0, 1.0, 1.0)
+Volume  29 | Shape = (512, 512, 172) | Slices = 172 | Liver = 1,633,962 | Tumor = 14,062 | Spacing = (1.0, 1.0, 1.0)
+Volume  30 | Shape = (512, 512, 200) | Slices = 200 | Liver = 2,360,827 | Tumor = 14,252 | Spacing = (1.0, 1.0, 1.0)
+Volume  31 | Shape = (512, 512, 91) | Slices =  91 | Liver = 1,125,696 | Tumor = 6,736 | Spacing = (1.0, 1.0, 1.0)
+Volume  32 | Shape = (512, 512, 139) | Slices = 139 | Liver = 2,124,505 | Tumor = 0 | Spacing = (1.0, 1.0, 1.0)
+Volume  33 | Shape = (512, 512, 135) | Slices = 135 | Liver = 1,393,772 | Tumor = 434,721 | Spacing = (1.0, 1.0, 1.0)
+Volume  34 | Shape = (512, 512, 151) | Slices = 151 | Liver = 1,461,944 | Tumor = 0 | Spacing = (1.0, 1.0, 1.0)
+Volume  35 | Shape = (512, 512, 124) | Slices = 124 | Liver = 3,194,772 | Tumor = 20,318 | Spacing = (1.0, 1.0, 1.0)
+Volume  36 | Shape = (512, 512, 111) | Slices = 111 | Liver = 1,225,936 | Tumor = 39,484 | Spacing = (1.0, 1.0, 1.0)
+Volume  37 | Shape = (512, 512, 122) | Slices = 122 | Liver = 1,857,041 | Tumor = 14,981 | Spacing = (1.0, 1.0, 1.0)
+Volume  38 | Shape = (512, 512, 132) | Slices = 132 | Liver = 1,692,716 | Tumor = 0 | Spacing = (1.0, 1.0, 1.0)
+Volume  39 | Shape = (512, 512, 260) | Slices = 260 | Liver = 2,992,447 | Tumor = 348,986 | Spacing = (1.0, 1.0, 1.0)
+Volume  40 | Shape = (512, 512, 122) | Slices = 122 | Liver = 1,940,629 | Tumor = 122,480 | Spacing = (1.0, 1.0, 1.0)
+Volume  41 | Shape = (512, 512, 113) | Slices = 113 | Liver = 1,633,641 | Tumor = 0 | Spacing = (1.0, 1.0, 1.0)
+Volume  42 | Shape = (512, 512, 125) | Slices = 125 | Liver = 1,387,934 | Tumor = 1,638 | Spacing = (1.0, 1.0, 1.0)
+Volume  43 | Shape = (512, 512, 155) | Slices = 155 | Liver = 2,709,848 | Tumor = 7,337 | Spacing = (1.0, 1.0, 1.0)
+Volume  44 | Shape = (512, 512, 119) | Slices = 119 | Liver = 1,920,507 | Tumor = 185,990 | Spacing = (1.0, 1.0, 1.0)
+Volume  45 | Shape = (512, 512, 74) | Slices =  74 | Liver = 1,216,025 | Tumor = 4,539 | Spacing = (1.0, 1.0, 1.0)
+Volume  46 | Shape = (512, 512, 124) | Slices = 124 | Liver = 541,792 | Tumor = 41,416 | Spacing = (1.0, 1.0, 1.0)
+Volume  47 | Shape = (512, 512, 225) | Slices = 225 | Liver = 1,359,697 | Tumor = 0 | Spacing = (1.0, 1.0, 1.0)
+Volume  48 | Shape = (512, 512, 244) | Slices = 244 | Liver = 853,316 | Tumor = 35,478 | Spacing = (0.9766, 0.9766, 2.5)
+Volume  49 | Shape = (512, 512, 254) | Slices = 254 | Liver = 720,798 | Tumor = 8,015 | Spacing = (0.9551, 0.9551, 2.5)
+Volume  50 | Shape = (512, 512, 240) | Slices = 240 | Liver = 707,982 | Tumor = 3,014 | Spacing = (0.9062, 0.9062, 2.5)
+Volume  51 | Shape = (512, 512, 227) | Slices = 227 | Liver = 656,295 | Tumor = 124,895 | Spacing = (0.9023, 0.9023, 3.0)
+Volume  52 | Shape = (512, 512, 237) | Slices = 237 | Liver = 741,298 | Tumor = 18,296 | Spacing = (0.8359, 0.8359, 2.5)
+Volume  53 | Shape = (512, 512, 105) | Slices = 105 | Liver = 556,890 | Tumor = 2,261 | Spacing = (0.85, 0.85, 4.0)
+Volume  54 | Shape = (512, 512, 96) | Slices =  96 | Liver = 525,493 | Tumor = 513 | Spacing = (0.8281, 0.8281, 5.0)
+Volume  55 | Shape = (512, 512, 192) | Slices = 192 | Liver = 1,698,920 | Tumor = 2,797 | Spacing = (0.666, 0.666, 2.5)
+Volume  56 | Shape = (512, 512, 239) | Slices = 239 | Liver = 1,468,108 | Tumor = 268,297 | Spacing = (0.8027, 0.8027, 2.0)
+Volume  57 | Shape = (512, 512, 366) | Slices = 366 | Liver = 3,002,392 | Tumor = 6,604 | Spacing = (0.7031, 0.7031, 1.25)
+Volume  58 | Shape = (512, 512, 212) | Slices = 212 | Liver = 1,335,401 | Tumor = 1,443 | Spacing = (0.6836, 0.6836, 2.0)
+Volume  59 | Shape = (512, 512, 216) | Slices = 216 | Liver = 1,501,488 | Tumor = 697 | Spacing = (0.6836, 0.6836, 2.0)
+Volume  60 | Shape = (512, 512, 244) | Slices = 244 | Liver = 1,869,578 | Tumor = 11,368 | Spacing = (0.7988, 0.7988, 2.0)
+Volume  61 | Shape = (512, 512, 193) | Slices = 193 | Liver = 1,129,592 | Tumor = 2,916 | Spacing = (0.7578, 0.7578, 2.5)
+Volume  62 | Shape = (512, 512, 188) | Slices = 188 | Liver = 1,423,214 | Tumor = 3,196 | Spacing = (0.6445, 0.6445, 2.0)
+Volume  63 | Shape = (512, 512, 104) | Slices = 104 | Liver = 635,709 | Tumor = 688 | Spacing = (0.7402, 0.7402, 5.0)
+Volume  64 | Shape = (512, 512, 230) | Slices = 230 | Liver = 1,635,708 | Tumor = 179,093 | Spacing = (0.7773, 0.7773, 2.0)
+Volume  65 | Shape = (512, 512, 513) | Slices = 513 | Liver = 2,786,649 | Tumor = 1,670 | Spacing = (0.625, 0.625, 0.799)
+Volume  66 | Shape = (512, 512, 86) | Slices =  86 | Liver = 672,006 | Tumor = 2,333 | Spacing = (0.7129, 0.7129, 5.0)
+Volume  67 | Shape = (512, 512, 165) | Slices = 165 | Liver = 1,101,934 | Tumor = 525 | Spacing = (0.7109, 0.7109, 2.5)
+Volume  68 | Shape = (512, 512, 266) | Slices = 266 | Liver = 1,264,814 | Tumor = 4,888 | Spacing = (0.666, 0.666, 2.4999)
+Volume  69 | Shape = (512, 512, 245) | Slices = 245 | Liver = 1,622,732 | Tumor = 3,113 | Spacing = (0.7539, 0.7539, 2.0)
+Volume  70 | Shape = (512, 512, 333) | Slices = 333 | Liver = 2,242,523 | Tumor = 120,665 | Spacing = (0.5977, 0.5977, 1.25)
+Volume  71 | Shape = (512, 512, 94) | Slices =  94 | Liver = 934,751 | Tumor = 142,741 | Spacing = (0.5566, 0.5566, 5.0)
+Volume  72 | Shape = (512, 512, 93) | Slices =  93 | Liver = 1,221,191 | Tumor = 22,364 | Spacing = (0.6777, 0.6777, 2.5)
+Volume  73 | Shape = (512, 512, 121) | Slices = 121 | Liver = 561,461 | Tumor = 592 | Spacing = (0.9512, 0.9512, 4.0)
+Volume  74 | Shape = (512, 512, 107) | Slices = 107 | Liver = 707,237 | Tumor = 37,144 | Spacing = (0.8262, 0.8262, 5.0)
+Volume  75 | Shape = (512, 512, 89) | Slices =  89 | Liver = 609,134 | Tumor = 2,703 | Spacing = (0.7578, 0.7578, 5.0)
+Volume  76 | Shape = (512, 512, 168) | Slices = 168 | Liver = 1,242,705 | Tumor = 193,508 | Spacing = (0.7422, 0.7422, 2.5)
+Volume  77 | Shape = (512, 512, 94) | Slices =  94 | Liver = 618,684 | Tumor = 4,234 | Spacing = (0.781, 0.781, 5.0)
+Volume  78 | Shape = (512, 512, 198) | Slices = 198 | Liver = 1,000,912 | Tumor = 12,265 | Spacing = (0.7852, 0.7852, 2.5)
+Volume  79 | Shape = (512, 512, 147) | Slices = 147 | Liver = 651,009 | Tumor = 9,085 | Spacing = (0.7969, 0.7969, 3.0)
+Volume  80 | Shape = (512, 512, 217) | Slices = 217 | Liver = 1,395,850 | Tumor = 88,269 | Spacing = (0.6836, 0.6836, 2.0)
+Volume  81 | Shape = (512, 512, 343) | Slices = 343 | Liver = 2,340,769 | Tumor = 5,130 | Spacing = (0.7031, 0.7031, 1.25)
+Volume  82 | Shape = (512, 512, 519) | Slices = 519 | Liver = 4,726,373 | Tumor = 141,610 | Spacing = (0.625, 0.625, 0.801)
+Volume  83 | Shape = (512, 512, 871) | Slices = 871 | Liver = 2,955,487 | Tumor = 98 | Spacing = (0.7422, 0.7422, 0.7)
+Volume  84 | Shape = (512, 512, 733) | Slices = 733 | Liver = 4,892,550 | Tumor = 541,305 | Spacing = (0.7578, 0.7578, 0.7)
+Volume  85 | Shape = (512, 512, 630) | Slices = 630 | Liver = 7,076,467 | Tumor = 15,544 | Spacing = (0.6445, 0.6445, 0.7)
+Volume  86 | Shape = (512, 512, 647) | Slices = 647 | Liver = 5,358,063 | Tumor = 6,051 | Spacing = (0.6836, 0.6836, 0.7)
+Volume  87 | Shape = (512, 512, 896) | Slices = 896 | Liver = 3,908,622 | Tumor = 0 | Spacing = (0.854, 0.854, 0.8)
+Volume  88 | Shape = (512, 512, 811) | Slices = 811 | Liver = 3,148,644 | Tumor = 254,141 | Spacing = (0.756, 0.756, 0.8)
+Volume  89 | Shape = (512, 512, 766) | Slices = 766 | Liver = 3,821,209 | Tumor = 0 | Spacing = (0.637, 0.637, 0.8)
+Volume  90 | Shape = (512, 512, 751) | Slices = 751 | Liver = 3,263,211 | Tumor = 250,893 | Spacing = (0.781, 0.781, 0.8)
+Volume  91 | Shape = (512, 512, 751) | Slices = 751 | Liver = 2,781,769 | Tumor = 0 | Spacing = (0.858, 0.858, 0.8)
+Volume  92 | Shape = (512, 512, 836) | Slices = 836 | Liver = 3,373,372 | Tumor = 2,632 | Spacing = (0.671, 0.671, 0.8)
+Volume  93 | Shape = (512, 512, 696) | Slices = 696 | Liver = 4,290,558 | Tumor = 348,088 | Spacing = (0.662, 0.662, 0.8)
+Volume  94 | Shape = (512, 512, 917) | Slices = 917 | Liver = 2,960,488 | Tumor = 62,525 | Spacing = (0.8379, 0.8379, 0.7)
+Volume  95 | Shape = (512, 512, 841) | Slices = 841 | Liver = 4,068,117 | Tumor = 2,581 | Spacing = (0.738, 0.738, 0.8)
+Volume  96 | Shape = (512, 512, 722) | Slices = 722 | Liver = 5,710,555 | Tumor = 40,533 | Spacing = (0.7461, 0.7461, 0.7)
+Volume  97 | Shape = (512, 512, 671) | Slices = 671 | Liver = 4,588,123 | Tumor = 725,310 | Spacing = (0.7227, 0.7227, 0.7)
+Volume  98 | Shape = (512, 512, 645) | Slices = 645 | Liver = 3,514,870 | Tumor = 608,639 | Spacing = (0.7344, 0.7344, 0.7)
+Volume  99 | Shape = (512, 512, 629) | Slices = 629 | Liver = 3,681,200 | Tumor = 12,253 | Spacing = (0.7812, 0.7812, 0.7)
+Volume 100 | Shape = (512, 512, 685) | Slices = 685 | Liver = 5,003,071 | Tumor = 1,569,689 | Spacing = (0.6992, 0.6992, 0.7)
+Volume 101 | Shape = (512, 512, 683) | Slices = 683 | Liver = 6,481,591 | Tumor = 378,439 | Spacing = (0.7051, 0.7051, 0.7)
+Volume 102 | Shape = (512, 512, 677) | Slices = 677 | Liver = 5,061,264 | Tumor = 47,754 | Spacing = (0.7168, 0.7168, 0.7)
+Volume 103 | Shape = (512, 512, 683) | Slices = 683 | Liver = 2,374,639 | Tumor = 75,787 | Spacing = (0.8555, 0.8555, 0.7)
+Volume 104 | Shape = (512, 512, 781) | Slices = 781 | Liver = 2,951,625 | Tumor = 275,918 | Spacing = (0.781, 0.781, 0.8)
+Volume 105 | Shape = (512, 512, 986) | Slices = 986 | Liver = 3,520,581 | Tumor = 0 | Spacing = (0.8438, 0.8438, 0.7)
+Volume 106 | Shape = (512, 512, 771) | Slices = 771 | Liver = 2,312,280 | Tumor = 0 | Spacing = (0.729, 0.729, 0.8)
+Volume 107 | Shape = (512, 512, 771) | Slices = 771 | Liver = 3,140,434 | Tumor = 5,953 | Spacing = (0.782, 0.782, 0.8)
+Volume 108 | Shape = (512, 512, 856) | Slices = 856 | Liver = 3,402,280 | Tumor = 1,455,033 | Spacing = (0.729, 0.729, 0.8)
+Volume 109 | Shape = (512, 512, 756) | Slices = 756 | Liver = 3,120,254 | Tumor = 72,822 | Spacing = (0.763, 0.763, 0.8)
+Volume 110 | Shape = (512, 512, 816) | Slices = 816 | Liver = 3,097,843 | Tumor = 124,406 | Spacing = (0.72, 0.72, 0.8)
+Volume 111 | Shape = (512, 512, 761) | Slices = 761 | Liver = 4,599,573 | Tumor = 7,300 | Spacing = (0.782, 0.782, 0.8)
+Volume 112 | Shape = (512, 512, 751) | Slices = 751 | Liver = 3,976,313 | Tumor = 1,181 | Spacing = (0.64, 0.64, 0.8)
+Volume 113 | Shape = (512, 512, 836) | Slices = 836 | Liver = 3,286,066 | Tumor = 84,270 | Spacing = (0.781, 0.781, 0.8)
+Volume 114 | Shape = (512, 512, 846) | Slices = 846 | Liver = 3,696,170 | Tumor = 0 | Spacing = (0.782, 0.782, 0.8)
+Volume 115 | Shape = (512, 512, 846) | Slices = 846 | Liver = 3,309,518 | Tumor = 0 | Spacing = (0.756, 0.756, 0.8)
+Volume 116 | Shape = (512, 512, 908) | Slices = 908 | Liver = 3,649,978 | Tumor = 611,132 | Spacing = (0.7891, 0.7891, 0.7)
+Volume 117 | Shape = (512, 512, 836) | Slices = 836 | Liver = 4,009,641 | Tumor = 1,034,092 | Spacing = (0.68, 0.68, 0.8)
+Volume 118 | Shape = (512, 512, 427) | Slices = 427 | Liver = 2,138,650 | Tumor = 419,119 | Spacing = (0.7441, 0.7441, 1.5)
+Volume 119 | Shape = (512, 512, 461) | Slices = 461 | Liver = 2,360,092 | Tumor = 0 | Spacing = (0.8438, 0.8438, 1.5)
+Volume 120 | Shape = (512, 512, 424) | Slices = 424 | Liver = 1,910,010 | Tumor = 5,231 | Spacing = (0.7441, 0.7441, 1.5)
+Volume 121 | Shape = (512, 512, 463) | Slices = 463 | Liver = 1,905,575 | Tumor = 2,123 | Spacing = (0.7949, 0.7949, 1.5)
+Volume 122 | Shape = (512, 512, 422) | Slices = 422 | Liver = 1,775,382 | Tumor = 79,803 | Spacing = (0.6895, 0.6895, 1.5)
+Volume 123 | Shape = (512, 512, 432) | Slices = 432 | Liver = 2,662,589 | Tumor = 228,251 | Spacing = (0.748, 0.748, 1.5)
+Volume 124 | Shape = (512, 512, 407) | Slices = 407 | Liver = 1,423,640 | Tumor = 72,092 | Spacing = (0.6992, 0.6992, 1.5)
+Volume 125 | Shape = (512, 512, 410) | Slices = 410 | Liver = 2,126,819 | Tumor = 754 | Spacing = (0.7129, 0.7129, 1.5)
+Volume 126 | Shape = (512, 512, 401) | Slices = 401 | Liver = 2,658,803 | Tumor = 5,090 | Spacing = (0.6641, 0.6641, 1.5)
+Volume 127 | Shape = (512, 512, 987) | Slices = 987 | Liver = 3,915,126 | Tumor = 298 | Spacing = (0.7715, 0.7715, 0.7)
+Volume 128 | Shape = (512, 512, 654) | Slices = 654 | Liver = 5,218,227 | Tumor = 326,553 | Spacing = (0.7812, 0.7812, 0.7)
+Volume 129 | Shape = (512, 512, 338) | Slices = 338 | Liver = 7,623,450 | Tumor = 1,909,785 | Spacing = (0.7051, 0.7051, 0.7)
+Volume 130 | Shape = (512, 512, 624) | Slices = 624 | Liver = 3,878,659 | Tumor = 1,383,692 | Spacing = (0.6836, 0.6836, 0.7)
+
+======================================================================
+3D PREPROCESSING COMPLETED SUCCESSFULLY
+======================================================================
+
+Output directory:
+/content/drive/MyDrive/LITS/Preprocessed3D_CLA
+
+Number of volumes : 131
+Total voxels      : 15,371,599,872
+Liver voxels      : 332,764,489
+Tumor voxels      : 18,465,194
+
+Metadata:
+/content/drive/MyDrive/LITS/Preprocessed3D_CLA/volume_metadata.json
+
+Summary:
+/content/drive/MyDrive/LITS/Preprocessed3D_CLA/preprocessing_summary.json
+
+Total processing time: 109.51 minutes
+
+Files created per volume:
+  volume_<ID>.npy   -> normalized 3D CT volume
+  label_<ID>.npy    -> 3D ground-truth segmentation
+  affine_<ID>.npy   -> original NIfTI affine
+
+IMPORTANT:
+All original Z-slices are preserved.
+No background-only slices were removed.
+The data are now suitable for reconstructing
+complete 3D predictions from the 2D CLA-ResUNet.

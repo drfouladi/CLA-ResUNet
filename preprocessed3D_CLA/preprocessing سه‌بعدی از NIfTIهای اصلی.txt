@@ -1,0 +1,934 @@
+# ================================================================
+# LiTS - 3D VOLUME-PRESERVING PREPROCESSING
+# For volume-level evaluation of 2D CLA-ResUNet
+#
+# IMPORTANT:
+# - Reads ORIGINAL LiTS NIfTI files
+# - Keeps ALL axial slices
+# - Preserves original Z ordering
+# - Preserves image/label correspondence
+# - Saves 3D volumes as .npy
+# - Saves voxel spacing for mm-based metrics
+# - Does NOT modify the CLA-ResUNet model
+# ================================================================
+
+import os
+import re
+import json
+import time
+import shutil
+import numpy as np
+import nibabel as nib
+from google.colab import drive
+
+# ================================================================
+# 1. MOUNT GOOGLE DRIVE
+# ================================================================
+
+drive.mount("/content/drive")
+
+# ================================================================
+# 2. PATHS
+# ================================================================
+
+BASE_DIR = "/content/drive/MyDrive/LITS"
+
+BATCH1_DIR = os.path.join(
+    BASE_DIR,
+    "LITS Challenge",
+    "Training Batch 1"
+)
+
+BATCH2_DIR = os.path.join(
+    BASE_DIR,
+    "LITS Challenge",
+    "Training Batch 2"
+)
+
+# New directory specifically for true 3D evaluation
+OUTPUT_DIR = os.path.join(
+    BASE_DIR,
+    "Preprocessed3D_CLA"
+)
+
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# ================================================================
+# 3. SETTINGS
+# ================================================================
+
+RANDOM_SEED = 42
+
+# Same normalization strategy used in your original preprocessing:
+# volume-wise min-max normalization.
+NORMALIZE_VOLUME_WISE = True
+
+np.random.seed(RANDOM_SEED)
+
+print("=" * 70)
+print("LiTS - 3D VOLUME-PRESERVING PREPROCESSING")
+print("For CLA-ResUNet volume-level evaluation")
+print("=" * 70)
+
+print()
+print("Paths:")
+print(f"BASE_DIR   : {BASE_DIR}")
+print(f"BATCH1_DIR : {BATCH1_DIR}")
+print(f"BATCH2_DIR : {BATCH2_DIR}")
+print(f"OUTPUT_DIR : {OUTPUT_DIR}")
+print()
+print(f"Random seed = {RANDOM_SEED}")
+
+# ================================================================
+# 4. CHECK DIRECTORIES
+# ================================================================
+
+print()
+print("=" * 70)
+print("CHECKING SOURCE DIRECTORIES")
+print("=" * 70)
+
+for path in [BASE_DIR, BATCH1_DIR, BATCH2_DIR]:
+
+    if os.path.exists(path):
+        print(f"✓ {path}")
+    else:
+        raise FileNotFoundError(
+            f"Required directory not found:\n{path}"
+        )
+
+print()
+print("✓ Source directory check completed.")
+
+# ================================================================
+# 5. HELPER: EXTRACT NUMBER
+# ================================================================
+
+def extract_number(filename):
+
+    match = re.search(r"\d+", filename)
+
+    if match:
+        return int(match.group())
+
+    return -1
+
+
+# ================================================================
+# 6. COLLECT ORIGINAL NIFTI FILES
+# ================================================================
+
+print()
+print("=" * 70)
+print("COLLECTING ORIGINAL NIFTI VOLUMES")
+print("=" * 70)
+
+volume_files = []
+segmentation_files = []
+
+for folder in [BATCH1_DIR, BATCH2_DIR]:
+
+    files = os.listdir(folder)
+
+    files = sorted(
+        files,
+        key=extract_number
+    )
+
+    for filename in files:
+
+        full_path = os.path.join(
+            folder,
+            filename
+        )
+
+        if not os.path.isfile(full_path):
+            continue
+
+        lower_name = filename.lower()
+
+        # Ignore non-NIfTI files
+        if not (
+            lower_name.endswith(".nii") or
+            lower_name.endswith(".nii.gz")
+        ):
+            continue
+
+        if "volume" in lower_name:
+
+            volume_files.append(full_path)
+
+        elif "segmentation" in lower_name:
+
+            segmentation_files.append(full_path)
+
+
+# Sort independently by numeric ID
+volume_files = sorted(
+    volume_files,
+    key=lambda x: extract_number(os.path.basename(x))
+)
+
+segmentation_files = sorted(
+    segmentation_files,
+    key=lambda x: extract_number(os.path.basename(x))
+)
+
+print()
+print(f"Original volume files       : {len(volume_files)}")
+print(f"Original segmentation files : {len(segmentation_files)}")
+
+if len(volume_files) == 0:
+    raise RuntimeError(
+        "No original volume NIfTI files were found."
+    )
+
+if len(segmentation_files) == 0:
+    raise RuntimeError(
+        "No original segmentation NIfTI files were found."
+    )
+
+if len(volume_files) != len(segmentation_files):
+
+    raise RuntimeError(
+        "Number of volumes and segmentations differ:\n"
+        f"Volumes       : {len(volume_files)}\n"
+        f"Segmentations : {len(segmentation_files)}"
+    )
+
+print()
+print("✓ Volume/segmentation count matches.")
+
+# ================================================================
+# 7. VERIFY VOLUME/SEGMENTATION ID MATCHING
+# ================================================================
+
+print()
+print("=" * 70)
+print("VERIFYING VOLUME / SEGMENTATION PAIRING")
+print("=" * 70)
+
+pairs = []
+
+for volume_path, seg_path in zip(
+    volume_files,
+    segmentation_files
+):
+
+    volume_id = extract_number(
+        os.path.basename(volume_path)
+    )
+
+    seg_id = extract_number(
+        os.path.basename(seg_path)
+    )
+
+    if volume_id != seg_id:
+
+        raise RuntimeError(
+            "\nVolume/segmentation mismatch detected!\n"
+            f"Volume      : {volume_path}\n"
+            f"Segmentation: {seg_path}\n"
+            f"Volume ID   : {volume_id}\n"
+            f"Seg ID      : {seg_id}"
+        )
+
+    pairs.append(
+        (
+            volume_id,
+            volume_path,
+            seg_path
+        )
+    )
+
+print(f"✓ Verified {len(pairs)} volume/segmentation pairs.")
+
+# ================================================================
+# 8. PREPARE METADATA
+# ================================================================
+
+metadata = []
+
+total_voxels = 0
+total_liver_voxels = 0
+total_tumor_voxels = 0
+
+start_time = time.time()
+
+# ================================================================
+# 9. PROCESS EACH 3D VOLUME
+# ================================================================
+
+print()
+print("=" * 70)
+print("PROCESSING ORIGINAL 3D NIFTI VOLUMES")
+print("=" * 70)
+
+for index, (volume_id, volume_path, seg_path) in enumerate(
+    pairs,
+    start=1
+):
+
+    volume_start = time.time()
+
+    print()
+    print("-" * 70)
+    print(
+        f"[{index}/{len(pairs)}] "
+        f"Processing Volume {volume_id}"
+    )
+    print("-" * 70)
+
+    print(
+        "Image:",
+        os.path.basename(volume_path)
+    )
+
+    print(
+        "Label:",
+        os.path.basename(seg_path)
+    )
+
+    # ------------------------------------------------------------
+    # LOAD ORIGINAL NIFTI
+    # ------------------------------------------------------------
+
+    volume_nii = nib.load(volume_path)
+    seg_nii = nib.load(seg_path)
+
+    volume = volume_nii.get_fdata(
+        dtype=np.float32
+    )
+
+    segmentation = seg_nii.get_fdata(
+        dtype=np.float32
+    )
+
+    # ------------------------------------------------------------
+    # CHECK ORIGINAL SHAPES
+    # ------------------------------------------------------------
+
+    print(
+        f"Original image shape : {volume.shape}"
+    )
+
+    print(
+        f"Original label shape : {segmentation.shape}"
+    )
+
+    if volume.ndim != 3:
+
+        raise ValueError(
+            f"Expected 3D image for volume {volume_id}, "
+            f"got shape {volume.shape}"
+        )
+
+    if segmentation.ndim != 3:
+
+        raise ValueError(
+            f"Expected 3D segmentation for volume {volume_id}, "
+            f"got shape {segmentation.shape}"
+        )
+
+    if volume.shape != segmentation.shape:
+
+        raise ValueError(
+            f"Image/segmentation shape mismatch "
+            f"for volume {volume_id}:\n"
+            f"Image: {volume.shape}\n"
+            f"Label: {segmentation.shape}"
+        )
+
+    # ------------------------------------------------------------
+    # ORIGINAL AFFINE / HEADER INFORMATION
+    # ------------------------------------------------------------
+
+    affine = volume_nii.affine.astype(
+        np.float64
+    )
+
+    spacing = volume_nii.header.get_zooms()[:3]
+
+    spacing = tuple(
+        float(x)
+        for x in spacing
+    )
+
+    print(
+        "Voxel spacing:",
+        spacing
+    )
+
+    # ------------------------------------------------------------
+    # NORMALIZATION
+    #
+    # IMPORTANT:
+    # This follows your original 2D preprocessing:
+    #
+    # (x - min) / (max - min + 1e-6)
+    #
+    # But it is now performed once over the entire 3D volume.
+    # ------------------------------------------------------------
+
+    if NORMALIZE_VOLUME_WISE:
+
+        vmin = float(
+            np.min(volume)
+        )
+
+        vmax = float(
+            np.max(volume)
+        )
+
+        volume_normalized = (
+            volume - vmin
+        ) / (
+            vmax - vmin + 1e-6
+        )
+
+    else:
+
+        vmin = float(
+            np.min(volume)
+        )
+
+        vmax = float(
+            np.max(volume)
+        )
+
+        volume_normalized = volume.copy()
+
+    volume_normalized = volume_normalized.astype(
+        np.float32
+    )
+
+    # ------------------------------------------------------------
+    # SEGMENTATION
+    #
+    # Preserve labels:
+    # 0 = background
+    # 1 = liver
+    # 2 = tumor
+    # ------------------------------------------------------------
+
+    segmentation = np.rint(
+        segmentation
+    ).astype(
+        np.uint8
+    )
+
+    unique_labels = np.unique(
+        segmentation
+    )
+
+    print(
+        "Segmentation labels:",
+        unique_labels.tolist()
+    )
+
+    invalid_labels = [
+        int(x)
+        for x in unique_labels
+        if x not in [0, 1, 2]
+    ]
+
+    if len(invalid_labels) > 0:
+
+        raise ValueError(
+            f"Unexpected segmentation labels "
+            f"in volume {volume_id}: "
+            f"{invalid_labels}"
+        )
+
+    # ------------------------------------------------------------
+    # IMPORTANT:
+    # KEEP ALL Z-SLICES
+    #
+    # Unlike the old preprocessing, we DO NOT do:
+    #
+    # if not np.any(seg_slice > 0):
+    #     continue
+    #
+    # Therefore the complete 3D geometry is preserved.
+    # ------------------------------------------------------------
+
+    num_slices = volume.shape[2]
+
+    liver_voxels = int(
+        np.sum(segmentation == 1)
+    )
+
+    tumor_voxels = int(
+        np.sum(segmentation == 2)
+    )
+
+    total_voxels += int(
+        volume.size
+    )
+
+    total_liver_voxels += liver_voxels
+
+    total_tumor_voxels += tumor_voxels
+
+    # ------------------------------------------------------------
+    # SAVE 3D IMAGE
+    # ------------------------------------------------------------
+
+    image_output = os.path.join(
+        OUTPUT_DIR,
+        f"volume_{volume_id}.npy"
+    )
+
+    label_output = os.path.join(
+        OUTPUT_DIR,
+        f"label_{volume_id}.npy"
+    )
+
+    np.save(
+        image_output,
+        volume_normalized
+    )
+
+    np.save(
+        label_output,
+        segmentation
+    )
+
+    # ------------------------------------------------------------
+    # SAVE ORIGINAL NIFTI AFFINE
+    #
+    # Useful if later we need to reconstruct a NIfTI.
+    # ------------------------------------------------------------
+
+    affine_output = os.path.join(
+        OUTPUT_DIR,
+        f"affine_{volume_id}.npy"
+    )
+
+    np.save(
+        affine_output,
+        affine
+    )
+
+    # ------------------------------------------------------------
+    # SAVE PER-VOLUME METADATA
+    # ------------------------------------------------------------
+
+    volume_metadata = {
+
+        "volume_id":
+            int(volume_id),
+
+        "original_volume_file":
+            os.path.basename(volume_path),
+
+        "original_segmentation_file":
+            os.path.basename(seg_path),
+
+        "original_volume_path":
+            volume_path,
+
+        "original_segmentation_path":
+            seg_path,
+
+        "shape":
+            [int(x) for x in volume.shape],
+
+        "num_slices":
+            int(num_slices),
+
+        "height":
+            int(volume.shape[0]),
+
+        "width":
+            int(volume.shape[1]),
+
+        "depth":
+            int(volume.shape[2]),
+
+        "spacing_mm":
+            [float(x) for x in spacing],
+
+        "image_min":
+            float(vmin),
+
+        "image_max":
+            float(vmax),
+
+        "normalization":
+            "volume-wise min-max",
+
+        "labels":
+            [0, 1, 2],
+
+        "background_voxels":
+            int(np.sum(segmentation == 0)),
+
+        "liver_voxels":
+            int(liver_voxels),
+
+        "tumor_voxels":
+            int(tumor_voxels),
+
+        "image_npy":
+            os.path.basename(image_output),
+
+        "label_npy":
+            os.path.basename(label_output),
+
+        "affine_npy":
+            os.path.basename(affine_output),
+
+        "all_slices_preserved":
+            True
+    }
+
+    metadata.append(
+        volume_metadata
+    )
+
+    # ------------------------------------------------------------
+    # PRINT SUMMARY
+    # ------------------------------------------------------------
+
+    elapsed = time.time() - volume_start
+
+    print()
+    print(
+        f"Saved image : {os.path.basename(image_output)}"
+    )
+
+    print(
+        f"Saved label : {os.path.basename(label_output)}"
+    )
+
+    print(
+        f"Shape       : {volume_normalized.shape}"
+    )
+
+    print(
+        f"Dtype image : {volume_normalized.dtype}"
+    )
+
+    print(
+        f"Dtype label : {segmentation.dtype}"
+    )
+
+    print(
+        f"Liver voxels : {liver_voxels:,}"
+    )
+
+    print(
+        f"Tumor voxels : {tumor_voxels:,}"
+    )
+
+    print(
+        f"Time        : {elapsed:.2f} sec"
+    )
+
+# ================================================================
+# 10. SAVE GLOBAL METADATA
+# ================================================================
+
+print()
+print("=" * 70)
+print("SAVING DATASET METADATA")
+print("=" * 70)
+
+metadata_path = os.path.join(
+    OUTPUT_DIR,
+    "volume_metadata.json"
+)
+
+dataset_metadata = {
+
+    "description":
+        "Volume-preserving 3D preprocessing "
+        "for volume-level evaluation of 2D CLA-ResUNet",
+
+    "num_volumes":
+        int(len(metadata)),
+
+    "random_seed":
+        int(RANDOM_SEED),
+
+    "normalization":
+        "volume-wise min-max",
+
+    "all_slices_preserved":
+        True,
+
+    "axis_order":
+        "H, W, Z",
+
+    "label_definition": {
+
+        "0":
+            "background",
+
+        "1":
+            "liver",
+
+        "2":
+            "tumor"
+    },
+
+    "volumes":
+        metadata
+}
+
+with open(
+    metadata_path,
+    "w",
+    encoding="utf-8"
+) as f:
+
+    json.dump(
+        dataset_metadata,
+        f,
+        indent=4
+    )
+
+print(
+    f"✓ Metadata saved:\n{metadata_path}"
+)
+
+# ================================================================
+# 11. SAVE PROCESSING SUMMARY
+# ================================================================
+
+summary = {
+
+    "num_volumes":
+        int(len(metadata)),
+
+    "total_voxels":
+        int(total_voxels),
+
+    "total_liver_voxels":
+        int(total_liver_voxels),
+
+    "total_tumor_voxels":
+        int(total_tumor_voxels),
+
+    "output_directory":
+        OUTPUT_DIR,
+
+    "preprocessing":
+        "3D volume-preserving",
+
+    "normalization":
+        "volume-wise min-max",
+
+    "all_slices_preserved":
+        True,
+
+    "source":
+        "Original LiTS NIfTI files"
+}
+
+summary_path = os.path.join(
+    OUTPUT_DIR,
+    "preprocessing_summary.json"
+)
+
+with open(
+    summary_path,
+    "w",
+    encoding="utf-8"
+) as f:
+
+    json.dump(
+        summary,
+        f,
+        indent=4
+    )
+
+# ================================================================
+# 12. FINAL VERIFICATION
+# ================================================================
+
+print()
+print("=" * 70)
+print("FINAL VERIFICATION")
+print("=" * 70)
+
+errors = []
+
+for item in metadata:
+
+    volume_id = item["volume_id"]
+
+    image_path = os.path.join(
+        OUTPUT_DIR,
+        item["image_npy"]
+    )
+
+    label_path = os.path.join(
+        OUTPUT_DIR,
+        item["label_npy"]
+    )
+
+    affine_path = os.path.join(
+        OUTPUT_DIR,
+        item["affine_npy"]
+    )
+
+    if not os.path.exists(image_path):
+        errors.append(
+            f"Missing image: volume {volume_id}"
+        )
+
+    if not os.path.exists(label_path):
+        errors.append(
+            f"Missing label: volume {volume_id}"
+        )
+
+    if not os.path.exists(affine_path):
+        errors.append(
+            f"Missing affine: volume {volume_id}"
+        )
+
+    if os.path.exists(image_path):
+
+        test_image = np.load(
+            image_path,
+            mmap_mode="r"
+        )
+
+        expected_shape = tuple(
+            item["shape"]
+        )
+
+        if test_image.shape != expected_shape:
+
+            errors.append(
+                f"Image shape mismatch "
+                f"volume {volume_id}: "
+                f"{test_image.shape} != "
+                f"{expected_shape}"
+            )
+
+    if os.path.exists(label_path):
+
+        test_label = np.load(
+            label_path,
+            mmap_mode="r"
+        )
+
+        expected_shape = tuple(
+            item["shape"]
+        )
+
+        if test_label.shape != expected_shape:
+
+            errors.append(
+                f"Label shape mismatch "
+                f"volume {volume_id}: "
+                f"{test_label.shape} != "
+                f"{expected_shape}"
+            )
+
+        labels = np.unique(
+            test_label
+        )
+
+        invalid = [
+            int(x)
+            for x in labels
+            if x not in [0, 1, 2]
+        ]
+
+        if invalid:
+
+            errors.append(
+                f"Invalid labels in "
+                f"volume {volume_id}: "
+                f"{invalid}"
+            )
+
+if errors:
+
+    print()
+    print("ERRORS FOUND:")
+    print()
+
+    for error in errors:
+        print("✗", error)
+
+    raise RuntimeError(
+        f"\nVerification failed with "
+        f"{len(errors)} error(s)."
+    )
+
+else:
+
+    print(
+        "✓ All generated 3D volumes verified."
+    )
+
+# ================================================================
+# 13. DISPLAY TEST VOLUME INFORMATION
+# ================================================================
+
+print()
+print("=" * 70)
+print("GENERATED 3D DATASET")
+print("=" * 70)
+
+for item in metadata:
+
+    print(
+        f"Volume {item['volume_id']:3d} | "
+        f"Shape = {tuple(item['shape'])} | "
+        f"Slices = {item['num_slices']:3d} | "
+        f"Liver = {item['liver_voxels']:,} | "
+        f"Tumor = {item['tumor_voxels']:,} | "
+        f"Spacing = {tuple(round(x, 4) for x in item['spacing_mm'])}"
+    )
+
+# ================================================================
+# 14. FINAL OUTPUT
+# ================================================================
+
+total_time = time.time() - start_time
+
+print()
+print("=" * 70)
+print("3D PREPROCESSING COMPLETED SUCCESSFULLY")
+print("=" * 70)
+
+print()
+print(f"Output directory:")
+print(OUTPUT_DIR)
+
+print()
+print(f"Number of volumes : {len(metadata)}")
+print(f"Total voxels      : {total_voxels:,}")
+print(f"Liver voxels      : {total_liver_voxels:,}")
+print(f"Tumor voxels      : {total_tumor_voxels:,}")
+
+print()
+print(f"Metadata:")
+print(metadata_path)
+
+print()
+print(f"Summary:")
+print(summary_path)
+
+print()
+print(f"Total processing time: {total_time / 60:.2f} minutes")
+
+print()
+print("Files created per volume:")
+print("  volume_<ID>.npy   -> normalized 3D CT volume")
+print("  label_<ID>.npy    -> 3D ground-truth segmentation")
+print("  affine_<ID>.npy   -> original NIfTI affine")
+
+print()
+print("IMPORTANT:")
+print("All original Z-slices are preserved.")
+print("No background-only slices were removed.")
+print("The data are now suitable for reconstructing")
+print("complete 3D predictions from the 2D CLA-ResUNet.")
+print("=" * 70)
