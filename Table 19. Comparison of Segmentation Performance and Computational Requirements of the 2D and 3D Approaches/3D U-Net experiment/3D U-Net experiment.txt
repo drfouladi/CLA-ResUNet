@@ -1,0 +1,4807 @@
+
+# =============================================================================
+# V14.1 - TUMOR FOCUSED + FP CONTROL + FAST I/O + RAM-SAFE 3D U-NET
+# =============================================================================
+#
+# LiTS 3D Liver / Tumor Segmentation
+#
+# V14.1 هدف:
+#
+#   1) Tumor-focused sampling
+#   2) Soft liver conditioning
+#   3) No hard liver gate inside network
+#   4) Stronger false-positive suppression
+#   5) Lower tumor positive BCE weight
+#   6) FP-focused Tversky
+#   7) Cached mmap volume/label handles
+#   8) No np.load() for every patch
+#   9) Fast epoch validation subset
+#  10) Full validation only at final evaluation
+#  11) Volume-level train/validation split
+#  12) Robust invalid-volume filtering
+#  13) Global voxel-level evaluation
+#  14) Automatic tumor threshold optimization
+#  15) Automatic liver threshold optimization
+#  16) Optional hard-gated comparison
+#  17) Best checkpoint based on validation tumor Dice
+#  18) TensorFlow 2.20 / Keras 3 compatible
+#
+# Expected data:
+#
+# /content/drive/MyDrive/LITS/Preprocessed3D_CLA/
+#
+# volume_0.npy
+# label_0.npy
+# volume_1.npy
+# label_1.npy
+# ...
+#
+# Volume shape typically:
+#     H x W x Z
+#
+# Model shape:
+#     D x H x W x C
+#
+# Patch:
+#     (volume_id, z0, y0, x0)
+#
+# Label:
+#     0 = background
+#     1 = liver
+#     2 = tumor
+#
+# Output:
+#     channel 0 = liver probability
+#     channel 1 = tumor probability
+#
+# =============================================================================
+
+
+# =============================================================================
+# 0. IMPORTS
+# =============================================================================
+
+import os
+import re
+import gc
+import json
+import math
+import time
+import random
+import warnings
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+
+from tensorflow import keras
+from tensorflow.keras import layers
+
+
+# =============================================================================
+# 1. SEED
+# =============================================================================
+
+SEED = 42
+
+random.seed(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+from google.colab import drive
+
+try:
+    drive.mount("/content/drive", force_remount=False)
+except Exception:
+    pass
+
+# =============================================================================
+# 2. CONFIGURATION
+# =============================================================================
+
+# -------------------------------------------------------------------------
+# Patch
+# -------------------------------------------------------------------------
+
+DEPTH = 8
+PATCH_H = 256
+PATCH_W = 256
+
+BATCH_SIZE = 1
+
+
+# -------------------------------------------------------------------------
+# Training
+# -------------------------------------------------------------------------
+
+EPOCHS = 60
+
+STEPS_PER_EPOCH = 180
+
+LEARNING_RATE = 5e-5
+MIN_LR = 5e-6
+
+
+# -------------------------------------------------------------------------
+# Sampling
+# -------------------------------------------------------------------------
+
+TUMOR_PATCH_PROB = 0.70
+LIVER_PATCH_PROB = 0.20
+BACKGROUND_PATCH_PROB = 0.10
+
+MAX_TUMOR_PATCHES = 500
+MAX_LIVER_PATCHES = 1000
+MAX_BACKGROUND_PATCHES = 3000
+
+
+# -------------------------------------------------------------------------
+# Validation pool
+# -------------------------------------------------------------------------
+
+MAX_VAL_TUMOR_PATCHES = 500
+MAX_VAL_LIVER_PATCHES = 500
+MAX_VAL_BACKGROUND_PATCHES = 200
+
+
+# -------------------------------------------------------------------------
+# FAST validation during every epoch
+#
+# Full validation is done after training.
+# -------------------------------------------------------------------------
+
+EPOCH_VAL_TUMOR = 100
+EPOCH_VAL_LIVER = 100
+EPOCH_VAL_BACKGROUND = 50
+
+
+# -------------------------------------------------------------------------
+# Volume split
+# -------------------------------------------------------------------------
+
+VAL_FRACTION = 0.20
+
+
+# -------------------------------------------------------------------------
+# Patch generation
+# -------------------------------------------------------------------------
+
+PATCH_STRIDE_Y = 128
+PATCH_STRIDE_X = 128
+PATCH_STRIDE_Z = 4
+
+
+# -------------------------------------------------------------------------
+# Loss
+# -------------------------------------------------------------------------
+
+LIVER_LOSS_WEIGHT = 0.35
+TUMOR_LOSS_WEIGHT = 0.65
+
+
+# IMPORTANT V14.1:
+#
+# V14 had:
+#     TUMOR_POS_WEIGHT = 8.0
+#
+# V14 had high recall but very poor precision.
+#
+# Therefore we reduce positive weighting.
+#
+
+TUMOR_POS_WEIGHT = 2.5
+
+
+# False-positive control.
+
+OUTSIDE_LIVER_WEIGHT = 0.30
+
+LIVER_NON_TUMOR_FP_WEIGHT = 0.25
+
+
+# FP-focused Tversky.
+
+TV_ALPHA = 0.85
+TV_BETA = 0.15
+TV_GAMMA = 0.75
+
+
+# -------------------------------------------------------------------------
+# Output
+# -------------------------------------------------------------------------
+
+ROOT = Path(
+    "/content/v14_1_outputs"
+)
+
+CHECKPOINT_DIR = ROOT / "checkpoints"
+REPORT_DIR = ROOT / "reports"
+CACHE_DIR = ROOT / "cache"
+
+ROOT.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+CHECKPOINT_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+REPORT_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+CACHE_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+
+BEST_MODEL_PATH = (
+    CHECKPOINT_DIR /
+    "v14_1_best_tumor_dice.keras"
+)
+
+TRAINING_CSV = (
+    REPORT_DIR /
+    "v14_1_training.csv"
+)
+
+THRESHOLD_CSV = (
+    REPORT_DIR /
+    "v14_1_threshold_results.csv"
+)
+
+FINAL_JSON = (
+    REPORT_DIR /
+    "v14_1_final_results.json"
+)
+
+POOL_JSON = (
+    CACHE_DIR /
+    "v14_1_pools.json"
+)
+
+
+# =============================================================================
+# 3. HEADER
+# =============================================================================
+
+print("=" * 100)
+print("V14.1 - TUMOR FOCUSED + FP CONTROL + FAST I/O 3D U-NET")
+print("=" * 100)
+
+print("TensorFlow:", tf.__version__)
+print("Keras:", keras.__version__)
+
+
+# =============================================================================
+# 4. GPU
+# =============================================================================
+
+gpus = tf.config.list_physical_devices("GPU")
+
+print("\nGPU:", gpus)
+
+if gpus:
+
+    for gpu in gpus:
+
+        try:
+            tf.config.experimental.set_memory_growth(
+                gpu,
+                True
+            )
+        except Exception:
+            pass
+
+    print("✓ GPU memory growth configured")
+
+else:
+
+    print("⚠ WARNING: No GPU detected")
+
+
+# =============================================================================
+# 5. GOOGLE DRIVE
+# =============================================================================
+
+from google.colab import drive
+
+try:
+
+    drive.mount(
+        "/content/drive",
+        force_remount=False
+    )
+
+except Exception as e:
+
+    print(
+        "Drive mount message:",
+        e
+    )
+
+
+# =============================================================================
+# 6. DATA PATH
+# =============================================================================
+
+DATA_DIR = Path(
+    "/content/drive/MyDrive/LITS/Preprocessed3D_CLA"
+)
+
+if not DATA_DIR.exists():
+
+    raise RuntimeError(
+        "\nDataset directory not found:\n"
+        f"{DATA_DIR}\n\n"
+        "Expected:\n"
+        "/content/drive/MyDrive/LITS/Preprocessed3D_CLA/"
+    )
+
+print("\nDATA_DIR:")
+print(DATA_DIR)
+
+
+# =============================================================================
+# 7. FILE DISCOVERY
+# =============================================================================
+
+def extract_id(path):
+
+    m = re.search(
+        r"(\d+)",
+        path.stem
+    )
+
+    if m:
+
+        return int(
+            m.group(1)
+        )
+
+    return None
+
+
+all_npy = sorted(
+    DATA_DIR.glob("*.npy")
+)
+
+print(
+    "\nNumpy files found:",
+    len(all_npy)
+)
+
+
+volume_file_map_local = {}
+label_file_map_local = {}
+
+
+for p in all_npy:
+
+    name = p.name.lower()
+
+    vid = extract_id(p)
+
+    if vid is None:
+        continue
+
+    if (
+        "label" in name
+        or "seg" in name
+        or "mask" in name
+        or "segmentation" in name
+    ):
+
+        label_file_map_local[vid] = str(p)
+
+    elif "volume" in name:
+
+        volume_file_map_local[vid] = str(p)
+
+
+# -------------------------------------------------------------------------
+# If maps already exist in the runtime, use them as fallback.
+# -------------------------------------------------------------------------
+
+if "volume_file_map" in globals():
+
+    try:
+
+        for k, v in volume_file_map.items():
+
+            k = int(k)
+
+            if k not in volume_file_map_local:
+
+                volume_file_map_local[k] = str(v)
+
+    except Exception:
+        pass
+
+
+if "label_file_map" in globals():
+
+    try:
+
+        for k, v in label_file_map.items():
+
+            k = int(k)
+
+            if k not in label_file_map_local:
+
+                label_file_map_local[k] = str(v)
+
+    except Exception:
+        pass
+
+
+common_ids = sorted(
+    set(volume_file_map_local.keys())
+    &
+    set(label_file_map_local.keys())
+)
+
+
+print(
+    "Volume files:",
+    len(volume_file_map_local)
+)
+
+print(
+    "Label files:",
+    len(label_file_map_local)
+)
+
+print(
+    "Common IDs:",
+    len(common_ids)
+)
+
+print(
+    "First common IDs:",
+    common_ids[:20]
+)
+
+
+if len(common_ids) < 2:
+
+    raise RuntimeError(
+        "\nCould not find matching volume/label pairs."
+    )
+
+
+# =============================================================================
+# 8. CACHED MMAP HANDLES
+# =============================================================================
+#
+# IMPORTANT V14.1 CHANGE
+#
+# V14:
+#
+#     np.load(volume_path, mmap_mode="r")
+#     np.load(label_path, mmap_mode="r")
+#
+# was executed repeatedly for every patch.
+#
+# V14.1:
+#
+#     each volume and label is opened once
+#
+# The mmap itself does NOT load the complete CT into RAM.
+#
+# =============================================================================
+
+VOLUME_MEMMAPS = {}
+LABEL_MEMMAPS = {}
+
+
+def get_volume(vid):
+
+    vid = int(vid)
+
+    if vid not in VOLUME_MEMMAPS:
+
+        VOLUME_MEMMAPS[vid] = np.load(
+            volume_file_map_local[vid],
+            mmap_mode="r"
+        )
+
+    return VOLUME_MEMMAPS[vid]
+
+
+def get_label(vid):
+
+    vid = int(vid)
+
+    if vid not in LABEL_MEMMAPS:
+
+        LABEL_MEMMAPS[vid] = np.load(
+            label_file_map_local[vid],
+            mmap_mode="r"
+        )
+
+    return LABEL_MEMMAPS[vid]
+
+
+# =============================================================================
+# 9. VOLUME SHAPE CACHE
+# =============================================================================
+
+volume_shape_cache = {}
+
+
+def get_volume_shape(vid):
+
+    vid = int(vid)
+
+    if vid not in volume_shape_cache:
+
+        arr = get_volume(vid)
+
+        volume_shape_cache[vid] = tuple(
+            arr.shape
+        )
+
+    return volume_shape_cache[vid]
+
+
+print("\nExample volume shapes:")
+
+for vid in common_ids[:10]:
+
+    print(
+        f"volume {vid}:",
+        get_volume_shape(vid)
+    )
+
+
+# =============================================================================
+# 10. PATCH NORMALIZATION
+# =============================================================================
+
+def normalize_patch(p):
+
+    if isinstance(
+        p,
+        np.ndarray
+    ):
+
+        p = p.tolist()
+
+
+    if isinstance(
+        p,
+        dict
+    ):
+
+        vid = p.get(
+            "volume_id",
+            p.get(
+                "vid"
+            )
+        )
+
+        z0 = p.get(
+            "z0",
+            0
+        )
+
+        y0 = p.get(
+            "y0",
+            0
+        )
+
+        x0 = p.get(
+            "x0",
+            0
+        )
+
+        return (
+            int(vid),
+            int(z0),
+            int(y0),
+            int(x0)
+        )
+
+
+    if isinstance(
+        p,
+        (tuple, list)
+    ):
+
+        if len(p) != 4:
+
+            raise ValueError(
+                f"Invalid patch: {p}"
+            )
+
+        return (
+            int(p[0]),
+            int(p[1]),
+            int(p[2]),
+            int(p[3])
+        )
+
+
+    raise TypeError(
+        f"Unsupported patch type: {type(p)}"
+    )
+
+
+# =============================================================================
+# 11. PATCH VALIDITY
+# =============================================================================
+
+def patch_valid(patch):
+
+    vid, z0, y0, x0 = normalize_patch(
+        patch
+    )
+
+    if vid not in common_ids:
+
+        return False
+
+    H, W, Z = get_volume_shape(
+        vid
+    )
+
+    if z0 < 0 or y0 < 0 or x0 < 0:
+
+        return False
+
+    if z0 >= Z:
+
+        return False
+
+    if y0 >= H:
+
+        return False
+
+    if x0 >= W:
+
+        return False
+
+    return True
+
+
+# =============================================================================
+# 12. PATCH LOADER
+# =============================================================================
+
+def load_patch(patch):
+
+    vid, z0, y0, x0 = normalize_patch(
+        patch
+    )
+
+    vol = get_volume(
+        vid
+    )
+
+    lab = get_label(
+        vid
+    )
+
+    H, W, Z = vol.shape
+
+    z1 = min(
+        z0 + DEPTH,
+        Z
+    )
+
+    y1 = min(
+        y0 + PATCH_H,
+        H
+    )
+
+    x1 = min(
+        x0 + PATCH_W,
+        W
+    )
+
+    image = np.zeros(
+        (
+            DEPTH,
+            PATCH_H,
+            PATCH_W
+        ),
+        dtype=np.float32
+    )
+
+    mask = np.zeros(
+        (
+            DEPTH,
+            PATCH_H,
+            PATCH_W
+        ),
+        dtype=np.uint8
+    )
+
+
+    if (
+        z1 > z0
+        and y1 > y0
+        and x1 > x0
+    ):
+
+        image_raw = np.asarray(
+            vol[
+                y0:y1,
+                x0:x1,
+                z0:z1
+            ],
+            dtype=np.float32
+        )
+
+        mask_raw = np.asarray(
+            lab[
+                y0:y1,
+                x0:x1,
+                z0:z1
+            ]
+        )
+
+
+        image[
+            :z1-z0,
+            :y1-y0,
+            :x1-x0
+        ] = image_raw.transpose(
+            2,
+            0,
+            1
+        )
+
+
+        mask[
+            :z1-z0,
+            :y1-y0,
+            :x1-x0
+        ] = mask_raw.transpose(
+            2,
+            0,
+            1
+        ).astype(
+            np.uint8
+        )
+
+
+    return image, mask
+
+
+# =============================================================================
+# 13. PATCH GRID
+# =============================================================================
+
+def make_patch_grid(ids):
+
+    patches = []
+
+    total_ids = len(ids)
+
+    for index, vid in enumerate(ids):
+
+        H, W, Z = get_volume_shape(
+            vid
+        )
+
+
+        z_positions = list(
+            range(
+                0,
+                max(
+                    1,
+                    Z - DEPTH + 1
+                ),
+                PATCH_STRIDE_Z
+            )
+        )
+
+
+        y_positions = list(
+            range(
+                0,
+                max(
+                    1,
+                    H - PATCH_H + 1
+                ),
+                PATCH_STRIDE_Y
+            )
+        )
+
+
+        x_positions = list(
+            range(
+                0,
+                max(
+                    1,
+                    W - PATCH_W + 1
+                ),
+                PATCH_STRIDE_X
+            )
+        )
+
+
+        # Final boundary positions.
+
+        z_last = max(
+            0,
+            Z - DEPTH
+        )
+
+        y_last = max(
+            0,
+            H - PATCH_H
+        )
+
+        x_last = max(
+            0,
+            W - PATCH_W
+        )
+
+
+        if z_last not in z_positions:
+
+            z_positions.append(
+                z_last
+            )
+
+
+        if y_last not in y_positions:
+
+            y_positions.append(
+                y_last
+            )
+
+
+        if x_last not in x_positions:
+
+            x_positions.append(
+                x_last
+            )
+
+
+        for z0 in z_positions:
+
+            for y0 in y_positions:
+
+                for x0 in x_positions:
+
+                    patches.append(
+                        (
+                            int(vid),
+                            int(z0),
+                            int(y0),
+                            int(x0)
+                        )
+                    )
+
+
+        if (
+            index + 1
+        ) % 5 == 0:
+
+            print(
+                f"Patch generation: "
+                f"{index+1}/{total_ids} volumes | "
+                f"patches={len(patches):,}"
+            )
+
+
+    return patches
+
+
+# =============================================================================
+# 14. GET EXISTING PATCHES
+# =============================================================================
+#
+# We prefer an existing train_patch_list if it exists.
+#
+# But invalid volume IDs such as the old 35/41 are removed.
+#
+# =============================================================================
+
+existing_train = None
+
+
+if "train_patch_list" in globals():
+
+    try:
+
+        tmp = []
+
+        for p in train_patch_list:
+
+            try:
+
+                q = normalize_patch(
+                    p
+                )
+
+                if patch_valid(q):
+
+                    tmp.append(
+                        q
+                    )
+
+            except Exception:
+
+                continue
+
+
+        if len(tmp) > 0:
+
+            existing_train = tmp
+
+            print(
+                "\n✓ Existing train_patch_list:",
+                len(existing_train)
+            )
+
+    except Exception as e:
+
+        print(
+            "Existing train_patch_list ignored:",
+            e
+        )
+
+
+# =============================================================================
+# 15. CANDIDATE PATCHES
+# =============================================================================
+
+if existing_train is not None:
+
+    all_candidate_patches = existing_train
+
+else:
+
+    print(
+        "\nNo usable train_patch_list."
+    )
+
+    print(
+        "Generating patch grid..."
+    )
+
+    all_candidate_patches = make_patch_grid(
+        common_ids
+    )
+
+
+print(
+    "\nTotal candidate patches:",
+    len(all_candidate_patches)
+)
+
+
+# =============================================================================
+# 16. VOLUME-LEVEL TRAIN / VALIDATION SPLIT
+# =============================================================================
+
+rng = np.random.default_rng(
+    SEED
+)
+
+all_ids_from_patches = sorted(
+    set(
+        p[0]
+        for p in all_candidate_patches
+        if p[0] in common_ids
+    )
+)
+
+if len(all_ids_from_patches) < 2:
+
+    raise RuntimeError(
+        "Not enough valid volumes for train/validation split."
+    )
+
+
+shuffled_ids = all_ids_from_patches.copy()
+
+rng.shuffle(
+    shuffled_ids
+)
+
+
+n_val = max(
+    1,
+    int(
+        round(
+            len(shuffled_ids)
+            * VAL_FRACTION
+        )
+    )
+)
+
+
+if n_val >= len(shuffled_ids):
+
+    n_val = len(shuffled_ids) - 1
+
+
+val_ids = set(
+    shuffled_ids[:n_val]
+)
+
+train_ids = set(
+    shuffled_ids[n_val:]
+)
+
+
+print("\n" + "=" * 100)
+print("VOLUME-LEVEL SPLIT")
+print("=" * 100)
+
+print(
+    "Train volumes:",
+    sorted(train_ids)
+)
+
+print(
+    "Validation volumes:",
+    sorted(val_ids)
+)
+
+
+train_base_patches = [
+    p
+    for p in all_candidate_patches
+    if p[0] in train_ids
+]
+
+
+val_base_patches = [
+    p
+    for p in all_candidate_patches
+    if p[0] in val_ids
+]
+
+
+print(
+    "Train candidate patches:",
+    len(train_base_patches)
+)
+
+print(
+    "Validation candidate patches:",
+    len(val_base_patches)
+)
+
+
+# =============================================================================
+# 17. PATCH CLASSIFICATION
+# =============================================================================
+
+def classify_patch(patch):
+
+    _, mask = load_patch(
+        patch
+    )
+
+    if np.any(
+        mask == 2
+    ):
+
+        return "tumor"
+
+
+    if np.any(
+        mask == 1
+    ):
+
+        return "liver"
+
+
+    return "background"
+
+
+# =============================================================================
+# 18. BUILD TRAINING POOLS
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("BUILDING TRAINING POOLS")
+print("=" * 100)
+
+
+tumor_pool_all = []
+liver_pool_all = []
+background_pool_all = []
+
+
+scan_start = time.time()
+
+
+for i, p in enumerate(
+    train_base_patches
+):
+
+    try:
+
+        category = classify_patch(
+            p
+        )
+
+        if category == "tumor":
+
+            tumor_pool_all.append(
+                p
+            )
+
+        elif category == "liver":
+
+            liver_pool_all.append(
+                p
+            )
+
+        else:
+
+            background_pool_all.append(
+                p
+            )
+
+    except Exception:
+
+        continue
+
+
+    if (
+        i + 1
+    ) % 1000 == 0:
+
+        elapsed = (
+            time.time()
+            - scan_start
+        )
+
+        print(
+            f"{i+1:,}/{len(train_base_patches):,} | "
+            f"tumor={len(tumor_pool_all):,} | "
+            f"liver={len(liver_pool_all):,} | "
+            f"bg={len(background_pool_all):,} | "
+            f"time={elapsed/60:.1f} min"
+        )
+
+
+rng.shuffle(
+    tumor_pool_all
+)
+
+rng.shuffle(
+    liver_pool_all
+)
+
+rng.shuffle(
+    background_pool_all
+)
+
+
+tumor_pool = tumor_pool_all[
+    :min(
+        len(tumor_pool_all),
+        MAX_TUMOR_PATCHES
+    )
+]
+
+
+liver_pool = liver_pool_all[
+    :min(
+        len(liver_pool_all),
+        MAX_LIVER_PATCHES
+    )
+]
+
+
+background_pool = background_pool_all[
+    :min(
+        len(background_pool_all),
+        MAX_BACKGROUND_PATCHES
+    )
+]
+
+
+print("\n" + "=" * 100)
+print("TRAINING POOLS")
+print("=" * 100)
+
+print(
+    "Tumor:",
+    len(tumor_pool)
+)
+
+print(
+    "Liver:",
+    len(liver_pool)
+)
+
+print(
+    "Background:",
+    len(background_pool)
+)
+
+
+if len(tumor_pool) == 0:
+
+    raise RuntimeError(
+        "NO TUMOR PATCHES FOUND."
+    )
+
+
+# =============================================================================
+# 19. BUILD VALIDATION POOLS
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("BUILDING VALIDATION POOLS")
+print("=" * 100)
+
+
+val_tumor_pool_all = []
+val_liver_pool_all = []
+val_background_pool_all = []
+
+
+val_scan_start = time.time()
+
+
+for i, p in enumerate(
+    val_base_patches
+):
+
+    try:
+
+        category = classify_patch(
+            p
+        )
+
+        if category == "tumor":
+
+            val_tumor_pool_all.append(
+                p
+            )
+
+        elif category == "liver":
+
+            val_liver_pool_all.append(
+                p
+            )
+
+        else:
+
+            val_background_pool_all.append(
+                p
+            )
+
+    except Exception:
+
+        continue
+
+
+    if (
+        i + 1
+    ) % 1000 == 0:
+
+        elapsed = (
+            time.time()
+            - val_scan_start
+        )
+
+        print(
+            f"{i+1:,}/{len(val_base_patches):,} | "
+            f"tumor={len(val_tumor_pool_all):,} | "
+            f"liver={len(val_liver_pool_all):,} | "
+            f"bg={len(val_background_pool_all):,} | "
+            f"time={elapsed/60:.1f} min"
+        )
+
+
+rng.shuffle(
+    val_tumor_pool_all
+)
+
+rng.shuffle(
+    val_liver_pool_all
+)
+
+rng.shuffle(
+    val_background_pool_all
+)
+
+
+val_tumor_pool = val_tumor_pool_all[
+    :min(
+        len(val_tumor_pool_all),
+        MAX_VAL_TUMOR_PATCHES
+    )
+]
+
+
+val_liver_pool = val_liver_pool_all[
+    :min(
+        len(val_liver_pool_all),
+        MAX_VAL_LIVER_PATCHES
+    )
+]
+
+
+val_background_pool = val_background_pool_all[
+    :min(
+        len(val_background_pool_all),
+        MAX_VAL_BACKGROUND_PATCHES
+    )
+]
+
+
+full_validation_patch_list = (
+    val_tumor_pool
+    +
+    val_liver_pool
+    +
+    val_background_pool
+)
+
+
+rng.shuffle(
+    full_validation_patch_list
+)
+
+
+print("\nValidation pools:")
+
+print(
+    "Tumor:",
+    len(val_tumor_pool)
+)
+
+print(
+    "Liver:",
+    len(val_liver_pool)
+)
+
+print(
+    "Background:",
+    len(val_background_pool)
+)
+
+print(
+    "Total:",
+    len(full_validation_patch_list)
+)
+
+
+if len(val_tumor_pool) == 0:
+
+    raise RuntimeError(
+        "WARNING: validation contains ZERO tumor patches."
+    )
+
+
+# =============================================================================
+# 20. FAST EPOCH VALIDATION SET
+# =============================================================================
+#
+# This is intentionally much smaller than full validation.
+#
+# Full validation will happen at the end.
+#
+# =============================================================================
+
+epoch_val_tumor = val_tumor_pool[
+    :min(
+        len(val_tumor_pool),
+        EPOCH_VAL_TUMOR
+    )
+]
+
+
+epoch_val_liver = val_liver_pool[
+    :min(
+        len(val_liver_pool),
+        EPOCH_VAL_LIVER
+    )
+]
+
+
+epoch_val_background = val_background_pool[
+    :min(
+        len(val_background_pool),
+        EPOCH_VAL_BACKGROUND
+    )
+]
+
+
+epoch_validation_patch_list = (
+    epoch_val_tumor
+    +
+    epoch_val_liver
+    +
+    epoch_val_background
+)
+
+
+rng.shuffle(
+    epoch_validation_patch_list
+)
+
+
+print("\n" + "=" * 100)
+print("FAST EPOCH VALIDATION")
+print("=" * 100)
+
+print(
+    "Tumor:",
+    len(epoch_val_tumor)
+)
+
+print(
+    "Liver:",
+    len(epoch_val_liver)
+)
+
+print(
+    "Background:",
+    len(epoch_val_background)
+)
+
+print(
+    "Total:",
+    len(epoch_validation_patch_list)
+)
+
+
+# =============================================================================
+# 21. LABEL DISTRIBUTION
+# =============================================================================
+
+def compute_label_distribution(ids):
+
+    counts = {
+        0: 0,
+        1: 0,
+        2: 0
+    }
+
+    for vid in sorted(ids):
+
+        lab = get_label(
+            vid
+        )
+
+        vals, cnts = np.unique(
+            lab,
+            return_counts=True
+        )
+
+        for v, c in zip(
+            vals,
+            cnts
+        ):
+
+            v = int(v)
+
+            if v in counts:
+
+                counts[v] += int(c)
+
+    return counts
+
+
+train_label_counts = compute_label_distribution(
+    train_ids
+)
+
+val_label_counts = compute_label_distribution(
+    val_ids
+)
+
+
+print("\n" + "=" * 100)
+print("TRUE LABEL DISTRIBUTION")
+print("=" * 100)
+
+print("\nTRAIN")
+
+for k in [0, 1, 2]:
+
+    print(
+        f"label {k}: "
+        f"{train_label_counts[k]:,}"
+    )
+
+
+print("\nVALIDATION")
+
+for k in [0, 1, 2]:
+
+    print(
+        f"label {k}: "
+        f"{val_label_counts[k]:,}"
+    )
+
+
+# =============================================================================
+# 22. SAVE POOL INFORMATION
+# =============================================================================
+
+pool_report = {
+
+    "version": "V14.1",
+
+    "train_volumes":
+        sorted(
+            list(train_ids)
+        ),
+
+    "validation_volumes":
+        sorted(
+            list(val_ids)
+        ),
+
+    "training_pool_sizes": {
+
+        "tumor":
+            len(tumor_pool),
+
+        "liver":
+            len(liver_pool),
+
+        "background":
+            len(background_pool)
+    },
+
+    "validation_pool_sizes": {
+
+        "tumor":
+            len(val_tumor_pool),
+
+        "liver":
+            len(val_liver_pool),
+
+        "background":
+            len(val_background_pool)
+    },
+
+    "train_label_counts":
+        train_label_counts,
+
+    "validation_label_counts":
+        val_label_counts
+}
+
+
+with open(
+    POOL_JSON,
+    "w"
+) as f:
+
+    json.dump(
+        pool_report,
+        f,
+        indent=2
+    )
+
+
+# =============================================================================
+# 23. AUGMENTATION
+# =============================================================================
+
+def augment_patch(
+    image,
+    mask
+):
+
+    # Horizontal flip.
+
+    if np.random.random() < 0.50:
+
+        image = image[
+            :,
+            :,
+            ::-1
+        ]
+
+        mask = mask[
+            :,
+            :,
+            ::-1
+        ]
+
+
+    # Vertical flip.
+
+    if np.random.random() < 0.50:
+
+        image = image[
+            :,
+            ::-1,
+            :
+        ]
+
+        mask = mask[
+            :,
+            ::-1,
+            :
+        ]
+
+
+    # Intensity scaling.
+
+    if np.random.random() < 0.50:
+
+        scale = np.random.uniform(
+            0.90,
+            1.10
+        )
+
+        shift = np.random.uniform(
+            -0.05,
+            0.05
+        )
+
+        image = (
+            image * scale
+            + shift
+        )
+
+
+    # Small Gaussian noise.
+
+    if np.random.random() < 0.20:
+
+        noise = np.random.normal(
+            0.0,
+            0.015,
+            size=image.shape
+        ).astype(
+            np.float32
+        )
+
+        image = (
+            image
+            + noise
+        )
+
+
+    return image, mask
+
+
+# =============================================================================
+# 24. NORMALIZATION
+# =============================================================================
+
+def normalize_image(image):
+
+    image = np.nan_to_num(
+        image,
+        nan=0.0,
+        posinf=0.0,
+        neginf=0.0
+    ).astype(
+        np.float32
+    )
+
+
+    finite_values = image[
+        np.isfinite(image)
+    ]
+
+
+    if finite_values.size == 0:
+
+        return np.zeros_like(
+            image,
+            dtype=np.float32
+        )
+
+
+    p1 = np.percentile(
+        finite_values,
+        1.0
+    )
+
+    p99 = np.percentile(
+        finite_values,
+        99.0
+    )
+
+
+    if p99 > p1:
+
+        image = (
+            image - p1
+        ) / (
+            p99 - p1
+        )
+
+    else:
+
+        image = (
+            image - p1
+        )
+
+
+    image = np.clip(
+        image,
+        0.0,
+        1.0
+    )
+
+
+    return image.astype(
+        np.float32
+    )
+
+
+# =============================================================================
+# 25. TARGET
+# =============================================================================
+
+def make_target(mask):
+
+    liver = (
+        mask > 0
+    ).astype(
+        np.float32
+    )
+
+    tumor = (
+        mask == 2
+    ).astype(
+        np.float32
+    )
+
+
+    return np.stack(
+        [
+            liver,
+            tumor
+        ],
+        axis=-1
+    ).astype(
+        np.float32
+    )
+
+
+# =============================================================================
+# 26. TRAINING SEQUENCE
+# =============================================================================
+
+class BalancedTumorSequence(
+    keras.utils.Sequence
+):
+
+    def __init__(
+        self,
+        tumor_pool,
+        liver_pool,
+        background_pool,
+        steps_per_epoch,
+        batch_size=1
+    ):
+
+        super().__init__()
+
+        self.tumor_pool = tumor_pool
+        self.liver_pool = liver_pool
+        self.background_pool = background_pool
+
+        self.steps_per_epoch = (
+            int(
+                steps_per_epoch
+            )
+        )
+
+        self.batch_size = (
+            int(
+                batch_size
+            )
+        )
+
+        self.rng = np.random.default_rng(
+            SEED + 100
+        )
+
+
+    def __len__(self):
+
+        return self.steps_per_epoch
+
+
+    def choose_patch(self):
+
+        r = self.rng.random()
+
+
+        if (
+            r < TUMOR_PATCH_PROB
+            and len(self.tumor_pool) > 0
+        ):
+
+            idx = self.rng.integers(
+                0,
+                len(self.tumor_pool)
+            )
+
+            return self.tumor_pool[
+                idx
+            ]
+
+
+        if (
+            r <
+            TUMOR_PATCH_PROB
+            +
+            LIVER_PATCH_PROB
+            and
+            len(self.liver_pool) > 0
+        ):
+
+            idx = self.rng.integers(
+                0,
+                len(self.liver_pool)
+            )
+
+            return self.liver_pool[
+                idx
+            ]
+
+
+        idx = self.rng.integers(
+            0,
+            len(self.background_pool)
+        )
+
+        return self.background_pool[
+            idx
+        ]
+
+
+    def __getitem__(
+        self,
+        index
+    ):
+
+        images = np.zeros(
+            (
+                self.batch_size,
+                DEPTH,
+                PATCH_H,
+                PATCH_W,
+                1
+            ),
+            dtype=np.float32
+        )
+
+
+        targets = np.zeros(
+            (
+                self.batch_size,
+                DEPTH,
+                PATCH_H,
+                PATCH_W,
+                2
+            ),
+            dtype=np.float32
+        )
+
+
+        for b in range(
+            self.batch_size
+        ):
+
+            patch = self.choose_patch()
+
+            image, mask = load_patch(
+                patch
+            )
+
+            image = normalize_image(
+                image
+            )
+
+            image, mask = augment_patch(
+                image,
+                mask
+            )
+
+            target = make_target(
+                mask
+            )
+
+            images[
+                b,
+                ...,
+                0
+            ] = image
+
+            targets[
+                b
+            ] = target
+
+
+        return (
+            images,
+            targets
+        )
+
+
+# =============================================================================
+# 27. VALIDATION SEQUENCE
+# =============================================================================
+
+class ValidationSequence(
+    keras.utils.Sequence
+):
+
+    def __init__(
+        self,
+        patches,
+        batch_size=1
+    ):
+
+        super().__init__()
+
+        self.patches = list(
+            patches
+        )
+
+        self.batch_size = (
+            int(
+                batch_size
+            )
+        )
+
+
+    def __len__(self):
+
+        return int(
+            math.ceil(
+                len(self.patches)
+                /
+                self.batch_size
+            )
+        )
+
+
+    def __getitem__(
+        self,
+        index
+    ):
+
+        start = (
+            index
+            *
+            self.batch_size
+        )
+
+        end = (
+            index + 1
+        ) * self.batch_size
+
+
+        batch_patches = self.patches[
+            start:end
+        ]
+
+
+        bs = len(
+            batch_patches
+        )
+
+
+        images = np.zeros(
+            (
+                bs,
+                DEPTH,
+                PATCH_H,
+                PATCH_W,
+                1
+            ),
+            dtype=np.float32
+        )
+
+
+        targets = np.zeros(
+            (
+                bs,
+                DEPTH,
+                PATCH_H,
+                PATCH_W,
+                2
+            ),
+            dtype=np.float32
+        )
+
+
+        for b, patch in enumerate(
+            batch_patches
+        ):
+
+            image, mask = load_patch(
+                patch
+            )
+
+            image = normalize_image(
+                image
+            )
+
+            targets[
+                b
+            ] = make_target(
+                mask
+            )
+
+            images[
+                b,
+                ...,
+                0
+            ] = image
+
+
+        return (
+            images,
+            targets
+        )
+
+
+# =============================================================================
+# 28. CREATE DATASETS
+# =============================================================================
+
+train_sequence = BalancedTumorSequence(
+    tumor_pool=tumor_pool,
+    liver_pool=liver_pool,
+    background_pool=background_pool,
+    steps_per_epoch=STEPS_PER_EPOCH,
+    batch_size=BATCH_SIZE
+)
+
+
+epoch_validation_sequence = ValidationSequence(
+    epoch_validation_patch_list,
+    batch_size=BATCH_SIZE
+)
+
+
+print("\nTraining steps:")
+print(
+    len(train_sequence)
+)
+
+print(
+    "Fast validation steps:",
+    len(epoch_validation_sequence)
+)
+
+
+# =============================================================================
+# 29. GROUP NORMALIZATION
+# =============================================================================
+
+class GroupNorm(
+    layers.Layer
+):
+
+    def __init__(
+        self,
+        groups=8,
+        epsilon=1e-5,
+        **kwargs
+    ):
+
+        super().__init__(
+            **kwargs
+        )
+
+        self.groups = groups
+        self.epsilon = epsilon
+
+
+    def build(
+        self,
+        input_shape
+    ):
+
+        channels = int(
+            input_shape[-1]
+        )
+
+
+        self.groups_actual = min(
+            self.groups,
+            channels
+        )
+
+
+        while (
+            channels
+            %
+            self.groups_actual
+            != 0
+            and
+            self.groups_actual > 1
+        ):
+
+            self.groups_actual -= 1
+
+
+        self.gamma = self.add_weight(
+            name="gamma",
+            shape=(channels,),
+            initializer="ones",
+            trainable=True
+        )
+
+
+        self.beta = self.add_weight(
+            name="beta",
+            shape=(channels,),
+            initializer="zeros",
+            trainable=True
+        )
+
+
+        super().build(
+            input_shape
+        )
+
+
+    def call(
+        self,
+        x
+    ):
+
+        shape = tf.shape(
+            x
+        )
+
+
+        N = shape[0]
+        D = shape[1]
+        H = shape[2]
+        W = shape[3]
+        C = shape[4]
+
+
+        G = self.groups_actual
+
+
+        x = tf.reshape(
+            x,
+            [
+                N,
+                D,
+                H,
+                W,
+                G,
+                C // G
+            ]
+        )
+
+
+        mean, var = tf.nn.moments(
+            x,
+            axes=[
+                1,
+                2,
+                3,
+                5
+            ],
+            keepdims=True
+        )
+
+
+        x = (
+            x - mean
+        ) / tf.sqrt(
+            var
+            +
+            self.epsilon
+        )
+
+
+        x = tf.reshape(
+            x,
+            [
+                N,
+                D,
+                H,
+                W,
+                C
+            ]
+        )
+
+
+        return (
+            x * self.gamma
+            +
+            self.beta
+        )
+
+
+    def get_config(self):
+
+        config = super().get_config()
+
+        config.update(
+            {
+                "groups":
+                    self.groups,
+
+                "epsilon":
+                    self.epsilon
+            }
+        )
+
+        return config
+
+
+# =============================================================================
+# 30. CONV BLOCK
+# =============================================================================
+
+def conv_block(
+    x,
+    filters,
+    name
+):
+
+    x = layers.Conv3D(
+        filters,
+        3,
+        padding="same",
+        use_bias=False,
+        name=name + "_conv1"
+    )(x)
+
+
+    x = GroupNorm(
+        groups=8,
+        name=name + "_gn1"
+    )(x)
+
+
+    x = layers.Activation(
+        "relu",
+        name=name + "_relu1"
+    )(x)
+
+
+    x = layers.Conv3D(
+        filters,
+        3,
+        padding="same",
+        use_bias=False,
+        name=name + "_conv2"
+    )(x)
+
+
+    x = GroupNorm(
+        groups=8,
+        name=name + "_gn2"
+    )(x)
+
+
+    x = layers.Activation(
+        "relu",
+        name=name + "_relu2"
+    )(x)
+
+
+    return x
+
+
+# =============================================================================
+# 31. BUILD V14.1 MODEL
+# =============================================================================
+
+def build_v14_1_model():
+
+    inputs = keras.Input(
+        shape=(
+            DEPTH,
+            PATCH_H,
+            PATCH_W,
+            1
+        ),
+        name="ct_input"
+    )
+
+
+    # -------------------------------------------------------------------------
+    # Encoder 1
+    # -------------------------------------------------------------------------
+
+    e1 = conv_block(
+        inputs,
+        16,
+        "enc1"
+    )
+
+
+    p1 = layers.MaxPool3D(
+        pool_size=(
+            1,
+            2,
+            2
+        ),
+        name="pool1"
+    )(e1)
+
+
+    # -------------------------------------------------------------------------
+    # Encoder 2
+    # -------------------------------------------------------------------------
+
+    e2 = conv_block(
+        p1,
+        32,
+        "enc2"
+    )
+
+
+    p2 = layers.MaxPool3D(
+        pool_size=(
+            1,
+            2,
+            2
+        ),
+        name="pool2"
+    )(e2)
+
+
+    # -------------------------------------------------------------------------
+    # Encoder 3
+    # -------------------------------------------------------------------------
+
+    e3 = conv_block(
+        p2,
+        64,
+        "enc3"
+    )
+
+
+    p3 = layers.MaxPool3D(
+        pool_size=(
+            1,
+            2,
+            2
+        ),
+        name="pool3"
+    )(e3)
+
+
+    # -------------------------------------------------------------------------
+    # Bottleneck
+    # -------------------------------------------------------------------------
+
+    b = conv_block(
+        p3,
+        96,
+        "bottleneck"
+    )
+
+
+    # -------------------------------------------------------------------------
+    # Decoder 3
+    # -------------------------------------------------------------------------
+
+    u3 = layers.Conv3DTranspose(
+        64,
+        kernel_size=(
+            1,
+            2,
+            2
+        ),
+        strides=(
+            1,
+            2,
+            2
+        ),
+        padding="same",
+        name="up3"
+    )(b)
+
+
+    u3 = layers.Concatenate(
+        name="skip3"
+    )(
+        [
+            u3,
+            e3
+        ]
+    )
+
+
+    d3 = conv_block(
+        u3,
+        64,
+        "dec3"
+    )
+
+
+    # -------------------------------------------------------------------------
+    # Decoder 2
+    # -------------------------------------------------------------------------
+
+    u2 = layers.Conv3DTranspose(
+        32,
+        kernel_size=(
+            1,
+            2,
+            2
+        ),
+        strides=(
+            1,
+            2,
+            2
+        ),
+        padding="same",
+        name="up2"
+    )(d3)
+
+
+    u2 = layers.Concatenate(
+        name="skip2"
+    )(
+        [
+            u2,
+            e2
+        ]
+    )
+
+
+    d2 = conv_block(
+        u2,
+        32,
+        "dec2"
+    )
+
+
+    # -------------------------------------------------------------------------
+    # Decoder 1
+    # -------------------------------------------------------------------------
+
+    u1 = layers.Conv3DTranspose(
+        16,
+        kernel_size=(
+            1,
+            2,
+            2
+        ),
+        strides=(
+            1,
+            2,
+            2
+        ),
+        padding="same",
+        name="up1"
+    )(d2)
+
+
+    u1 = layers.Concatenate(
+        name="skip1"
+    )(
+        [
+            u1,
+            e1
+        ]
+    )
+
+
+    d1 = conv_block(
+        u1,
+        16,
+        "dec1"
+    )
+
+
+    # -------------------------------------------------------------------------
+    # Liver branch
+    # -------------------------------------------------------------------------
+
+    liver_features = layers.Conv3D(
+        16,
+        3,
+        padding="same",
+        use_bias=False,
+        name="liver_head_conv"
+    )(d1)
+
+
+    liver_features = GroupNorm(
+        groups=8,
+        name="liver_head_gn"
+    )(liver_features)
+
+
+    liver_features = layers.Activation(
+        "relu",
+        name="liver_head_relu"
+    )(liver_features)
+
+
+    liver_prob = layers.Conv3D(
+        1,
+        1,
+        activation="sigmoid",
+        name="liver_probability"
+    )(liver_features)
+
+
+    # -------------------------------------------------------------------------
+    # SOFT LIVER CONDITIONING
+    # -------------------------------------------------------------------------
+    #
+    # Tumor branch receives continuous liver probability.
+    #
+    # No hard gating.
+    #
+    # -------------------------------------------------------------------------
+
+    tumor_context = layers.Concatenate(
+        name="soft_liver_tumor_context"
+    )(
+        [
+            d1,
+            liver_prob
+        ]
+    )
+
+
+    tumor_features = layers.Conv3D(
+        24,
+        3,
+        padding="same",
+        use_bias=False,
+        name="tumor_head_conv1"
+    )(tumor_context)
+
+
+    tumor_features = GroupNorm(
+        groups=8,
+        name="tumor_head_gn1"
+    )(tumor_features)
+
+
+    tumor_features = layers.Activation(
+        "relu",
+        name="tumor_head_relu1"
+    )(tumor_features)
+
+
+    tumor_features = layers.Conv3D(
+        16,
+        3,
+        padding="same",
+        use_bias=False,
+        name="tumor_head_conv2"
+    )(tumor_features)
+
+
+    tumor_features = GroupNorm(
+        groups=8,
+        name="tumor_head_gn2"
+    )(tumor_features)
+
+
+    tumor_features = layers.Activation(
+        "relu",
+        name="tumor_head_relu2"
+    )(tumor_features)
+
+
+    tumor_prob = layers.Conv3D(
+        1,
+        1,
+        activation="sigmoid",
+        name="tumor_probability"
+    )(tumor_features)
+
+
+    # -------------------------------------------------------------------------
+    # Final output
+    # -------------------------------------------------------------------------
+
+    outputs = layers.Concatenate(
+        axis=-1,
+        name="segmentation_output"
+    )(
+        [
+            liver_prob,
+            tumor_prob
+        ]
+    )
+
+
+    model = keras.Model(
+        inputs=inputs,
+        outputs=outputs,
+        name="V14_1_TumorFocused_3D_UNet"
+    )
+
+
+    return model
+
+
+model = build_v14_1_model()
+
+
+# =============================================================================
+# 32. LOSS FUNCTIONS
+# =============================================================================
+
+EPS = 1e-6
+
+
+def soft_dice(
+    y_true,
+    y_pred
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.float32
+    )
+
+    y_pred = tf.cast(
+        y_pred,
+        tf.float32
+    )
+
+
+    axes = [
+        1,
+        2,
+        3
+    ]
+
+
+    intersection = tf.reduce_sum(
+        y_true * y_pred,
+        axis=axes
+    )
+
+
+    denominator = (
+        tf.reduce_sum(
+            y_true,
+            axis=axes
+        )
+        +
+        tf.reduce_sum(
+            y_pred,
+            axis=axes
+        )
+    )
+
+
+    dice = (
+        2.0 * intersection
+        +
+        EPS
+    ) / (
+        denominator
+        +
+        EPS
+    )
+
+
+    return tf.reduce_mean(
+        dice
+    )
+
+
+# =============================================================================
+# 33. WEIGHTED BCE
+# =============================================================================
+
+def weighted_bce(
+    y_true,
+    y_pred,
+    positive_weight=1.0
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.float32
+    )
+
+
+    y_pred = tf.clip_by_value(
+        y_pred,
+        EPS,
+        1.0 - EPS
+    )
+
+
+    loss = -(
+        positive_weight
+        *
+        y_true
+        *
+        tf.math.log(
+            y_pred
+        )
+        +
+        (
+            1.0 - y_true
+        )
+        *
+        tf.math.log(
+            1.0 - y_pred
+        )
+    )
+
+
+    return tf.reduce_mean(
+        loss
+    )
+
+
+# =============================================================================
+# 34. FOCUSED NEGATIVE LOSS
+# =============================================================================
+#
+# This specifically increases the importance of difficult negative voxels.
+#
+# If:
+#
+#     y_true = 0
+#     prediction is high
+#
+# then the penalty becomes stronger.
+#
+# This directly targets V14's:
+#
+#     high recall
+#     low precision
+#
+# problem.
+#
+# =============================================================================
+
+def negative_focal_loss(
+    y_true,
+    y_pred,
+    gamma=2.0
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.float32
+    )
+
+
+    y_pred = tf.clip_by_value(
+        y_pred,
+        EPS,
+        1.0 - EPS
+    )
+
+
+    negative_mask = (
+        1.0 - y_true
+    )
+
+
+    loss = (
+        negative_mask
+        *
+        tf.pow(
+            y_pred,
+            gamma
+        )
+        *
+        (
+            -tf.math.log(
+                1.0 - y_pred
+            )
+        )
+    )
+
+
+    return tf.reduce_mean(
+        loss
+    )
+
+
+# =============================================================================
+# 35. FOCUSED TVERSKY
+# =============================================================================
+
+def tversky_loss(
+    y_true,
+    y_pred,
+    alpha=TV_ALPHA,
+    beta=TV_BETA
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.float32
+    )
+
+    y_pred = tf.cast(
+        y_pred,
+        tf.float32
+    )
+
+
+    axes = [
+        1,
+        2,
+        3
+    ]
+
+
+    tp = tf.reduce_sum(
+        y_true * y_pred,
+        axis=axes
+    )
+
+
+    fp = tf.reduce_sum(
+        (
+            1.0 - y_true
+        )
+        *
+        y_pred,
+        axis=axes
+    )
+
+
+    fn = tf.reduce_sum(
+        y_true
+        *
+        (
+            1.0 - y_pred
+        ),
+        axis=axes
+    )
+
+
+    score = (
+        tp + EPS
+    ) / (
+        tp
+        +
+        alpha * fp
+        +
+        beta * fn
+        +
+        EPS
+    )
+
+
+    return tf.reduce_mean(
+        1.0 - score
+    )
+
+
+def focal_tversky_loss(
+    y_true,
+    y_pred
+):
+
+    loss = tversky_loss(
+        y_true,
+        y_pred
+    )
+
+
+    return tf.pow(
+        loss + EPS,
+        TV_GAMMA
+    )
+
+
+# =============================================================================
+# 36. OUTSIDE LIVER PENALTY
+# =============================================================================
+
+def outside_liver_penalty(
+    true_liver,
+    tumor_pred
+):
+
+    outside = (
+        tumor_pred
+        *
+        (
+            1.0 - true_liver
+        )
+    )
+
+
+    return tf.reduce_mean(
+        outside
+    )
+
+
+# =============================================================================
+# 37. LIVER NON-TUMOR FP PENALTY
+# =============================================================================
+#
+# This is especially important.
+#
+# True liver but NOT tumor:
+#
+#     liver = 1
+#     tumor = 0
+#
+# High tumor probability here is a false positive.
+#
+# =============================================================================
+
+def liver_non_tumor_fp_penalty(
+    true_liver,
+    true_tumor,
+    tumor_pred
+):
+
+    liver_non_tumor = (
+        true_liver
+        *
+        (
+            1.0 - true_tumor
+        )
+    )
+
+
+    penalty = (
+        liver_non_tumor
+        *
+        tf.square(
+            tumor_pred
+        )
+    )
+
+
+    return tf.reduce_mean(
+        penalty
+    )
+
+
+# =============================================================================
+# 38. TOTAL V14.1 LOSS
+# =============================================================================
+
+def v14_1_loss(
+    y_true,
+    y_pred
+):
+
+    true_liver = (
+        y_true[
+            ...,
+            0:1
+        ]
+    )
+
+
+    true_tumor = (
+        y_true[
+            ...,
+            1:2
+        ]
+    )
+
+
+    pred_liver = (
+        y_pred[
+            ...,
+            0:1
+        ]
+    )
+
+
+    pred_tumor = (
+        y_pred[
+            ...,
+            1:2
+        ]
+    )
+
+
+    # -------------------------------------------------------------------------
+    # LIVER LOSS
+    # -------------------------------------------------------------------------
+
+    liver_bce = weighted_bce(
+        true_liver,
+        pred_liver,
+        positive_weight=1.5
+    )
+
+
+    liver_dice_loss = (
+        1.0
+        -
+        soft_dice(
+            true_liver,
+            pred_liver
+        )
+    )
+
+
+    liver_loss = (
+        0.35 * liver_bce
+        +
+        0.65 * liver_dice_loss
+    )
+
+
+    # -------------------------------------------------------------------------
+    # TUMOR LOSS
+    # -------------------------------------------------------------------------
+
+    tumor_bce = weighted_bce(
+        true_tumor,
+        pred_tumor,
+        positive_weight=TUMOR_POS_WEIGHT
+    )
+
+
+    tumor_dice_loss = (
+        1.0
+        -
+        soft_dice(
+            true_tumor,
+            pred_tumor
+        )
+    )
+
+
+    tumor_tv_loss = focal_tversky_loss(
+        true_tumor,
+        pred_tumor
+    )
+
+
+    negative_fp_loss = negative_focal_loss(
+        true_tumor,
+        pred_tumor,
+        gamma=2.0
+    )
+
+
+    tumor_loss = (
+        0.20 * tumor_bce
+        +
+        0.25 * tumor_dice_loss
+        +
+        0.35 * tumor_tv_loss
+        +
+        0.20 * negative_fp_loss
+    )
+
+
+    # -------------------------------------------------------------------------
+    # FALSE POSITIVE PENALTIES
+    # -------------------------------------------------------------------------
+
+    outside_penalty = outside_liver_penalty(
+        true_liver,
+        pred_tumor
+    )
+
+
+    liver_non_tumor_penalty = (
+        liver_non_tumor_fp_penalty(
+            true_liver,
+            true_tumor,
+            pred_tumor
+        )
+    )
+
+
+    # -------------------------------------------------------------------------
+    # TOTAL
+    # -------------------------------------------------------------------------
+
+    total = (
+        LIVER_LOSS_WEIGHT
+        *
+        liver_loss
+        +
+        TUMOR_LOSS_WEIGHT
+        *
+        tumor_loss
+        +
+        OUTSIDE_LIVER_WEIGHT
+        *
+        outside_penalty
+        +
+        LIVER_NON_TUMOR_FP_WEIGHT
+        *
+        liver_non_tumor_penalty
+    )
+
+
+    return total
+
+
+# =============================================================================
+# 39. METRICS
+# =============================================================================
+
+def liver_dice_metric(
+    y_true,
+    y_pred
+):
+
+    return soft_dice(
+        y_true[..., 0:1],
+        y_pred[..., 0:1]
+    )
+
+
+def tumor_dice_metric(
+    y_true,
+    y_pred
+):
+
+    return soft_dice(
+        y_true[..., 1:2],
+        y_pred[..., 1:2]
+    )
+
+
+def tumor_precision_metric(
+    y_true,
+    y_pred
+):
+
+    yt = (
+        y_true[..., 1]
+        >
+        0.5
+    )
+
+
+    yp = (
+        y_pred[..., 1]
+        >
+        0.5
+    )
+
+
+    tp = tf.reduce_sum(
+        tf.cast(
+            yt & yp,
+            tf.float32
+        )
+    )
+
+
+    fp = tf.reduce_sum(
+        tf.cast(
+            (
+                ~yt
+            )
+            &
+            yp,
+            tf.float32
+        )
+    )
+
+
+    return (
+        tp + EPS
+    ) / (
+        tp
+        +
+        fp
+        +
+        EPS
+    )
+
+
+def tumor_recall_metric(
+    y_true,
+    y_pred
+):
+
+    yt = (
+        y_true[..., 1]
+        >
+        0.5
+    )
+
+
+    yp = (
+        y_pred[..., 1]
+        >
+        0.5
+    )
+
+
+    tp = tf.reduce_sum(
+        tf.cast(
+            yt & yp,
+            tf.float32
+        )
+    )
+
+
+    fn = tf.reduce_sum(
+        tf.cast(
+            yt & (~yp),
+            tf.float32
+        )
+    )
+
+
+    return (
+        tp + EPS
+    ) / (
+        tp
+        +
+        fn
+        +
+        EPS
+    )
+
+
+# =============================================================================
+# 40. COMPILE
+# =============================================================================
+
+optimizer = keras.optimizers.Adam(
+    learning_rate=LEARNING_RATE
+)
+
+
+model.compile(
+    optimizer=optimizer,
+    loss=v14_1_loss,
+    metrics=[
+        liver_dice_metric,
+        tumor_dice_metric,
+        tumor_precision_metric,
+        tumor_recall_metric
+    ]
+)
+
+
+# =============================================================================
+# 41. MODEL SUMMARY
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("V14.1 MODEL")
+print("=" * 100)
+
+model.summary()
+
+
+# =============================================================================
+# 42. CALLBACKS
+# =============================================================================
+
+checkpoint_callback = keras.callbacks.ModelCheckpoint(
+    filepath=str(
+        BEST_MODEL_PATH
+    ),
+    monitor="val_tumor_dice_metric",
+    mode="max",
+    save_best_only=True,
+    save_weights_only=False,
+    verbose=1
+)
+
+
+csv_callback = keras.callbacks.CSVLogger(
+    str(
+        TRAINING_CSV
+    ),
+    append=False
+)
+
+
+reduce_lr_callback = keras.callbacks.ReduceLROnPlateau(
+    monitor="val_tumor_dice_metric",
+    mode="max",
+    factor=0.5,
+    patience=5,
+    min_lr=MIN_LR,
+    verbose=1
+)
+
+
+early_stop_callback = keras.callbacks.EarlyStopping(
+    monitor="val_tumor_dice_metric",
+    mode="max",
+    patience=12,
+    restore_best_weights=True,
+    verbose=1
+)
+
+
+# =============================================================================
+# 43. LOADER TEST
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("LOADER TEST")
+print("=" * 100)
+
+
+test_patch = tumor_pool[0]
+
+
+test_image, test_mask = load_patch(
+    test_patch
+)
+
+
+test_image_norm = normalize_image(
+    test_image
+)
+
+
+print(
+    "Patch:",
+    test_patch
+)
+
+print(
+    "Image shape:",
+    test_image.shape
+)
+
+print(
+    "Mask shape:",
+    test_mask.shape
+)
+
+print(
+    "Image dtype:",
+    test_image.dtype
+)
+
+print(
+    "Mask unique:",
+    np.unique(
+        test_mask
+    )
+)
+
+print(
+    "Tumor voxels:",
+    int(
+        np.sum(
+            test_mask == 2
+        )
+    )
+)
+
+
+assert test_image.shape == (
+    DEPTH,
+    PATCH_H,
+    PATCH_W
+)
+
+
+assert test_mask.shape == (
+    DEPTH,
+    PATCH_H,
+    PATCH_W
+)
+
+
+print(
+    "✓ Loader test passed"
+)
+
+
+# =============================================================================
+# 44. TRAIN BATCH TEST
+# =============================================================================
+
+x_test, y_test = train_sequence[0]
+
+
+print(
+    "\nTrain batch:",
+    x_test.shape,
+    y_test.shape
+)
+
+
+assert x_test.shape == (
+    BATCH_SIZE,
+    DEPTH,
+    PATCH_H,
+    PATCH_W,
+    1
+)
+
+
+assert y_test.shape == (
+    BATCH_SIZE,
+    DEPTH,
+    PATCH_H,
+    PATCH_W,
+    2
+)
+
+
+print(
+    "✓ Training sequence test passed"
+)
+
+
+# =============================================================================
+# 45. MODEL FORWARD TEST
+# =============================================================================
+
+print(
+    "\nRunning model forward pass..."
+)
+
+
+pred_test = model(
+    x_test,
+    training=False
+)
+
+
+print(
+    "Prediction shape:",
+    pred_test.shape
+)
+
+
+print(
+    "Prediction min:",
+    float(
+        tf.reduce_min(
+            pred_test
+        )
+    )
+)
+
+
+print(
+    "Prediction max:",
+    float(
+        tf.reduce_max(
+            pred_test
+        )
+    )
+)
+
+
+assert pred_test.shape == (
+    BATCH_SIZE,
+    DEPTH,
+    PATCH_H,
+    PATCH_W,
+    2
+)
+
+
+print(
+    "✓ Forward pass passed"
+)
+
+
+del x_test
+del y_test
+del pred_test
+
+gc.collect()
+
+
+# =============================================================================
+# 46. TRAIN
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("STARTING V14.1 TRAINING")
+print("=" * 100)
+
+print(
+    "Epochs:",
+    EPOCHS
+)
+
+print(
+    "Steps / epoch:",
+    STEPS_PER_EPOCH
+)
+
+print(
+    "Fast validation:",
+    len(epoch_validation_sequence),
+    "steps"
+)
+
+print(
+    "Tumor positive weight:",
+    TUMOR_POS_WEIGHT
+)
+
+print(
+    "Tversky alpha:",
+    TV_ALPHA
+)
+
+print(
+    "Tversky beta:",
+    TV_BETA
+)
+
+print(
+    "Outside liver penalty:",
+    OUTSIDE_LIVER_WEIGHT
+)
+
+print(
+    "Liver non-tumor FP penalty:",
+    LIVER_NON_TUMOR_FP_WEIGHT
+)
+
+
+training_start = time.time()
+
+
+history = model.fit(
+    train_sequence,
+    validation_data=epoch_validation_sequence,
+    epochs=EPOCHS,
+    callbacks=[
+        checkpoint_callback,
+        csv_callback,
+        reduce_lr_callback,
+        early_stop_callback
+    ],
+    verbose=1
+)
+
+
+training_minutes = (
+    time.time()
+    -
+    training_start
+) / 60.0
+
+
+print(
+    f"\nTraining time: "
+    f"{training_minutes:.2f} minutes"
+)
+
+
+# =============================================================================
+# 47. LOAD BEST MODEL
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("LOADING BEST MODEL")
+print("=" * 100)
+
+
+if BEST_MODEL_PATH.exists():
+
+    print(
+        "Best checkpoint:",
+        BEST_MODEL_PATH
+    )
+
+
+    model = keras.models.load_model(
+        BEST_MODEL_PATH,
+        custom_objects={
+            "GroupNorm":
+                GroupNorm,
+
+            "v14_1_loss":
+                v14_1_loss,
+
+            "liver_dice_metric":
+                liver_dice_metric,
+
+            "tumor_dice_metric":
+                tumor_dice_metric,
+
+            "tumor_precision_metric":
+                tumor_precision_metric,
+
+            "tumor_recall_metric":
+                tumor_recall_metric
+        }
+    )
+
+
+    print(
+        "✓ Best model loaded"
+    )
+
+else:
+
+    print(
+        "⚠ Best checkpoint not found."
+    )
+
+
+# =============================================================================
+# 48. FAST GLOBAL PREDICTION FUNCTION
+# =============================================================================
+#
+# IMPORTANT V14.1:
+#
+# We process validation in batches.
+#
+# V14:
+#
+#     model.predict() once per patch
+#
+# V14.1:
+#
+#     batch prediction
+#
+# =============================================================================
+
+def collect_predictions_batched(
+    model,
+    patches,
+    batch_size=1,
+    verbose_every=50
+):
+
+    results = []
+
+    patches = list(
+        patches
+    )
+
+
+    total = len(
+        patches
+    )
+
+
+    for start in range(
+        0,
+        total,
+        batch_size
+    ):
+
+        batch_patches = patches[
+            start:
+            start + batch_size
+        ]
+
+
+        bs = len(
+            batch_patches
+        )
+
+
+        x = np.zeros(
+            (
+                bs,
+                DEPTH,
+                PATCH_H,
+                PATCH_W,
+                1
+            ),
+            dtype=np.float32
+        )
+
+
+        masks = []
+
+
+        for b, patch in enumerate(
+            batch_patches
+        ):
+
+            image, mask = load_patch(
+                patch
+            )
+
+            image = normalize_image(
+                image
+            )
+
+            x[
+                b,
+                ...,
+                0
+            ] = image
+
+            masks.append(
+                mask
+            )
+
+
+        pred = model(
+            x,
+            training=False
+        ).numpy()
+
+
+        for b, patch in enumerate(
+            batch_patches
+        ):
+
+            results.append(
+                {
+                    "patch":
+                        patch,
+
+                    "mask":
+                        masks[b],
+
+                    "liver_prob":
+                        pred[
+                            b,
+                            ...,
+                            0
+                        ].astype(
+                            np.float32
+                        ),
+
+                    "tumor_prob":
+                        pred[
+                            b,
+                            ...,
+                            1
+                        ].astype(
+                            np.float32
+                        )
+                }
+            )
+
+
+        if (
+            (
+                start // batch_size
+            )
+            %
+            verbose_every
+            == 0
+        ):
+
+            print(
+                f"Prediction: "
+                f"{min(start + batch_size, total):,}"
+                f"/{total:,}"
+            )
+
+
+        del x
+        del masks
+        del pred
+
+
+    return results
+
+
+# =============================================================================
+# 49. FULL VALIDATION PREDICTIONS
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("FULL VALIDATION PREDICTIONS")
+print("=" * 100)
+
+print(
+    "Full validation patches:",
+    len(full_validation_patch_list)
+)
+
+
+full_val_start = time.time()
+
+
+validation_results = collect_predictions_batched(
+    model,
+    full_validation_patch_list,
+    batch_size=BATCH_SIZE,
+    verbose_every=25
+)
+
+
+full_val_minutes = (
+    time.time()
+    -
+    full_val_start
+) / 60.0
+
+
+print(
+    f"\nFull validation prediction time: "
+    f"{full_val_minutes:.2f} minutes"
+)
+
+
+print(
+    "✓ Validation predictions:",
+    len(validation_results)
+)
+
+
+# =============================================================================
+# 50. GLOBAL METRICS
+# =============================================================================
+
+def calculate_metrics(
+    results,
+    tumor_threshold=0.50,
+    liver_threshold=0.50,
+    use_liver_gate=False
+):
+
+    tumor_tp = 0
+    tumor_fp = 0
+    tumor_fn = 0
+
+    liver_tp = 0
+    liver_fp = 0
+    liver_fn = 0
+
+
+    for r in results:
+
+        true_liver = (
+            r["mask"] > 0
+        )
+
+
+        true_tumor = (
+            r["mask"] == 2
+        )
+
+
+        pred_liver = (
+            r["liver_prob"]
+            >=
+            liver_threshold
+        )
+
+
+        pred_tumor = (
+            r["tumor_prob"]
+            >=
+            tumor_threshold
+        )
+
+
+        if use_liver_gate:
+
+            pred_tumor = (
+                pred_tumor
+                &
+                pred_liver
+            )
+
+
+        tumor_tp += int(
+            np.sum(
+                pred_tumor
+                &
+                true_tumor
+            )
+        )
+
+
+        tumor_fp += int(
+            np.sum(
+                pred_tumor
+                &
+                (~true_tumor)
+            )
+        )
+
+
+        tumor_fn += int(
+            np.sum(
+                (~pred_tumor)
+                &
+                true_tumor
+            )
+        )
+
+
+        liver_tp += int(
+            np.sum(
+                pred_liver
+                &
+                true_liver
+            )
+        )
+
+
+        liver_fp += int(
+            np.sum(
+                pred_liver
+                &
+                (~true_liver)
+            )
+        )
+
+
+        liver_fn += int(
+            np.sum(
+                (~pred_liver)
+                &
+                true_liver
+            )
+        )
+
+
+    tumor_dice = (
+        2.0 * tumor_tp
+        /
+        (
+            2.0 * tumor_tp
+            +
+            tumor_fp
+            +
+            tumor_fn
+            +
+            1e-8
+        )
+    )
+
+
+    tumor_precision = (
+        tumor_tp
+        /
+        (
+            tumor_tp
+            +
+            tumor_fp
+            +
+            1e-8
+        )
+    )
+
+
+    tumor_recall = (
+        tumor_tp
+        /
+        (
+            tumor_tp
+            +
+            tumor_fn
+            +
+            1e-8
+        )
+    )
+
+
+    liver_dice = (
+        2.0 * liver_tp
+        /
+        (
+            2.0 * liver_tp
+            +
+            liver_fp
+            +
+            liver_fn
+            +
+            1e-8
+        )
+    )
+
+
+    liver_precision = (
+        liver_tp
+        /
+        (
+            liver_tp
+            +
+            liver_fp
+            +
+            1e-8
+        )
+    )
+
+
+    liver_recall = (
+        liver_tp
+        /
+        (
+            liver_tp
+            +
+            liver_fn
+            +
+            1e-8
+        )
+    )
+
+
+    return {
+
+        "tumor_dice":
+            float(
+                tumor_dice
+            ),
+
+        "tumor_precision":
+            float(
+                tumor_precision
+            ),
+
+        "tumor_recall":
+            float(
+                tumor_recall
+            ),
+
+        "tumor_tp":
+            int(
+                tumor_tp
+            ),
+
+        "tumor_fp":
+            int(
+                tumor_fp
+            ),
+
+        "tumor_fn":
+            int(
+                tumor_fn
+            ),
+
+        "liver_dice":
+            float(
+                liver_dice
+            ),
+
+        "liver_precision":
+            float(
+                liver_precision
+            ),
+
+        "liver_recall":
+            float(
+                liver_recall
+            ),
+
+        "liver_tp":
+            int(
+                liver_tp
+            ),
+
+        "liver_fp":
+            int(
+                liver_fp
+            ),
+
+        "liver_fn":
+            int(
+                liver_fn
+            )
+    }
+
+
+# =============================================================================
+# 51. BASELINE
+# =============================================================================
+
+baseline = calculate_metrics(
+    validation_results,
+    tumor_threshold=0.50,
+    liver_threshold=0.50,
+    use_liver_gate=False
+)
+
+
+print("\n" + "=" * 100)
+print("V14.1 BASELINE @ 0.50")
+print("=" * 100)
+
+
+for k, v in baseline.items():
+
+    if isinstance(
+        v,
+        float
+    ):
+
+        print(
+            f"{k}: {v:.6f}"
+        )
+
+    else:
+
+        print(
+            f"{k}: {v:,}"
+        )
+
+
+# =============================================================================
+# 52. THRESHOLD SEARCH
+# =============================================================================
+
+tumor_thresholds = np.arange(
+    0.05,
+    0.96,
+    0.05
+)
+
+
+liver_thresholds = np.arange(
+    0.20,
+    0.81,
+    0.05
+)
+
+
+threshold_rows = []
+
+
+# =============================================================================
+# 53. BEST TUMOR THRESHOLD
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("TUMOR THRESHOLD OPTIMIZATION")
+print("=" * 100)
+
+
+best_tumor_result = None
+
+
+for tt in tumor_thresholds:
+
+    metrics = calculate_metrics(
+        validation_results,
+        tumor_threshold=float(tt),
+        liver_threshold=0.50,
+        use_liver_gate=False
+    )
+
+
+    row = {
+
+        "mode":
+            "tumor_only",
+
+        "tumor_threshold":
+            float(tt),
+
+        "liver_threshold":
+            0.50,
+
+        "use_liver_gate":
+            False,
+
+        **metrics
+    }
+
+
+    threshold_rows.append(
+        row
+    )
+
+
+    if (
+        best_tumor_result is None
+        or
+        metrics["tumor_dice"]
+        >
+        best_tumor_result["tumor_dice"]
+    ):
+
+        best_tumor_result = row
+
+
+# =============================================================================
+# 54. BEST LIVER THRESHOLD
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("LIVER THRESHOLD OPTIMIZATION")
+print("=" * 100)
+
+
+best_liver_result = None
+
+
+for lt in liver_thresholds:
+
+    metrics = calculate_metrics(
+        validation_results,
+        tumor_threshold=0.50,
+        liver_threshold=float(lt),
+        use_liver_gate=False
+    )
+
+
+    row = {
+
+        "mode":
+            "liver_only",
+
+        "tumor_threshold":
+            0.50,
+
+        "liver_threshold":
+            float(lt),
+
+        "use_liver_gate":
+            False,
+
+        **metrics
+    }
+
+
+    threshold_rows.append(
+        row
+    )
+
+
+    if (
+        best_liver_result is None
+        or
+        metrics["liver_dice"]
+        >
+        best_liver_result["liver_dice"]
+    ):
+
+        best_liver_result = row
+
+
+# =============================================================================
+# 55. OPTIONAL HARD GATE
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("OPTIONAL HARD-LIVER-GATE SEARCH")
+print("=" * 100)
+
+
+best_gated_result = None
+
+
+for tt in tumor_thresholds:
+
+    for lt in liver_thresholds:
+
+        metrics = calculate_metrics(
+            validation_results,
+            tumor_threshold=float(tt),
+            liver_threshold=float(lt),
+            use_liver_gate=True
+        )
+
+
+        row = {
+
+            "mode":
+                "hard_liver_gate",
+
+            "tumor_threshold":
+                float(tt),
+
+            "liver_threshold":
+                float(lt),
+
+            "use_liver_gate":
+                True,
+
+            **metrics
+        }
+
+
+        threshold_rows.append(
+            row
+        )
+
+
+        if (
+            best_gated_result is None
+            or
+            metrics["tumor_dice"]
+            >
+            best_gated_result["tumor_dice"]
+        ):
+
+            best_gated_result = row
+
+
+# =============================================================================
+# 56. SAVE THRESHOLD RESULTS
+# =============================================================================
+
+threshold_df = pd.DataFrame(
+    threshold_rows
+)
+
+
+threshold_df.to_csv(
+    THRESHOLD_CSV,
+    index=False
+)
+
+
+# =============================================================================
+# 57. PRINT BEST RESULTS
+# =============================================================================
+
+print("\n" + "=" * 100)
+print("V14.1 FINAL VALIDATION RESULTS")
+print("=" * 100)
+
+
+print("\n--- BEST TUMOR THRESHOLD ---")
+
+print(
+    "Tumor threshold:",
+    best_tumor_result[
+        "tumor_threshold"
+    ]
+)
+
+print(
+    "Tumor Dice:",
+    f"{best_tumor_result['tumor_dice']:.6f}"
+)
+
+print(
+    "Tumor Precision:",
+    f"{best_tumor_result['tumor_precision']:.6f}"
+)
+
+print(
+    "Tumor Recall:",
+    f"{best_tumor_result['tumor_recall']:.6f}"
+)
+
+print(
+    "TP:",
+    f"{best_tumor_result['tumor_tp']:,}"
+)
+
+print(
+    "FP:",
+    f"{best_tumor_result['tumor_fp']:,}"
+)
+
+print(
+    "FN:",
+    f"{best_tumor_result['tumor_fn']:,}"
+)
+
+
+print("\n--- BEST LIVER THRESHOLD ---")
+
+print(
+    "Liver threshold:",
+    best_liver_result[
+        "liver_threshold"
+    ]
+)
+
+print(
+    "Liver Dice:",
+    f"{best_liver_result['liver_dice']:.6f}"
+)
+
+print(
+    "Liver Precision:",
+    f"{best_liver_result['liver_precision']:.6f}"
+)
+
+print(
+    "Liver Recall:",
+    f"{best_liver_result['liver_recall']:.6f}"
+)
+
+
+print("\n--- OPTIONAL HARD-GATED RESULT ---")
+
+print(
+    "Tumor threshold:",
+    best_gated_result[
+        "tumor_threshold"
+    ]
+)
+
+print(
+    "Liver threshold:",
+    best_gated_result[
+        "liver_threshold"
+    ]
+)
+
+print(
+    "Tumor Dice:",
+    f"{best_gated_result['tumor_dice']:.6f}"
+)
+
+print(
+    "Tumor Precision:",
+    f"{best_gated_result['tumor_precision']:.6f}"
+)
+
+print(
+    "Tumor Recall:",
+    f"{best_gated_result['tumor_recall']:.6f}"
+)
+
+
+# =============================================================================
+# 58. TRAINING HISTORY
+# =============================================================================
+
+history_summary = {}
+
+
+if hasattr(
+    history,
+    "history"
+):
+
+    hist = history.history
+
+
+    if "val_tumor_dice_metric" in hist:
+
+        values = np.asarray(
+            hist[
+                "val_tumor_dice_metric"
+            ]
+        )
+
+
+        if len(values) > 0:
+
+            best_epoch = (
+                int(
+                    np.argmax(
+                        values
+                    )
+                )
+                +
+                1
+            )
+
+
+            best_epoch_dice = float(
+                np.max(
+                    values
+                )
+            )
+
+
+            history_summary[
+                "best_epoch"
+            ] = best_epoch
+
+
+            history_summary[
+                "best_epoch_tumor_dice"
+            ] = best_epoch_dice
+
+
+            print(
+                "\nBest fast-validation tumor Dice:",
+                f"{best_epoch_dice:.6f}"
+            )
+
+
+            print(
+                "Best epoch:",
+                best_epoch
+            )
+
+
+    if "val_liver_dice_metric" in hist:
+
+        values = np.asarray(
+            hist[
+                "val_liver_dice_metric"
+            ]
+        )
+
+
+        if len(values) > 0:
+
+            history_summary[
+                "best_epoch_liver_dice"
+            ] = float(
+                np.max(
+                    values
+                )
+            )
+
+
+            print(
+                "Best fast-validation liver Dice:",
+                f"{float(np.max(values)):.6f}"
+            )
+
+
+# =============================================================================
+# 59. FINAL REPORT
+# =============================================================================
+
+final_report = {
+
+    "version":
+        "V14.1",
+
+    "model":
+        "V14_1_TumorFocused_3D_UNet",
+
+    "tensorflow":
+        tf.__version__,
+
+    "keras":
+        keras.__version__,
+
+    "training_time_minutes":
+        float(
+            training_minutes
+        ),
+
+    "full_validation_prediction_time_minutes":
+        float(
+            full_val_minutes
+        ),
+
+    "config": {
+
+        "depth":
+            DEPTH,
+
+        "patch_h":
+            PATCH_H,
+
+        "patch_w":
+            PATCH_W,
+
+        "batch_size":
+            BATCH_SIZE,
+
+        "epochs":
+            EPOCHS,
+
+        "steps_per_epoch":
+            STEPS_PER_EPOCH,
+
+        "learning_rate":
+            LEARNING_RATE,
+
+        "tumor_pos_weight":
+            TUMOR_POS_WEIGHT,
+
+        "tversky_alpha":
+            TV_ALPHA,
+
+        "tversky_beta":
+            TV_BETA,
+
+        "tversky_gamma":
+            TV_GAMMA,
+
+        "outside_liver_weight":
+            OUTSIDE_LIVER_WEIGHT,
+
+        "liver_non_tumor_fp_weight":
+            LIVER_NON_TUMOR_FP_WEIGHT,
+
+        "tumor_patch_probability":
+            TUMOR_PATCH_PROB,
+
+        "liver_patch_probability":
+            LIVER_PATCH_PROB,
+
+        "background_patch_probability":
+            BACKGROUND_PATCH_PROB,
+
+        "hard_liver_gate_main":
+            False
+    },
+
+
+    "train_volumes":
+        sorted(
+            list(train_ids)
+        ),
+
+
+    "validation_volumes":
+        sorted(
+            list(val_ids)
+        ),
+
+
+    "training_pool_sizes": {
+
+        "tumor":
+            len(tumor_pool),
+
+        "liver":
+            len(liver_pool),
+
+        "background":
+            len(background_pool)
+    },
+
+
+    "validation_pool_sizes": {
+
+        "tumor":
+            len(val_tumor_pool),
+
+        "liver":
+            len(val_liver_pool),
+
+        "background":
+            len(val_background_pool)
+    },
+
+
+    "train_label_counts":
+        train_label_counts,
+
+
+    "validation_label_counts":
+        val_label_counts,
+
+
+    "fast_validation_history":
+        history_summary,
+
+
+    "baseline_050":
+        baseline,
+
+
+    "best_tumor_threshold":
+        best_tumor_result,
+
+
+    "best_liver_threshold":
+        best_liver_result,
+
+
+    "best_hard_gated":
+        best_gated_result,
+
+
+    "best_model_path":
+        str(
+            BEST_MODEL_PATH
+        ),
+
+
+    "training_csv":
+        str(
+            TRAINING_CSV
+        ),
+
+
+    "threshold_csv":
+        str(
+            THRESHOLD_CSV
+        )
+}
+
+
+with open(
+    FINAL_JSON,
+    "w"
+) as f:
+
+    json.dump(
+        final_report,
+        f,
+        indent=2
+    )
+
+
+# =============================================================================
+# 60. FINAL CLEANUP
+# =============================================================================
+
+gc.collect()
+
+
+print("\n" + "=" * 100)
+print("V14.1 COMPLETED")
+print("=" * 100)
+
+
+print(
+    "\nBest model:"
+)
+
+print(
+    BEST_MODEL_PATH
+)
+
+
+print(
+    "\nTraining log:"
+)
+
+print(
+    TRAINING_CSV
+)
+
+
+print(
+    "\nThreshold results:"
+)
+
+print(
+    THRESHOLD_CSV
+)
+
+
+print(
+    "\nFinal JSON:"
+)
+
+print(
+    FINAL_JSON
+)
+
+
+print("\n" + "=" * 100)
+print("MAIN V14.1 RESULT")
+print("=" * 100)
+
+
+print(
+    "Tumor Dice:",
+    f"{best_tumor_result['tumor_dice']:.6f}"
+)
+
+
+print(
+    "Tumor threshold:",
+    best_tumor_result[
+        "tumor_threshold"
+    ]
+)
+
+
+print(
+    "Tumor Precision:",
+    f"{best_tumor_result['tumor_precision']:.6f}"
+)
+
+
+print(
+    "Tumor Recall:",
+    f"{best_tumor_result['tumor_recall']:.6f}"
+)
+
+
+print(
+    "Liver Dice:",
+    f"{best_liver_result['liver_dice']:.6f}"
+)
+
+
+print(
+    "Liver threshold:",
+    best_liver_result[
+        "liver_threshold"
+    ]
+)
+
+
+print("\n" + "=" * 100)
+print("✓ V14.1 FINISHED SUCCESSFULLY")
+print("=" * 100)
+
