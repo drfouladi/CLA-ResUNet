@@ -1,0 +1,987 @@
+====================================================================================================
+TUNED RESUNET + SWIN-STYLE TRANSFORMER + HLA
+====================================================================================================
+TensorFlow: 2.20.0
+Keras: 3.13.2
+GPU: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+✓ GPU memory growth configured
+Mounted at /content/drive
+
+DATA_PATH  : /content/drive/MyDrive/LITS/Preprocessed
+OUTPUT_PATH: /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment
+
+Image size: 128
+Batch size: 8
+Maximum epochs: 100
+
+Configurations:
+1. CFG_E_fine_tokens_small_window_lowLR | stride=2 | window=4 | LR=2e-05
+
+====================================================================================================
+LOADING DATASET
+====================================================================================================
+Raw volume files: 12325
+Raw segmentation files: 12329
+
+Volume IDs : 12325
+Seg IDs    : 12329
+Matched IDs: 12324
+Volume IDs without segmentation: 1
+Segmentation IDs without volume: 5
+First unmatched volume IDs: [12323]
+First unmatched segmentation IDs: [12325, 12326, 12327, 12328, 12329]
+
+Scanning matched segmentation files...
+Scanned 1000/12324 | tumor=425 | non-tumor=575
+Scanned 2000/12324 | tumor=803 | non-tumor=1197
+Scanned 3000/12324 | tumor=1120 | non-tumor=1880
+Scanned 4000/12324 | tumor=1309 | non-tumor=2691
+Scanned 5000/12324 | tumor=1700 | non-tumor=3300
+Scanned 6000/12324 | tumor=2015 | non-tumor=3985
+Scanned 7000/12324 | tumor=2244 | non-tumor=4756
+Scanned 8000/12324 | tumor=2456 | non-tumor=5544
+Scanned 9000/12324 | tumor=2766 | non-tumor=6234
+Scanned 10000/12324 | tumor=3085 | non-tumor=6915
+Scanned 11000/12324 | tumor=3375 | non-tumor=7625
+Scanned 12000/12324 | tumor=3763 | non-tumor=8237
+Scanned 12324/12324 | tumor=3895 | non-tumor=8429
+
+Label scan time: 28.89 min
+
+Tumor candidate slices    : 3895
+Non-tumor candidate slices: 8429
+
+Observed label voxel counts:
+Background: 3013255218
+Liver     : 210489962
+Tumor     : 6917476
+
+====================================================================================================
+SELECTED DATASET
+====================================================================================================
+Selected tumor slices    : 500
+Selected non-tumor slices: 500
+Total selected slices    : 1000
+
+Train slices: 800
+Val slices  : 200
+
+Train tumor-containing slices: 400
+Train non-tumor slices       : 400
+Val tumor-containing slices  : 100
+Val non-tumor slices         : 100
+
+####################################################################################################
+CONFIGURATION 1/1
+CFG_E_fine_tokens_small_window_lowLR
+####################################################################################################
+
+====================================================================================================
+TRAINING CFG_E_fine_tokens_small_window_lowLR
+====================================================================================================
+Patch stride : 2
+Window size  : 4
+Learning rate: 2e-05
+
+Trainable parameters: 57962339
+
+Train steps per epoch: 100
+Validation steps      : 25
+Epoch 1/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 856ms/step - keras_liver_dice: 0.0450 - keras_liver_precision: 0.1504 - keras_tumor_dice: 0.0033 - loss: 1.8314/usr/local/lib/python3.13/dist-packages/keras/src/callbacks/model_checkpoint.py:276: UserWarning: Can save best model only with val_tumor_dice available.
+  if self._should_save_model(epoch, batch, logs, filepath):
+
+Epoch 1: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=7.000, tumor=8.500, tumor_boost=3.000
+Epoch time: 216.55 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 217s 1s/step - keras_liver_dice: 0.0829 - keras_liver_precision: 0.3106 - keras_tumor_dice: 0.0013 - loss: 1.3098 - val_keras_liver_dice: 0.0434 - val_keras_liver_precision: 0.3683 - val_keras_tumor_dice: 0.0032 - val_loss: 1.5531 - learning_rate: 2.0000e-05
+Epoch 2/100
+/usr/local/lib/python3.13/dist-packages/keras/src/callbacks/callback_list.py:171: UserWarning: Learning rate reduction is conditioned on metric `val_tumor_dice` which is not available. Available metrics are: keras_liver_dice,keras_liver_precision,keras_tumor_dice,loss,val_keras_liver_dice,val_keras_liver_precision,val_keras_tumor_dice,val_loss,learning_rate.
+  callback.on_epoch_end(epoch, logs)
+/usr/local/lib/python3.13/dist-packages/keras/src/callbacks/early_stopping.py:99: UserWarning: Early stopping conditioned on metric `val_tumor_dice` which is not available. Available metrics are: keras_liver_dice,keras_liver_precision,keras_tumor_dice,loss,val_keras_liver_dice,val_keras_liver_precision,val_keras_tumor_dice,val_loss,learning_rate
+  current = self.get_monitor_value(logs)
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 551ms/step - keras_liver_dice: 0.4643 - keras_liver_precision: 0.6010 - keras_tumor_dice: 0.2184 - loss: 0.7263/usr/local/lib/python3.13/dist-packages/keras/src/trainers/epoch_iterator.py:164: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.
+  self._interrupted_warning()
+
+Epoch 2: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=7.000, tumor=9.500, tumor_boost=3.000
+Epoch time: 70.85 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 71s 710ms/step - keras_liver_dice: 0.4762 - keras_liver_precision: 0.5906 - keras_tumor_dice: 0.3388 - loss: 0.6866 - val_keras_liver_dice: 0.5087 - val_keras_liver_precision: 0.5088 - val_keras_tumor_dice: 3.2823e-08 - val_loss: 1.0400 - learning_rate: 2.0000e-05
+Epoch 3/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 749ms/step - keras_liver_dice: 0.4996 - keras_liver_precision: 0.5881 - keras_tumor_dice: 0.5038 - loss: 0.6185
+Epoch 3: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=9.500, tumor_boost=3.000
+Epoch time: 90.35 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 907ms/step - keras_liver_dice: 0.5061 - keras_liver_precision: 0.5956 - keras_tumor_dice: 0.5013 - loss: 0.6018 - val_keras_liver_dice: 0.5820 - val_keras_liver_precision: 0.5187 - val_keras_tumor_dice: 0.3125 - val_loss: 0.8176 - learning_rate: 2.0000e-05
+Epoch 4/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 760ms/step - keras_liver_dice: 0.5034 - keras_liver_precision: 0.6046 - keras_tumor_dice: 0.5137 - loss: 0.5902
+Epoch 4: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=9.500, tumor_boost=3.000
+Epoch time: 89.94 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 903ms/step - keras_liver_dice: 0.5231 - keras_liver_precision: 0.5985 - keras_tumor_dice: 0.5113 - loss: 0.5852 - val_keras_liver_dice: 0.3698 - val_keras_liver_precision: 0.5634 - val_keras_tumor_dice: 0.3125 - val_loss: 0.7035 - learning_rate: 2.0000e-05
+Epoch 5/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 746ms/step - keras_liver_dice: 0.5033 - keras_liver_precision: 0.6187 - keras_tumor_dice: 0.4892 - loss: 0.5666
+Epoch 5: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.97 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 923ms/step - keras_liver_dice: 0.5416 - keras_liver_precision: 0.6155 - keras_tumor_dice: 0.5113 - loss: 0.5534 - val_keras_liver_dice: 0.5748 - val_keras_liver_precision: 0.5166 - val_keras_tumor_dice: 0.3125 - val_loss: 0.6614 - learning_rate: 2.0000e-05
+Epoch 6/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 709ms/step - keras_liver_dice: 0.5770 - keras_liver_precision: 0.6193 - keras_tumor_dice: 0.5040 - loss: 0.5275
+Epoch 6: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 96.39 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 96s 968ms/step - keras_liver_dice: 0.5710 - keras_liver_precision: 0.6274 - keras_tumor_dice: 0.5113 - loss: 0.5251 - val_keras_liver_dice: 0.5336 - val_keras_liver_precision: 0.5605 - val_keras_tumor_dice: 0.3125 - val_loss: 0.6055 - learning_rate: 2.0000e-05
+Epoch 7/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 712ms/step - keras_liver_dice: 0.5970 - keras_liver_precision: 0.6345 - keras_tumor_dice: 0.5056 - loss: 0.4993
+Epoch 7: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 85.03 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 853ms/step - keras_liver_dice: 0.6089 - keras_liver_precision: 0.6530 - keras_tumor_dice: 0.5113 - loss: 0.4947 - val_keras_liver_dice: 0.0338 - val_keras_liver_precision: 0.9372 - val_keras_tumor_dice: 0.3125 - val_loss: 0.8633 - learning_rate: 2.0000e-05
+Epoch 8/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 707ms/step - keras_liver_dice: 0.6361 - keras_liver_precision: 0.6775 - keras_tumor_dice: 0.5003 - loss: 0.4655
+Epoch 8: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.10 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 905ms/step - keras_liver_dice: 0.6328 - keras_liver_precision: 0.6738 - keras_tumor_dice: 0.5113 - loss: 0.4697 - val_keras_liver_dice: 0.4642 - val_keras_liver_precision: 0.7781 - val_keras_tumor_dice: 0.3125 - val_loss: 0.5856 - learning_rate: 2.0000e-05
+Epoch 9/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 719ms/step - keras_liver_dice: 0.6621 - keras_liver_precision: 0.6878 - keras_tumor_dice: 0.5100 - loss: 0.4458
+Epoch 9: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 87.77 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 88s 881ms/step - keras_liver_dice: 0.6764 - keras_liver_precision: 0.7081 - keras_tumor_dice: 0.5113 - loss: 0.4375 - val_keras_liver_dice: 0.6957 - val_keras_liver_precision: 0.6241 - val_keras_tumor_dice: 0.3125 - val_loss: 0.5759 - learning_rate: 2.0000e-05
+Epoch 10/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 731ms/step - keras_liver_dice: 0.6987 - keras_liver_precision: 0.6957 - keras_tumor_dice: 0.4944 - loss: 0.4261
+Epoch 10: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 94.55 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 95s 949ms/step - keras_liver_dice: 0.7119 - keras_liver_precision: 0.7245 - keras_tumor_dice: 0.5113 - loss: 0.4115 - val_keras_liver_dice: 0.1547 - val_keras_liver_precision: 0.9273 - val_keras_tumor_dice: 0.3125 - val_loss: 0.9752 - learning_rate: 2.0000e-05
+Epoch 11/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 721ms/step - keras_liver_dice: 0.7494 - keras_liver_precision: 0.7601 - keras_tumor_dice: 0.4904 - loss: 0.3805
+Epoch 11: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.50 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 909ms/step - keras_liver_dice: 0.7545 - keras_liver_precision: 0.7613 - keras_tumor_dice: 0.5113 - loss: 0.3767 - val_keras_liver_dice: 0.6551 - val_keras_liver_precision: 0.7768 - val_keras_tumor_dice: 0.3125 - val_loss: 0.4798 - learning_rate: 2.0000e-05
+Epoch 12/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 698ms/step - keras_liver_dice: 0.7809 - keras_liver_precision: 0.7878 - keras_tumor_dice: 0.5279 - loss: 0.3545
+Epoch 12: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.48 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 908ms/step - keras_liver_dice: 0.7841 - keras_liver_precision: 0.7842 - keras_tumor_dice: 0.5113 - loss: 0.3529 - val_keras_liver_dice: 0.2768 - val_keras_liver_precision: 0.9236 - val_keras_tumor_dice: 0.3125 - val_loss: 0.9266 - learning_rate: 2.0000e-05
+Epoch 13/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 699ms/step - keras_liver_dice: 0.8099 - keras_liver_precision: 0.8118 - keras_tumor_dice: 0.5156 - loss: 0.3332
+Epoch 13: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.78 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 901ms/step - keras_liver_dice: 0.8165 - keras_liver_precision: 0.8127 - keras_tumor_dice: 0.5113 - loss: 0.3263 - val_keras_liver_dice: 0.4557 - val_keras_liver_precision: 0.8697 - val_keras_tumor_dice: 0.3125 - val_loss: 0.6130 - learning_rate: 2.0000e-05
+Epoch 14/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 702ms/step - keras_liver_dice: 0.8301 - keras_liver_precision: 0.8275 - keras_tumor_dice: 0.5344 - loss: 0.3146
+Epoch 14: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.22 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 89s 896ms/step - keras_liver_dice: 0.8343 - keras_liver_precision: 0.8283 - keras_tumor_dice: 0.5113 - loss: 0.3161 - val_keras_liver_dice: 0.7619 - val_keras_liver_precision: 0.6843 - val_keras_tumor_dice: 0.3125 - val_loss: 0.4677 - learning_rate: 2.0000e-05
+Epoch 15/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 713ms/step - keras_liver_dice: 0.8394 - keras_liver_precision: 0.8209 - keras_tumor_dice: 0.5309 - loss: 0.3099
+Epoch 15: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.39 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 917ms/step - keras_liver_dice: 0.8552 - keras_liver_precision: 0.8402 - keras_tumor_dice: 0.5113 - loss: 0.2973 - val_keras_liver_dice: 0.7243 - val_keras_liver_precision: 0.8232 - val_keras_tumor_dice: 0.3125 - val_loss: 0.4531 - learning_rate: 2.0000e-05
+Epoch 16/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 679ms/step - keras_liver_dice: 0.8600 - keras_liver_precision: 0.8517 - keras_tumor_dice: 0.4980 - loss: 0.2868
+Epoch 16: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.38 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 89s 897ms/step - keras_liver_dice: 0.8653 - keras_liver_precision: 0.8503 - keras_tumor_dice: 0.5113 - loss: 0.2871 - val_keras_liver_dice: 0.5409 - val_keras_liver_precision: 0.8951 - val_keras_tumor_dice: 0.3125 - val_loss: 0.7075 - learning_rate: 2.0000e-05
+Epoch 17/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 705ms/step - keras_liver_dice: 0.8645 - keras_liver_precision: 0.8614 - keras_tumor_dice: 0.5389 - loss: 0.2733
+Epoch 17: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.74 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 911ms/step - keras_liver_dice: 0.8810 - keras_liver_precision: 0.8679 - keras_tumor_dice: 0.5113 - loss: 0.2714 - val_keras_liver_dice: 0.6553 - val_keras_liver_precision: 0.9111 - val_keras_tumor_dice: 0.3125 - val_loss: 0.5129 - learning_rate: 2.0000e-05
+Epoch 18/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 717ms/step - keras_liver_dice: 0.8972 - keras_liver_precision: 0.8812 - keras_tumor_dice: 0.5205 - loss: 0.2630
+Epoch 18: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.41 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 928ms/step - keras_liver_dice: 0.8923 - keras_liver_precision: 0.8767 - keras_tumor_dice: 0.5113 - loss: 0.2638 - val_keras_liver_dice: 0.8127 - val_keras_liver_precision: 0.7987 - val_keras_tumor_dice: 0.3125 - val_loss: 0.3895 - learning_rate: 2.0000e-05
+Epoch 19/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 719ms/step - keras_liver_dice: 0.8931 - keras_liver_precision: 0.8728 - keras_tumor_dice: 0.5215 - loss: 0.2545
+Epoch 19: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 97.48 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 97s 979ms/step - keras_liver_dice: 0.9007 - keras_liver_precision: 0.8817 - keras_tumor_dice: 0.5104 - loss: 0.2553 - val_keras_liver_dice: 0.4362 - val_keras_liver_precision: 0.9116 - val_keras_tumor_dice: 0.3125 - val_loss: 0.7814 - learning_rate: 2.0000e-05
+Epoch 20/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 733ms/step - keras_liver_dice: 0.9011 - keras_liver_precision: 0.8889 - keras_tumor_dice: 0.5411 - loss: 0.2486
+Epoch 20: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 100.92 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 101s 1s/step - keras_liver_dice: 0.9021 - keras_liver_precision: 0.8899 - keras_tumor_dice: 0.4974 - loss: 0.2469 - val_keras_liver_dice: 0.8016 - val_keras_liver_precision: 0.7475 - val_keras_tumor_dice: 0.3182 - val_loss: 0.4171 - learning_rate: 2.0000e-05
+Epoch 21/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 712ms/step - keras_liver_dice: 0.9080 - keras_liver_precision: 0.8949 - keras_tumor_dice: 0.5226 - loss: 0.2356
+Epoch 21: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.32 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 917ms/step - keras_liver_dice: 0.9093 - keras_liver_precision: 0.9004 - keras_tumor_dice: 0.5439 - loss: 0.2314 - val_keras_liver_dice: 0.6889 - val_keras_liver_precision: 0.8663 - val_keras_tumor_dice: 0.3840 - val_loss: 0.5051 - learning_rate: 2.0000e-05
+Epoch 22/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 732ms/step - keras_liver_dice: 0.9151 - keras_liver_precision: 0.9173 - keras_tumor_dice: 0.6068 - loss: 0.2189
+Epoch 22: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 96.44 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 96s 968ms/step - keras_liver_dice: 0.9086 - keras_liver_precision: 0.9071 - keras_tumor_dice: 0.6221 - loss: 0.2202 - val_keras_liver_dice: 0.5754 - val_keras_liver_precision: 0.9105 - val_keras_tumor_dice: 0.2884 - val_loss: 0.6368 - learning_rate: 2.0000e-05
+Epoch 23/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 739ms/step - keras_liver_dice: 0.9243 - keras_liver_precision: 0.9235 - keras_tumor_dice: 0.6615 - loss: 0.2078
+Epoch 23: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 101.14 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 101s 1s/step - keras_liver_dice: 0.9173 - keras_liver_precision: 0.9170 - keras_tumor_dice: 0.6544 - loss: 0.2071 - val_keras_liver_dice: 0.5818 - val_keras_liver_precision: 0.8719 - val_keras_tumor_dice: 0.3330 - val_loss: 0.6202 - learning_rate: 2.0000e-05
+Epoch 24/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 722ms/step - keras_liver_dice: 0.9245 - keras_liver_precision: 0.9189 - keras_tumor_dice: 0.7172 - loss: 0.2019
+Epoch 24: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.62 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 920ms/step - keras_liver_dice: 0.9229 - keras_liver_precision: 0.9178 - keras_tumor_dice: 0.7090 - loss: 0.1988 - val_keras_liver_dice: 0.8355 - val_keras_liver_precision: 0.8375 - val_keras_tumor_dice: 0.4498 - val_loss: 0.3580 - learning_rate: 2.0000e-05
+Epoch 25/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 727ms/step - keras_liver_dice: 0.9281 - keras_liver_precision: 0.9263 - keras_tumor_dice: 0.7584 - loss: 0.1887
+Epoch 25: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 88.50 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 88s 888ms/step - keras_liver_dice: 0.9306 - keras_liver_precision: 0.9292 - keras_tumor_dice: 0.7454 - loss: 0.1892 - val_keras_liver_dice: 0.7840 - val_keras_liver_precision: 0.8615 - val_keras_tumor_dice: 0.4182 - val_loss: 0.4026 - learning_rate: 2.0000e-05
+Epoch 26/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 710ms/step - keras_liver_dice: 0.9325 - keras_liver_precision: 0.9255 - keras_tumor_dice: 0.7481 - loss: 0.1888
+Epoch 26: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.67 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 920ms/step - keras_liver_dice: 0.9328 - keras_liver_precision: 0.9263 - keras_tumor_dice: 0.7584 - loss: 0.1841 - val_keras_liver_dice: 0.8541 - val_keras_liver_precision: 0.8696 - val_keras_tumor_dice: 0.4563 - val_loss: 0.3345 - learning_rate: 2.0000e-05
+Epoch 27/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 724ms/step - keras_liver_dice: 0.9394 - keras_liver_precision: 0.9375 - keras_tumor_dice: 0.7420 - loss: 0.1771
+Epoch 27: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.36 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 89s 897ms/step - keras_liver_dice: 0.9360 - keras_liver_precision: 0.9350 - keras_tumor_dice: 0.7642 - loss: 0.1778 - val_keras_liver_dice: 0.8146 - val_keras_liver_precision: 0.8518 - val_keras_tumor_dice: 0.5452 - val_loss: 0.3804 - learning_rate: 2.0000e-05
+Epoch 28/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 722ms/step - keras_liver_dice: 0.9311 - keras_liver_precision: 0.9268 - keras_tumor_dice: 0.7973 - loss: 0.1756
+Epoch 28: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 95.28 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 95s 957ms/step - keras_liver_dice: 0.9361 - keras_liver_precision: 0.9344 - keras_tumor_dice: 0.7757 - loss: 0.1750 - val_keras_liver_dice: 0.7823 - val_keras_liver_precision: 0.8736 - val_keras_tumor_dice: 0.4026 - val_loss: 0.4135 - learning_rate: 2.0000e-05
+Epoch 29/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 721ms/step - keras_liver_dice: 0.9400 - keras_liver_precision: 0.9381 - keras_tumor_dice: 0.8006 - loss: 0.1670
+Epoch 29: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.14 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 925ms/step - keras_liver_dice: 0.9380 - keras_liver_precision: 0.9372 - keras_tumor_dice: 0.8015 - loss: 0.1716 - val_keras_liver_dice: 0.7888 - val_keras_liver_precision: 0.8863 - val_keras_tumor_dice: 0.4686 - val_loss: 0.3860 - learning_rate: 2.0000e-05
+Epoch 30/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 701ms/step - keras_liver_dice: 0.9414 - keras_liver_precision: 0.9383 - keras_tumor_dice: 0.8160 - loss: 0.1683
+Epoch 30: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.10 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 904ms/step - keras_liver_dice: 0.9376 - keras_liver_precision: 0.9337 - keras_tumor_dice: 0.8115 - loss: 0.1678 - val_keras_liver_dice: 0.8439 - val_keras_liver_precision: 0.8138 - val_keras_tumor_dice: 0.5722 - val_loss: 0.3492 - learning_rate: 2.0000e-05
+Epoch 31/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 708ms/step - keras_liver_dice: 0.9457 - keras_liver_precision: 0.9424 - keras_tumor_dice: 0.8294 - loss: 0.1634
+Epoch 31: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 96.65 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 97s 971ms/step - keras_liver_dice: 0.9431 - keras_liver_precision: 0.9387 - keras_tumor_dice: 0.8150 - loss: 0.1643 - val_keras_liver_dice: 0.8015 - val_keras_liver_precision: 0.8663 - val_keras_tumor_dice: 0.5423 - val_loss: 0.3665 - learning_rate: 2.0000e-05
+Epoch 32/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 720ms/step - keras_liver_dice: 0.9411 - keras_liver_precision: 0.9442 - keras_tumor_dice: 0.8183 - loss: 0.1630
+Epoch 32: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 88.24 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 88s 886ms/step - keras_liver_dice: 0.9439 - keras_liver_precision: 0.9434 - keras_tumor_dice: 0.8293 - loss: 0.1608 - val_keras_liver_dice: 0.7708 - val_keras_liver_precision: 0.8684 - val_keras_tumor_dice: 0.4691 - val_loss: 0.4191 - learning_rate: 2.0000e-05
+Epoch 33/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 711ms/step - keras_liver_dice: 0.9430 - keras_liver_precision: 0.9433 - keras_tumor_dice: 0.8208 - loss: 0.1603
+Epoch 33: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 85.43 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 858ms/step - keras_liver_dice: 0.9428 - keras_liver_precision: 0.9402 - keras_tumor_dice: 0.8412 - loss: 0.1596 - val_keras_liver_dice: 0.6779 - val_keras_liver_precision: 0.8790 - val_keras_tumor_dice: 0.4854 - val_loss: 0.5313 - learning_rate: 2.0000e-05
+Epoch 34/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 693ms/step - keras_liver_dice: 0.9370 - keras_liver_precision: 0.9353 - keras_tumor_dice: 0.8427 - loss: 0.1574
+Epoch 34: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 83.99 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 84s 843ms/step - keras_liver_dice: 0.9440 - keras_liver_precision: 0.9415 - keras_tumor_dice: 0.8388 - loss: 0.1556 - val_keras_liver_dice: 0.7964 - val_keras_liver_precision: 0.8692 - val_keras_tumor_dice: 0.4113 - val_loss: 0.3889 - learning_rate: 2.0000e-05
+Epoch 35/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 710ms/step - keras_liver_dice: 0.9487 - keras_liver_precision: 0.9489 - keras_tumor_dice: 0.8485 - loss: 0.1522
+Epoch 35: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 88.37 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 88s 887ms/step - keras_liver_dice: 0.9449 - keras_liver_precision: 0.9462 - keras_tumor_dice: 0.8601 - loss: 0.1537 - val_keras_liver_dice: 0.8395 - val_keras_liver_precision: 0.8432 - val_keras_tumor_dice: 0.4275 - val_loss: 0.3582 - learning_rate: 2.0000e-05
+Epoch 36/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 693ms/step - keras_liver_dice: 0.9448 - keras_liver_precision: 0.9398 - keras_tumor_dice: 0.8414 - loss: 0.1536
+Epoch 36: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 85.65 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 86s 860ms/step - keras_liver_dice: 0.9471 - keras_liver_precision: 0.9425 - keras_tumor_dice: 0.8454 - loss: 0.1525 - val_keras_liver_dice: 0.8533 - val_keras_liver_precision: 0.8598 - val_keras_tumor_dice: 0.4951 - val_loss: 0.3391 - learning_rate: 2.0000e-05
+Epoch 37/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 686ms/step - keras_liver_dice: 0.9537 - keras_liver_precision: 0.9526 - keras_tumor_dice: 0.8621 - loss: 0.1493
+Epoch 37: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.70 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 850ms/step - keras_liver_dice: 0.9529 - keras_liver_precision: 0.9490 - keras_tumor_dice: 0.8605 - loss: 0.1476 - val_keras_liver_dice: 0.8551 - val_keras_liver_precision: 0.8571 - val_keras_tumor_dice: 0.6132 - val_loss: 0.3373 - learning_rate: 2.0000e-05
+Epoch 38/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 679ms/step - keras_liver_dice: 0.9527 - keras_liver_precision: 0.9501 - keras_tumor_dice: 0.8743 - loss: 0.1456
+Epoch 38: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 80.50 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 81s 808ms/step - keras_liver_dice: 0.9523 - keras_liver_precision: 0.9515 - keras_tumor_dice: 0.8724 - loss: 0.1463 - val_keras_liver_dice: 0.8373 - val_keras_liver_precision: 0.8496 - val_keras_tumor_dice: 0.5967 - val_loss: 0.3611 - learning_rate: 2.0000e-05
+Epoch 39/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 707ms/step - keras_liver_dice: 0.9566 - keras_liver_precision: 0.9518 - keras_tumor_dice: 0.8848 - loss: 0.1422
+Epoch 39: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.47 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 908ms/step - keras_liver_dice: 0.9554 - keras_liver_precision: 0.9524 - keras_tumor_dice: 0.8731 - loss: 0.1432 - val_keras_liver_dice: 0.8564 - val_keras_liver_precision: 0.8736 - val_keras_tumor_dice: 0.4962 - val_loss: 0.3358 - learning_rate: 2.0000e-05
+Epoch 40/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 701ms/step - keras_liver_dice: 0.9585 - keras_liver_precision: 0.9563 - keras_tumor_dice: 0.8877 - loss: 0.1431
+Epoch 40: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 93.78 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 94s 942ms/step - keras_liver_dice: 0.9568 - keras_liver_precision: 0.9543 - keras_tumor_dice: 0.8838 - loss: 0.1407 - val_keras_liver_dice: 0.8178 - val_keras_liver_precision: 0.8950 - val_keras_tumor_dice: 0.4356 - val_loss: 0.4168 - learning_rate: 2.0000e-05
+Epoch 41/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 694ms/step - keras_liver_dice: 0.9574 - keras_liver_precision: 0.9560 - keras_tumor_dice: 0.8810 - loss: 0.1396
+Epoch 41: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.69 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 850ms/step - keras_liver_dice: 0.9562 - keras_liver_precision: 0.9547 - keras_tumor_dice: 0.8868 - loss: 0.1399 - val_keras_liver_dice: 0.8402 - val_keras_liver_precision: 0.8789 - val_keras_tumor_dice: 0.5876 - val_loss: 0.3632 - learning_rate: 2.0000e-05
+Epoch 42/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 724ms/step - keras_liver_dice: 0.9559 - keras_liver_precision: 0.9535 - keras_tumor_dice: 0.8931 - loss: 0.1400
+Epoch 42: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.95 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 852ms/step - keras_liver_dice: 0.9584 - keras_liver_precision: 0.9551 - keras_tumor_dice: 0.8961 - loss: 0.1375 - val_keras_liver_dice: 0.8455 - val_keras_liver_precision: 0.8658 - val_keras_tumor_dice: 0.5948 - val_loss: 0.3501 - learning_rate: 2.0000e-05
+Epoch 43/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 723ms/step - keras_liver_dice: 0.9597 - keras_liver_precision: 0.9587 - keras_tumor_dice: 0.8785 - loss: 0.1414
+Epoch 43: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.14 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 915ms/step - keras_liver_dice: 0.9584 - keras_liver_precision: 0.9583 - keras_tumor_dice: 0.8803 - loss: 0.1363 - val_keras_liver_dice: 0.8588 - val_keras_liver_precision: 0.8656 - val_keras_tumor_dice: 0.5784 - val_loss: 0.3478 - learning_rate: 2.0000e-05
+Epoch 44/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 689ms/step - keras_liver_dice: 0.9573 - keras_liver_precision: 0.9539 - keras_tumor_dice: 0.9082 - loss: 0.1328
+Epoch 44: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.46 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 84s 848ms/step - keras_liver_dice: 0.9588 - keras_liver_precision: 0.9552 - keras_tumor_dice: 0.9008 - loss: 0.1346 - val_keras_liver_dice: 0.8069 - val_keras_liver_precision: 0.8817 - val_keras_tumor_dice: 0.4258 - val_loss: 0.3933 - learning_rate: 2.0000e-05
+Epoch 45/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 706ms/step - keras_liver_dice: 0.9571 - keras_liver_precision: 0.9546 - keras_tumor_dice: 0.8912 - loss: 0.1379
+Epoch 45: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 86.59 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 87s 869ms/step - keras_liver_dice: 0.9583 - keras_liver_precision: 0.9546 - keras_tumor_dice: 0.8899 - loss: 0.1349 - val_keras_liver_dice: 0.8529 - val_keras_liver_precision: 0.8809 - val_keras_tumor_dice: 0.4980 - val_loss: 0.3726 - learning_rate: 2.0000e-05
+Epoch 46/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 704ms/step - keras_liver_dice: 0.9588 - keras_liver_precision: 0.9543 - keras_tumor_dice: 0.8898 - loss: 0.1340
+Epoch 46: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 85.02 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 854ms/step - keras_liver_dice: 0.9605 - keras_liver_precision: 0.9560 - keras_tumor_dice: 0.8936 - loss: 0.1327 - val_keras_liver_dice: 0.7010 - val_keras_liver_precision: 0.8811 - val_keras_tumor_dice: 0.4239 - val_loss: 0.5485 - learning_rate: 2.0000e-05
+Epoch 47/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 701ms/step - keras_liver_dice: 0.9640 - keras_liver_precision: 0.9657 - keras_tumor_dice: 0.9064 - loss: 0.1274
+Epoch 47: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.62 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 849ms/step - keras_liver_dice: 0.9635 - keras_liver_precision: 0.9608 - keras_tumor_dice: 0.8933 - loss: 0.1305 - val_keras_liver_dice: 0.8233 - val_keras_liver_precision: 0.8778 - val_keras_tumor_dice: 0.4806 - val_loss: 0.4220 - learning_rate: 2.0000e-05
+Epoch 48/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 727ms/step - keras_liver_dice: 0.9630 - keras_liver_precision: 0.9607 - keras_tumor_dice: 0.8944 - loss: 0.1239
+Epoch 48: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 94.65 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 95s 950ms/step - keras_liver_dice: 0.9646 - keras_liver_precision: 0.9620 - keras_tumor_dice: 0.9057 - loss: 0.1283 - val_keras_liver_dice: 0.8275 - val_keras_liver_precision: 0.8692 - val_keras_tumor_dice: 0.5084 - val_loss: 0.3787 - learning_rate: 2.0000e-05
+Epoch 49/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 693ms/step - keras_liver_dice: 0.9628 - keras_liver_precision: 0.9596 - keras_tumor_dice: 0.9121 - loss: 0.1261
+Epoch 49: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.02 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 89s 894ms/step - keras_liver_dice: 0.9638 - keras_liver_precision: 0.9602 - keras_tumor_dice: 0.9079 - loss: 0.1271 - val_keras_liver_dice: 0.8412 - val_keras_liver_precision: 0.8676 - val_keras_tumor_dice: 0.6286 - val_loss: 0.3670 - learning_rate: 2.0000e-05
+Epoch 50/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 732ms/step - keras_liver_dice: 0.9668 - keras_liver_precision: 0.9655 - keras_tumor_dice: 0.8991 - loss: 0.1279
+Epoch 50: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 98.39 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 98s 988ms/step - keras_liver_dice: 0.9654 - keras_liver_precision: 0.9629 - keras_tumor_dice: 0.9033 - loss: 0.1267 - val_keras_liver_dice: 0.8452 - val_keras_liver_precision: 0.8755 - val_keras_tumor_dice: 0.5439 - val_loss: 0.3671 - learning_rate: 2.0000e-05
+Epoch 51/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 721ms/step - keras_liver_dice: 0.9574 - keras_liver_precision: 0.9543 - keras_tumor_dice: 0.9167 - loss: 0.1260
+Epoch 51: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.41 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 928ms/step - keras_liver_dice: 0.9653 - keras_liver_precision: 0.9632 - keras_tumor_dice: 0.9141 - loss: 0.1255 - val_keras_liver_dice: 0.8180 - val_keras_liver_precision: 0.8751 - val_keras_tumor_dice: 0.5773 - val_loss: 0.4007 - learning_rate: 2.0000e-05
+Epoch 52/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 712ms/step - keras_liver_dice: 0.9645 - keras_liver_precision: 0.9611 - keras_tumor_dice: 0.9141 - loss: 0.1245
+Epoch 52: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 100.21 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 100s 1s/step - keras_liver_dice: 0.9651 - keras_liver_precision: 0.9625 - keras_tumor_dice: 0.9158 - loss: 0.1241 - val_keras_liver_dice: 0.8196 - val_keras_liver_precision: 0.8863 - val_keras_tumor_dice: 0.4139 - val_loss: 0.3948 - learning_rate: 2.0000e-05
+Epoch 53/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 724ms/step - keras_liver_dice: 0.9655 - keras_liver_precision: 0.9634 - keras_tumor_dice: 0.9029 - loss: 0.1204
+Epoch 53: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 96.95 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 97s 974ms/step - keras_liver_dice: 0.9661 - keras_liver_precision: 0.9629 - keras_tumor_dice: 0.9077 - loss: 0.1228 - val_keras_liver_dice: 0.8411 - val_keras_liver_precision: 0.8584 - val_keras_tumor_dice: 0.5720 - val_loss: 0.3704 - learning_rate: 2.0000e-05
+Epoch 54/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 700ms/step - keras_liver_dice: 0.9660 - keras_liver_precision: 0.9657 - keras_tumor_dice: 0.9190 - loss: 0.1188
+Epoch 54: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.17 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 926ms/step - keras_liver_dice: 0.9662 - keras_liver_precision: 0.9635 - keras_tumor_dice: 0.9158 - loss: 0.1224 - val_keras_liver_dice: 0.8184 - val_keras_liver_precision: 0.8897 - val_keras_tumor_dice: 0.5270 - val_loss: 0.4122 - learning_rate: 2.0000e-05
+Epoch 55/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 702ms/step - keras_liver_dice: 0.9620 - keras_liver_precision: 0.9578 - keras_tumor_dice: 0.9056 - loss: 0.1274
+Epoch 55: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 131.50 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 131s 1s/step - keras_liver_dice: 0.9686 - keras_liver_precision: 0.9664 - keras_tumor_dice: 0.9065 - loss: 0.1219 - val_keras_liver_dice: 0.8495 - val_keras_liver_precision: 0.8762 - val_keras_tumor_dice: 0.5193 - val_loss: 0.3593 - learning_rate: 2.0000e-05
+Epoch 56/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 722ms/step - keras_liver_dice: 0.9689 - keras_liver_precision: 0.9642 - keras_tumor_dice: 0.9278 - loss: 0.1143
+Epoch 56: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 98.30 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 98s 987ms/step - keras_liver_dice: 0.9698 - keras_liver_precision: 0.9667 - keras_tumor_dice: 0.9249 - loss: 0.1196 - val_keras_liver_dice: 0.7709 - val_keras_liver_precision: 0.8826 - val_keras_tumor_dice: 0.5278 - val_loss: 0.4803 - learning_rate: 2.0000e-05
+Epoch 57/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 729ms/step - keras_liver_dice: 0.9654 - keras_liver_precision: 0.9648 - keras_tumor_dice: 0.9186 - loss: 0.1216
+Epoch 57: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 95.34 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 95s 957ms/step - keras_liver_dice: 0.9671 - keras_liver_precision: 0.9652 - keras_tumor_dice: 0.9097 - loss: 0.1206 - val_keras_liver_dice: 0.8603 - val_keras_liver_precision: 0.8770 - val_keras_tumor_dice: 0.5610 - val_loss: 0.3551 - learning_rate: 2.0000e-05
+Epoch 58/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 713ms/step - keras_liver_dice: 0.9649 - keras_liver_precision: 0.9634 - keras_tumor_dice: 0.9292 - loss: 0.1177
+Epoch 58: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 98.60 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 99s 990ms/step - keras_liver_dice: 0.9685 - keras_liver_precision: 0.9665 - keras_tumor_dice: 0.9203 - loss: 0.1187 - val_keras_liver_dice: 0.8449 - val_keras_liver_precision: 0.8641 - val_keras_tumor_dice: 0.4983 - val_loss: 0.3621 - learning_rate: 2.0000e-05
+Epoch 59/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 721ms/step - keras_liver_dice: 0.9734 - keras_liver_precision: 0.9719 - keras_tumor_dice: 0.9162 - loss: 0.1191
+Epoch 59: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 97.34 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 97s 978ms/step - keras_liver_dice: 0.9722 - keras_liver_precision: 0.9687 - keras_tumor_dice: 0.9202 - loss: 0.1172 - val_keras_liver_dice: 0.8308 - val_keras_liver_precision: 0.8878 - val_keras_tumor_dice: 0.5495 - val_loss: 0.3840 - learning_rate: 2.0000e-05
+Epoch 60/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 710ms/step - keras_liver_dice: 0.9721 - keras_liver_precision: 0.9706 - keras_tumor_dice: 0.9070 - loss: 0.1193
+Epoch 60: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 96.27 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 96s 967ms/step - keras_liver_dice: 0.9731 - keras_liver_precision: 0.9718 - keras_tumor_dice: 0.9202 - loss: 0.1153 - val_keras_liver_dice: 0.8693 - val_keras_liver_precision: 0.8421 - val_keras_tumor_dice: 0.4625 - val_loss: 0.3513 - learning_rate: 2.0000e-05
+Epoch 61/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 704ms/step - keras_liver_dice: 0.9704 - keras_liver_precision: 0.9644 - keras_tumor_dice: 0.9355 - loss: 0.1153
+Epoch 61: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 137.05 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 137s 1s/step - keras_liver_dice: 0.9708 - keras_liver_precision: 0.9658 - keras_tumor_dice: 0.9396 - loss: 0.1150 - val_keras_liver_dice: 0.8178 - val_keras_liver_precision: 0.8934 - val_keras_tumor_dice: 0.4458 - val_loss: 0.4123 - learning_rate: 2.0000e-05
+Epoch 62/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 715ms/step - keras_liver_dice: 0.9719 - keras_liver_precision: 0.9688 - keras_tumor_dice: 0.9327 - loss: 0.1153
+Epoch 62: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 93.24 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 93s 936ms/step - keras_liver_dice: 0.9741 - keras_liver_precision: 0.9713 - keras_tumor_dice: 0.9422 - loss: 0.1128 - val_keras_liver_dice: 0.8678 - val_keras_liver_precision: 0.8618 - val_keras_tumor_dice: 0.5596 - val_loss: 0.3568 - learning_rate: 2.0000e-05
+Epoch 63/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 724ms/step - keras_liver_dice: 0.9746 - keras_liver_precision: 0.9730 - keras_tumor_dice: 0.9487 - loss: 0.1089
+Epoch 63: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 101.75 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 102s 1s/step - keras_liver_dice: 0.9746 - keras_liver_precision: 0.9723 - keras_tumor_dice: 0.9411 - loss: 0.1128 - val_keras_liver_dice: 0.8450 - val_keras_liver_precision: 0.8691 - val_keras_tumor_dice: 0.4596 - val_loss: 0.3744 - learning_rate: 2.0000e-05
+Epoch 64/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 694ms/step - keras_liver_dice: 0.9736 - keras_liver_precision: 0.9687 - keras_tumor_dice: 0.9393 - loss: 0.1136
+Epoch 64: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 95.83 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 96s 963ms/step - keras_liver_dice: 0.9761 - keras_liver_precision: 0.9720 - keras_tumor_dice: 0.9404 - loss: 0.1118 - val_keras_liver_dice: 0.8454 - val_keras_liver_precision: 0.8769 - val_keras_tumor_dice: 0.4976 - val_loss: 0.3856 - learning_rate: 2.0000e-05
+Epoch 65/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 719ms/step - keras_liver_dice: 0.9792 - keras_liver_precision: 0.9785 - keras_tumor_dice: 0.9438 - loss: 0.1060
+Epoch 65: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.59 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 910ms/step - keras_liver_dice: 0.9779 - keras_liver_precision: 0.9756 - keras_tumor_dice: 0.9475 - loss: 0.1108 - val_keras_liver_dice: 0.8131 - val_keras_liver_precision: 0.8839 - val_keras_tumor_dice: 0.5731 - val_loss: 0.4157 - learning_rate: 2.0000e-05
+Epoch 66/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 722ms/step - keras_liver_dice: 0.9792 - keras_liver_precision: 0.9780 - keras_tumor_dice: 0.9427 - loss: 0.1140
+Epoch 66: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 94.00 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 94s 944ms/step - keras_liver_dice: 0.9787 - keras_liver_precision: 0.9766 - keras_tumor_dice: 0.9332 - loss: 0.1102 - val_keras_liver_dice: 0.8760 - val_keras_liver_precision: 0.8708 - val_keras_tumor_dice: 0.5691 - val_loss: 0.3595 - learning_rate: 2.0000e-05
+Epoch 67/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 713ms/step - keras_liver_dice: 0.9774 - keras_liver_precision: 0.9766 - keras_tumor_dice: 0.9609 - loss: 0.1085
+Epoch 67: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 87.84 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 88s 882ms/step - keras_liver_dice: 0.9760 - keras_liver_precision: 0.9757 - keras_tumor_dice: 0.9505 - loss: 0.1094 - val_keras_liver_dice: 0.8662 - val_keras_liver_precision: 0.8671 - val_keras_tumor_dice: 0.4873 - val_loss: 0.3585 - learning_rate: 2.0000e-05
+Epoch 68/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 707ms/step - keras_liver_dice: 0.9778 - keras_liver_precision: 0.9752 - keras_tumor_dice: 0.9540 - loss: 0.1115
+Epoch 68: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.88 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 923ms/step - keras_liver_dice: 0.9764 - keras_liver_precision: 0.9740 - keras_tumor_dice: 0.9462 - loss: 0.1090 - val_keras_liver_dice: 0.8616 - val_keras_liver_precision: 0.8690 - val_keras_tumor_dice: 0.4573 - val_loss: 0.3485 - learning_rate: 2.0000e-05
+Epoch 69/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 722ms/step - keras_liver_dice: 0.9746 - keras_liver_precision: 0.9732 - keras_tumor_dice: 0.9283 - loss: 0.1085
+Epoch 69: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.15 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 915ms/step - keras_liver_dice: 0.9772 - keras_liver_precision: 0.9752 - keras_tumor_dice: 0.9427 - loss: 0.1074 - val_keras_liver_dice: 0.8603 - val_keras_liver_precision: 0.8614 - val_keras_tumor_dice: 0.5732 - val_loss: 0.3704 - learning_rate: 2.0000e-05
+Epoch 70/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 717ms/step - keras_liver_dice: 0.9842 - keras_liver_precision: 0.9817 - keras_tumor_dice: 0.9384 - loss: 0.1059
+Epoch 70: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.60 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 920ms/step - keras_liver_dice: 0.9819 - keras_liver_precision: 0.9787 - keras_tumor_dice: 0.9482 - loss: 0.1060 - val_keras_liver_dice: 0.8720 - val_keras_liver_precision: 0.8561 - val_keras_tumor_dice: 0.4310 - val_loss: 0.3642 - learning_rate: 2.0000e-05
+Epoch 71/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 720ms/step - keras_liver_dice: 0.9811 - keras_liver_precision: 0.9804 - keras_tumor_dice: 0.9574 - loss: 0.1073
+Epoch 71: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 95.92 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 96s 964ms/step - keras_liver_dice: 0.9805 - keras_liver_precision: 0.9787 - keras_tumor_dice: 0.9570 - loss: 0.1062 - val_keras_liver_dice: 0.8604 - val_keras_liver_precision: 0.8620 - val_keras_tumor_dice: 0.5156 - val_loss: 0.4046 - learning_rate: 2.0000e-05
+Epoch 72/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 704ms/step - keras_liver_dice: 0.9802 - keras_liver_precision: 0.9799 - keras_tumor_dice: 0.9534 - loss: 0.1092
+Epoch 72: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 93.21 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 93s 936ms/step - keras_liver_dice: 0.9784 - keras_liver_precision: 0.9785 - keras_tumor_dice: 0.9537 - loss: 0.1058 - val_keras_liver_dice: 0.8451 - val_keras_liver_precision: 0.8810 - val_keras_tumor_dice: 0.5429 - val_loss: 0.4015 - learning_rate: 2.0000e-05
+Epoch 73/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 704ms/step - keras_liver_dice: 0.9840 - keras_liver_precision: 0.9817 - keras_tumor_dice: 0.9533 - loss: 0.1049
+Epoch 73: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.39 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 927ms/step - keras_liver_dice: 0.9812 - keras_liver_precision: 0.9788 - keras_tumor_dice: 0.9612 - loss: 0.1040 - val_keras_liver_dice: 0.8481 - val_keras_liver_precision: 0.8751 - val_keras_tumor_dice: 0.5081 - val_loss: 0.4051 - learning_rate: 2.0000e-05
+Epoch 74/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 730ms/step - keras_liver_dice: 0.9775 - keras_liver_precision: 0.9748 - keras_tumor_dice: 0.9706 - loss: 0.1053
+Epoch 74: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 95.02 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 95s 954ms/step - keras_liver_dice: 0.9830 - keras_liver_precision: 0.9804 - keras_tumor_dice: 0.9637 - loss: 0.1027 - val_keras_liver_dice: 0.8453 - val_keras_liver_precision: 0.8776 - val_keras_tumor_dice: 0.5301 - val_loss: 0.4094 - learning_rate: 2.0000e-05
+Epoch 75/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 691ms/step - keras_liver_dice: 0.9868 - keras_liver_precision: 0.9846 - keras_tumor_dice: 0.9740 - loss: 0.1046
+Epoch 75: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 94.99 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 95s 954ms/step - keras_liver_dice: 0.9844 - keras_liver_precision: 0.9816 - keras_tumor_dice: 0.9716 - loss: 0.1019 - val_keras_liver_dice: 0.8544 - val_keras_liver_precision: 0.8859 - val_keras_tumor_dice: 0.4548 - val_loss: 0.3828 - learning_rate: 2.0000e-05
+Epoch 76/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 712ms/step - keras_liver_dice: 0.9864 - keras_liver_precision: 0.9858 - keras_tumor_dice: 0.9714 - loss: 0.0995
+Epoch 76: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.38 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 92s 928ms/step - keras_liver_dice: 0.9841 - keras_liver_precision: 0.9846 - keras_tumor_dice: 0.9624 - loss: 0.1011 - val_keras_liver_dice: 0.8578 - val_keras_liver_precision: 0.8581 - val_keras_tumor_dice: 0.5035 - val_loss: 0.3913 - learning_rate: 2.0000e-05
+Epoch 77/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 715ms/step - keras_liver_dice: 0.9854 - keras_liver_precision: 0.9829 - keras_tumor_dice: 0.9687 - loss: 0.1068
+Epoch 77: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 93.94 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 94s 944ms/step - keras_liver_dice: 0.9840 - keras_liver_precision: 0.9836 - keras_tumor_dice: 0.9718 - loss: 0.1010 - val_keras_liver_dice: 0.8587 - val_keras_liver_precision: 0.8771 - val_keras_tumor_dice: 0.5301 - val_loss: 0.4014 - learning_rate: 2.0000e-05
+Epoch 78/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 697ms/step - keras_liver_dice: 0.9846 - keras_liver_precision: 0.9827 - keras_tumor_dice: 0.9717 - loss: 0.0974
+Epoch 78: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 97.69 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 98s 981ms/step - keras_liver_dice: 0.9842 - keras_liver_precision: 0.9818 - keras_tumor_dice: 0.9711 - loss: 0.1012 - val_keras_liver_dice: 0.8564 - val_keras_liver_precision: 0.8918 - val_keras_tumor_dice: 0.4875 - val_loss: 0.3866 - learning_rate: 2.0000e-05
+Epoch 79/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 706ms/step - keras_liver_dice: 0.9886 - keras_liver_precision: 0.9869 - keras_tumor_dice: 0.9547 - loss: 0.1024
+Epoch 79: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 95.91 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 96s 963ms/step - keras_liver_dice: 0.9858 - keras_liver_precision: 0.9835 - keras_tumor_dice: 0.9604 - loss: 0.1008 - val_keras_liver_dice: 0.8766 - val_keras_liver_precision: 0.8788 - val_keras_tumor_dice: 0.5486 - val_loss: 0.3582 - learning_rate: 2.0000e-05
+Epoch 80/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 720ms/step - keras_liver_dice: 0.9852 - keras_liver_precision: 0.9823 - keras_tumor_dice: 0.9663 - loss: 0.1029
+Epoch 80: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 99.42 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 99s 999ms/step - keras_liver_dice: 0.9855 - keras_liver_precision: 0.9832 - keras_tumor_dice: 0.9718 - loss: 0.0999 - val_keras_liver_dice: 0.8616 - val_keras_liver_precision: 0.8783 - val_keras_tumor_dice: 0.5498 - val_loss: 0.3927 - learning_rate: 2.0000e-05
+Epoch 81/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 702ms/step - keras_liver_dice: 0.9872 - keras_liver_precision: 0.9848 - keras_tumor_dice: 0.9747 - loss: 0.0985
+Epoch 81: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 87.20 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 87s 875ms/step - keras_liver_dice: 0.9884 - keras_liver_precision: 0.9865 - keras_tumor_dice: 0.9762 - loss: 0.0988 - val_keras_liver_dice: 0.8534 - val_keras_liver_precision: 0.8706 - val_keras_tumor_dice: 0.4987 - val_loss: 0.3925 - learning_rate: 2.0000e-05
+Epoch 82/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 709ms/step - keras_liver_dice: 0.9823 - keras_liver_precision: 0.9829 - keras_tumor_dice: 0.9766 - loss: 0.0988
+Epoch 82: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.54 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 93s 929ms/step - keras_liver_dice: 0.9861 - keras_liver_precision: 0.9851 - keras_tumor_dice: 0.9712 - loss: 0.0986 - val_keras_liver_dice: 0.8542 - val_keras_liver_precision: 0.8776 - val_keras_tumor_dice: 0.4395 - val_loss: 0.3997 - learning_rate: 2.0000e-05
+Epoch 83/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 707ms/step - keras_liver_dice: 0.9884 - keras_liver_precision: 0.9866 - keras_tumor_dice: 0.9662 - loss: 0.0967
+Epoch 83: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 96.94 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 97s 974ms/step - keras_liver_dice: 0.9868 - keras_liver_precision: 0.9850 - keras_tumor_dice: 0.9686 - loss: 0.0984 - val_keras_liver_dice: 0.8624 - val_keras_liver_precision: 0.8511 - val_keras_tumor_dice: 0.5587 - val_loss: 0.3926 - learning_rate: 2.0000e-05
+Epoch 84/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 713ms/step - keras_liver_dice: 0.9868 - keras_liver_precision: 0.9848 - keras_tumor_dice: 0.9066 - loss: 0.1018
+Epoch 84: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 93.56 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 94s 940ms/step - keras_liver_dice: 0.9852 - keras_liver_precision: 0.9834 - keras_tumor_dice: 0.9224 - loss: 0.1008 - val_keras_liver_dice: 0.8688 - val_keras_liver_precision: 0.8547 - val_keras_tumor_dice: 0.5383 - val_loss: 0.3711 - learning_rate: 2.0000e-05
+Epoch 85/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 712ms/step - keras_liver_dice: 0.9853 - keras_liver_precision: 0.9827 - keras_tumor_dice: 0.9542 - loss: 0.0943
+Epoch 85: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.70 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 85s 850ms/step - keras_liver_dice: 0.9850 - keras_liver_precision: 0.9828 - keras_tumor_dice: 0.9538 - loss: 0.0995 - val_keras_liver_dice: 0.8158 - val_keras_liver_precision: 0.8845 - val_keras_tumor_dice: 0.5341 - val_loss: 0.5154 - learning_rate: 2.0000e-05
+Epoch 86/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 724ms/step - keras_liver_dice: 0.9885 - keras_liver_precision: 0.9865 - keras_tumor_dice: 0.9798 - loss: 0.0989
+Epoch 86: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 87.08 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 87s 874ms/step - keras_liver_dice: 0.9891 - keras_liver_precision: 0.9870 - keras_tumor_dice: 0.9716 - loss: 0.0980 - val_keras_liver_dice: 0.8508 - val_keras_liver_precision: 0.8675 - val_keras_tumor_dice: 0.4173 - val_loss: 0.4009 - learning_rate: 2.0000e-05
+Epoch 87/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 703ms/step - keras_liver_dice: 0.9898 - keras_liver_precision: 0.9887 - keras_tumor_dice: 0.9618 - loss: 0.0976
+Epoch 87: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.55 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 899ms/step - keras_liver_dice: 0.9904 - keras_liver_precision: 0.9891 - keras_tumor_dice: 0.9693 - loss: 0.0973 - val_keras_liver_dice: 0.8727 - val_keras_liver_precision: 0.9019 - val_keras_tumor_dice: 0.5615 - val_loss: 0.3892 - learning_rate: 2.0000e-05
+Epoch 88/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 708ms/step - keras_liver_dice: 0.9911 - keras_liver_precision: 0.9906 - keras_tumor_dice: 0.9693 - loss: 0.0914
+Epoch 88: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.13 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 84s 844ms/step - keras_liver_dice: 0.9904 - keras_liver_precision: 0.9896 - keras_tumor_dice: 0.9707 - loss: 0.0966 - val_keras_liver_dice: 0.8620 - val_keras_liver_precision: 0.8646 - val_keras_tumor_dice: 0.4788 - val_loss: 0.3976 - learning_rate: 2.0000e-05
+Epoch 89/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 698ms/step - keras_liver_dice: 0.9890 - keras_liver_precision: 0.9875 - keras_tumor_dice: 0.9809 - loss: 0.0929
+Epoch 89: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 84.36 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 84s 847ms/step - keras_liver_dice: 0.9901 - keras_liver_precision: 0.9886 - keras_tumor_dice: 0.9830 - loss: 0.0956 - val_keras_liver_dice: 0.8717 - val_keras_liver_precision: 0.8732 - val_keras_tumor_dice: 0.4927 - val_loss: 0.3882 - learning_rate: 2.0000e-05
+Epoch 90/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 708ms/step - keras_liver_dice: 0.9925 - keras_liver_precision: 0.9909 - keras_tumor_dice: 0.9784 - loss: 0.0935
+Epoch 90: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 98.17 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 98s 986ms/step - keras_liver_dice: 0.9922 - keras_liver_precision: 0.9914 - keras_tumor_dice: 0.9790 - loss: 0.0954 - val_keras_liver_dice: 0.8715 - val_keras_liver_precision: 0.8633 - val_keras_tumor_dice: 0.5286 - val_loss: 0.3907 - learning_rate: 2.0000e-05
+Epoch 91/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 690ms/step - keras_liver_dice: 0.9910 - keras_liver_precision: 0.9896 - keras_tumor_dice: 0.9806 - loss: 0.0972
+Epoch 91: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 97.26 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 97s 977ms/step - keras_liver_dice: 0.9910 - keras_liver_precision: 0.9897 - keras_tumor_dice: 0.9784 - loss: 0.0951 - val_keras_liver_dice: 0.8354 - val_keras_liver_precision: 0.8929 - val_keras_tumor_dice: 0.5333 - val_loss: 0.4426 - learning_rate: 2.0000e-05
+Epoch 92/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 709ms/step - keras_liver_dice: 0.9917 - keras_liver_precision: 0.9911 - keras_tumor_dice: 0.9762 - loss: 0.0951
+Epoch 92: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 92.93 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 93s 933ms/step - keras_liver_dice: 0.9904 - keras_liver_precision: 0.9899 - keras_tumor_dice: 0.9764 - loss: 0.0948 - val_keras_liver_dice: 0.8354 - val_keras_liver_precision: 0.8739 - val_keras_tumor_dice: 0.5069 - val_loss: 0.4449 - learning_rate: 2.0000e-05
+Epoch 93/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 700ms/step - keras_liver_dice: 0.9930 - keras_liver_precision: 0.9922 - keras_tumor_dice: 0.9766 - loss: 0.0928
+Epoch 93: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.79 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 901ms/step - keras_liver_dice: 0.9915 - keras_liver_precision: 0.9899 - keras_tumor_dice: 0.9798 - loss: 0.0945 - val_keras_liver_dice: 0.8517 - val_keras_liver_precision: 0.8744 - val_keras_tumor_dice: 0.4635 - val_loss: 0.4228 - learning_rate: 2.0000e-05
+Epoch 94/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 699ms/step - keras_liver_dice: 0.9911 - keras_liver_precision: 0.9897 - keras_tumor_dice: 0.9765 - loss: 0.0985
+Epoch 94: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 88.40 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 88s 888ms/step - keras_liver_dice: 0.9919 - keras_liver_precision: 0.9908 - keras_tumor_dice: 0.9754 - loss: 0.0948 - val_keras_liver_dice: 0.8604 - val_keras_liver_precision: 0.8498 - val_keras_tumor_dice: 0.5063 - val_loss: 0.4058 - learning_rate: 2.0000e-05
+Epoch 95/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 712ms/step - keras_liver_dice: 0.9895 - keras_liver_precision: 0.9876 - keras_tumor_dice: 0.9437 - loss: 0.0934
+Epoch 95: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 83.98 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 84s 843ms/step - keras_liver_dice: 0.9899 - keras_liver_precision: 0.9884 - keras_tumor_dice: 0.9662 - loss: 0.0961 - val_keras_liver_dice: 0.8623 - val_keras_liver_precision: 0.8744 - val_keras_tumor_dice: 0.4827 - val_loss: 0.4054 - learning_rate: 2.0000e-05
+Epoch 96/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 700ms/step - keras_liver_dice: 0.9909 - keras_liver_precision: 0.9896 - keras_tumor_dice: 0.9842 - loss: 0.0932
+Epoch 96: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 91.44 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 91s 918ms/step - keras_liver_dice: 0.9900 - keras_liver_precision: 0.9887 - keras_tumor_dice: 0.9732 - loss: 0.0953 - val_keras_liver_dice: 0.8500 - val_keras_liver_precision: 0.8690 - val_keras_tumor_dice: 0.5491 - val_loss: 0.4324 - learning_rate: 2.0000e-05
+Epoch 97/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 706ms/step - keras_liver_dice: 0.9923 - keras_liver_precision: 0.9909 - keras_tumor_dice: 0.9841 - loss: 0.0967
+Epoch 97: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 90.16 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 905ms/step - keras_liver_dice: 0.9912 - keras_liver_precision: 0.9899 - keras_tumor_dice: 0.9719 - loss: 0.0943 - val_keras_liver_dice: 0.8631 - val_keras_liver_precision: 0.8647 - val_keras_tumor_dice: 0.5038 - val_loss: 0.4093 - learning_rate: 2.0000e-05
+Epoch 98/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 682ms/step - keras_liver_dice: 0.9889 - keras_liver_precision: 0.9875 - keras_tumor_dice: 0.9854 - loss: 0.0941
+Epoch 98: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 135.94 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 136s 1s/step - keras_liver_dice: 0.9917 - keras_liver_precision: 0.9903 - keras_tumor_dice: 0.9833 - loss: 0.0937 - val_keras_liver_dice: 0.8493 - val_keras_liver_precision: 0.8798 - val_keras_tumor_dice: 0.5251 - val_loss: 0.4385 - learning_rate: 2.0000e-05
+Epoch 99/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 708ms/step - keras_liver_dice: 0.9914 - keras_liver_precision: 0.9908 - keras_tumor_dice: 0.9845 - loss: 0.0920
+Epoch 99: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 89.78 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 90s 901ms/step - keras_liver_dice: 0.9922 - keras_liver_precision: 0.9912 - keras_tumor_dice: 0.9857 - loss: 0.0930 - val_keras_liver_dice: 0.8744 - val_keras_liver_precision: 0.8490 - val_keras_tumor_dice: 0.5159 - val_loss: 0.3945 - learning_rate: 2.0000e-05
+Epoch 100/100
+100/100 ━━━━━━━━━━━━━━━━━━━━ 0s 718ms/step - keras_liver_dice: 0.9933 - keras_liver_precision: 0.9917 - keras_tumor_dice: 0.9837 - loss: 0.0919
+Epoch 100: finished saving model to /content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+HLA | Liver Dice=0.0000 | Tumor Dice=0.0000 | LR=2.00e-05
+HLA weights: bg=7.000, liver=8.000, tumor=10.000, tumor_boost=3.000
+Epoch time: 86.98 sec
+100/100 ━━━━━━━━━━━━━━━━━━━━ 87s 873ms/step - keras_liver_dice: 0.9938 - keras_liver_precision: 0.9926 - keras_tumor_dice: 0.9845 - loss: 0.0926 - val_keras_liver_dice: 0.8638 - val_keras_liver_precision: 0.8782 - val_keras_tumor_dice: 0.4802 - val_loss: 0.4184 - learning_rate: 2.0000e-05
+
+CFG_E_fine_tokens_small_window_lowLR training time: 156.60 minutes
+
+✓ Best epoch weights loaded:
+/content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/best.weights.h5
+
+====================================================================================================
+FULL VALIDATION EVALUATION — CFG_E_fine_tokens_small_window_lowLR
+====================================================================================================
+
+Validation slices: 200
+Tumor-positive slices: 99
+
+Liver Dice      : 0.8212
+Liver IoU       : 0.7392
+Liver Precision : 0.8308
+Liver Recall    : 0.8436
+
+Tumor Dice      : 0.5484
+Tumor IoU       : 0.5049
+Tumor Precision : 0.6562
+Tumor Recall    : 0.7309
+
+Mean Dice       : 0.6848
+Best epoch      : 1
+Best epoch val tumor Dice: 0.0000
+
+✓ Full evaluation saved to:
+/content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/CFG_E_fine_tokens_small_window_lowLR/evaluation_full_200.json
+
+====================================================================================================
+FINAL CONFIGURATION SUMMARY
+====================================================================================================
+
+====================================================================================================
+AUTOMATIC MODEL SELECTION
+====================================================================================================
+Selection criterion:
+FULL VALIDATION TUMOR DICE over all 200 validation slices
+
+Selected configuration:
+CFG_E_fine_tokens_small_window_lowLR
+
+Patch stride : 2
+Window size  : 4
+Learning rate: 2e-05
+
+Full validation Tumor Dice: 0.5484
+Full validation Liver Dice: 0.8212
+Full validation Mean Dice: 0.6848
+
+Best weights:
+/content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/BEST_MODEL.weights.h5
+
+Best model:
+/content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/BEST_MODEL.keras
+
+Best configuration metadata:
+/content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment/BEST_CONFIGURATION.json
+
+====================================================================================================
+FULL-VALIDATION RESULTS — ALL CONFIGURATIONS
+====================================================================================================
+Configuration                              Tumor Dice    Tumor IoU  Tumor Prec. Tumor Recall   Liver Dice    Mean Dice
+----------------------------------------------------------------------------------------------------------------------
+CFG_E_fine_tokens_small_window_lowLR           0.5484       0.5049       0.6562       0.7309       0.8212       0.6848
+
+====================================================================================================
+EXPERIMENT FINISHED
+====================================================================================================
+Total experiment time: 157.59 minutes
+
+Results directory:
+/content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment
+
+Saved files include:
+✓ all_configurations_summary.csv
+✓ all_configurations_summary.json
+✓ data_split_information.json
+✓ BEST_MODEL.weights.h5
+✓ BEST_MODEL.keras
+✓ BEST_CONFIGURATION.json
+
+IMPORTANT:
+The reported primary Tumor Dice is calculated from ALL 200 validation slices for each configuration.
+No 5-sample tumor-only stopping criterion is used.
+The selected model is the configuration with the highest FULL-VALIDATION tumor Dice.
+These are validation results, not independent test-set results.
+
+====================================================================================================

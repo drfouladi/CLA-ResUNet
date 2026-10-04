@@ -1,0 +1,4112 @@
+
+# ==========================================================================================
+# TUNED RESUNET + SWIN-STYLE TRANSFORMER ENCODER + HLA
+# COMPLETE SINGLE COLAB CELL
+#
+# Includes:
+#   1) Robust volume/segmentation pairing by slice ID
+#   2) 500 tumor + 500 non-tumor slice selection
+#   3) Fixed 800/200 train-validation split
+#   4) Five Transformer configurations
+#   5) Dynamic Hierarchical Learning Automata
+#   6) Best-epoch checkpointing
+#   7) Full deterministic evaluation on ALL 200 validation slices
+#   8) Automatic best-configuration selection by full-validation tumor Dice
+#   9) Best model weight saving
+#  10) JSON / CSV / history outputs
+#
+# IMPORTANT:
+# Primary model-selection metric:
+#       FULL-VALIDATION TUMOR DICE over all 200 validation slices
+#
+# ==========================================================================================
+
+import os
+import re
+import json
+import csv
+import time
+import random
+import gc
+import shutil
+
+import numpy as np
+import tensorflow as tf
+
+from tensorflow.keras import layers, Model, callbacks
+from sklearn.model_selection import train_test_split
+
+from google.colab import drive
+
+
+# ==========================================================================================
+# 0. GLOBAL SETTINGS
+# ==========================================================================================
+
+SEED = 42
+
+random.seed(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+
+os.environ["PYTHONHASHSEED"] = str(SEED)
+
+print("=" * 100)
+print("TUNED RESUNET + SWIN-STYLE TRANSFORMER + HLA")
+print("=" * 100)
+
+print("TensorFlow:", tf.__version__)
+print("Keras:", tf.keras.__version__)
+print("GPU:", tf.config.list_physical_devices("GPU"))
+
+# ------------------------------------------------------------------------------------------
+# GPU memory growth
+# ------------------------------------------------------------------------------------------
+
+gpus = tf.config.list_physical_devices("GPU")
+
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        print("✓ GPU memory growth configured")
+    except Exception as e:
+        print("GPU memory growth warning:", e)
+else:
+    print("WARNING: No GPU detected.")
+
+# ------------------------------------------------------------------------------------------
+# Mount Google Drive
+# ------------------------------------------------------------------------------------------
+
+drive.mount("/content/drive", force_remount=True)
+
+# ==========================================================================================
+# 1. PATHS
+# ==========================================================================================
+
+DATA_PATH = "/content/drive/MyDrive/LITS/Preprocessed"
+
+OUTPUT_PATH = "/content/drive/MyDrive/LITS/Tuned_Swin_HLA_Experiment"
+
+os.makedirs(OUTPUT_PATH, exist_ok=True)
+
+print()
+print("DATA_PATH  :", DATA_PATH)
+print("OUTPUT_PATH:", OUTPUT_PATH)
+
+# ==========================================================================================
+# 2. EXPERIMENT SETTINGS
+# ==========================================================================================
+
+IMAGE_SIZE = 128
+NUM_CLASSES = 3
+
+BATCH_SIZE = 8
+
+MAX_EPOCHS = 100
+
+TRAIN_SIZE = 800
+VAL_SIZE = 200
+
+MAX_TUMOR_SLICES = 500
+MAX_OTHER_SLICES = 500
+
+# ------------------------------------------------------------------------------------------
+# Set to None to run ALL five configurations.
+#
+# Example:
+# RUN_CONFIG_NAMES = ["CFG_A_original"]
+#
+# This is useful if Colab disconnects and you want to resume only one configuration.
+# ------------------------------------------------------------------------------------------
+
+#RUN_CONFIG_NAMES = None
+
+# ------------------------------------------------------------------------------------------
+# Five configurations
+# ------------------------------------------------------------------------------------------
+
+CONFIGS = [
+    {
+        "name": "CFG_A_original",
+        "patch_stride": 4,
+        "window_size": 8,
+        "learning_rate": 4.2e-5
+    },
+
+    {
+        "name": "CFG_B_small_window",
+        "patch_stride": 4,
+        "window_size": 4,
+        "learning_rate": 4.2e-5
+    },
+
+    {
+        "name": "CFG_C_fine_tokens",
+        "patch_stride": 2,
+        "window_size": 8,
+        "learning_rate": 4.2e-5
+    },
+
+    {
+        "name": "CFG_D_fine_tokens_small_window",
+        "patch_stride": 2,
+        "window_size": 4,
+        "learning_rate": 4.2e-5
+    },
+
+    {
+        "name": "CFG_E_fine_tokens_small_window_lowLR",
+        "patch_stride": 2,
+        "window_size": 4,
+        "learning_rate": 2.0e-5
+    }
+]
+RUN_CONFIG_NAMES ="CFG_E_fine_tokens_small_window_lowLR"
+if RUN_CONFIG_NAMES is not None:
+    CONFIGS = [
+        cfg for cfg in CONFIGS
+        if cfg["name"] in RUN_CONFIG_NAMES
+    ]
+
+print()
+print("Image size:", IMAGE_SIZE)
+print("Batch size:", BATCH_SIZE)
+print("Maximum epochs:", MAX_EPOCHS)
+
+print()
+print("Configurations:")
+for i, cfg in enumerate(CONFIGS, 1):
+    print(
+        f"{i}. {cfg['name']} | "
+        f"stride={cfg['patch_stride']} | "
+        f"window={cfg['window_size']} | "
+        f"LR={cfg['learning_rate']}"
+    )
+
+# ==========================================================================================
+# 3. ROBUST FILE PAIRING BY SLICE ID
+# ==========================================================================================
+
+print()
+print("=" * 100)
+print("LOADING DATASET")
+print("=" * 100)
+
+if not os.path.isdir(DATA_PATH):
+    raise RuntimeError(f"DATA_PATH does not exist: {DATA_PATH}")
+
+
+def extract_slice_id(filename):
+    """
+    Extract numeric ID from:
+        vol_slice_123.npy
+        seg_slice_123.npy
+
+    Returns None if no numeric ID exists.
+    """
+
+    match = re.search(r"_(\d+)\.npy$", filename)
+
+    if match is None:
+        return None
+
+    return int(match.group(1))
+
+
+all_files = os.listdir(DATA_PATH)
+
+vol_files = [
+    f for f in all_files
+    if f.startswith("vol_slice_") and f.endswith(".npy")
+]
+
+seg_files = [
+    f for f in all_files
+    if f.startswith("seg_slice_") and f.endswith(".npy")
+]
+
+print("Raw volume files:", len(vol_files))
+print("Raw segmentation files:", len(seg_files))
+
+# ------------------------------------------------------------------------------------------
+# Build maps by actual numeric slice ID
+# ------------------------------------------------------------------------------------------
+
+vol_map = {}
+seg_map = {}
+
+for f in vol_files:
+    sid = extract_slice_id(f)
+    if sid is not None:
+        vol_map[sid] = f
+
+for f in seg_files:
+    sid = extract_slice_id(f)
+    if sid is not None:
+        seg_map[sid] = f
+
+vol_ids = set(vol_map.keys())
+seg_ids = set(seg_map.keys())
+
+common_ids = sorted(vol_ids.intersection(seg_ids))
+
+missing_seg_ids = sorted(vol_ids - seg_ids)
+missing_vol_ids = sorted(seg_ids - vol_ids)
+
+print()
+print("Volume IDs :", len(vol_ids))
+print("Seg IDs    :", len(seg_ids))
+print("Matched IDs:", len(common_ids))
+
+print("Volume IDs without segmentation:", len(missing_seg_ids))
+print("Segmentation IDs without volume:", len(missing_vol_ids))
+
+if len(missing_seg_ids) > 0:
+    print(
+        "First unmatched volume IDs:",
+        missing_seg_ids[:20]
+    )
+
+if len(missing_vol_ids) > 0:
+    print(
+        "First unmatched segmentation IDs:",
+        missing_vol_ids[:20]
+    )
+
+if len(common_ids) == 0:
+    raise RuntimeError(
+        "No matched volume/segmentation pairs were found."
+    )
+
+
+# ==========================================================================================
+# 4. SCAN LABEL DISTRIBUTION
+# ==========================================================================================
+
+print()
+print("Scanning matched segmentation files...")
+
+tumor_candidates = []
+other_candidates = []
+
+invalid_label_files = []
+
+label_counts = {
+    0: 0,
+    1: 0,
+    2: 0
+}
+
+scan_start = time.time()
+
+for counter, sid in enumerate(common_ids, 1):
+
+    seg_path = os.path.join(DATA_PATH, seg_map[sid])
+
+    try:
+
+        seg = np.load(seg_path, mmap_mode="r")
+
+        if seg.size == 0:
+            continue
+
+        unique_values = np.unique(seg)
+
+        # ------------------------------------------------------------------
+        # Valid labels must be 0, 1, 2
+        # ------------------------------------------------------------------
+
+        if np.any(~np.isin(unique_values, [0, 1, 2])):
+
+            invalid_label_files.append(
+                {
+                    "id": int(sid),
+                    "file": seg_map[sid],
+                    "unique_values": unique_values.tolist()
+                }
+            )
+
+            continue
+
+        # ------------------------------------------------------------------
+        # Global counts
+        # ------------------------------------------------------------------
+
+        for value in unique_values:
+
+            value_int = int(value)
+
+            if value_int in label_counts:
+                label_counts[value_int] += int(
+                    np.sum(seg == value_int)
+                )
+
+        # ------------------------------------------------------------------
+        # Tumor / non-tumor classification
+        # ------------------------------------------------------------------
+
+        if np.any(seg == 2):
+
+            tumor_candidates.append(
+                (
+                    int(sid),
+                    os.path.join(DATA_PATH, vol_map[sid]),
+                    seg_path
+                )
+            )
+
+        else:
+
+            other_candidates.append(
+                (
+                    int(sid),
+                    os.path.join(DATA_PATH, vol_map[sid]),
+                    seg_path
+                )
+            )
+
+    except Exception as e:
+
+        print(
+            f"WARNING: could not inspect segmentation "
+            f"{seg_map[sid]}: {e}"
+        )
+
+    if counter % 1000 == 0 or counter == len(common_ids):
+
+        print(
+            f"Scanned {counter}/{len(common_ids)} "
+            f"| tumor={len(tumor_candidates)} "
+            f"| non-tumor={len(other_candidates)}"
+        )
+
+
+print()
+print(
+    f"Label scan time: "
+    f"{(time.time() - scan_start) / 60:.2f} min"
+)
+
+print()
+print("Tumor candidate slices    :", len(tumor_candidates))
+print("Non-tumor candidate slices:", len(other_candidates))
+
+print()
+print("Observed label voxel counts:")
+print("Background:", label_counts[0])
+print("Liver     :", label_counts[1])
+print("Tumor     :", label_counts[2])
+
+if len(invalid_label_files) > 0:
+    print(
+        "WARNING: invalid-label files:",
+        len(invalid_label_files)
+    )
+
+
+# ==========================================================================================
+# 5. SELECT 500 TUMOR + 500 NON-TUMOR
+# ==========================================================================================
+
+if len(tumor_candidates) < MAX_TUMOR_SLICES:
+
+    raise RuntimeError(
+        f"Only {len(tumor_candidates)} tumor slices are available, "
+        f"but {MAX_TUMOR_SLICES} are required."
+    )
+
+if len(other_candidates) < MAX_OTHER_SLICES:
+
+    raise RuntimeError(
+        f"Only {len(other_candidates)} non-tumor slices are available, "
+        f"but {MAX_OTHER_SLICES} are required."
+    )
+
+# Deterministic shuffle
+rng = np.random.RandomState(SEED)
+
+tumor_candidates = sorted(
+    tumor_candidates,
+    key=lambda x: x[0]
+)
+
+other_candidates = sorted(
+    other_candidates,
+    key=lambda x: x[0]
+)
+
+rng.shuffle(tumor_candidates)
+rng.shuffle(other_candidates)
+
+tumor_candidates = tumor_candidates[:MAX_TUMOR_SLICES]
+other_candidates = other_candidates[:MAX_OTHER_SLICES]
+
+selected_pairs = tumor_candidates + other_candidates
+
+# Shuffle selected dataset before train/validation split
+rng.shuffle(selected_pairs)
+
+print()
+print("=" * 100)
+print("SELECTED DATASET")
+print("=" * 100)
+
+print("Selected tumor slices    :", len(tumor_candidates))
+print("Selected non-tumor slices:", len(other_candidates))
+print("Total selected slices    :", len(selected_pairs))
+
+
+# ==========================================================================================
+# 6. FIXED 800 / 200 SPLIT
+# ==========================================================================================
+
+train_pairs, val_pairs = train_test_split(
+    selected_pairs,
+    test_size=VAL_SIZE,
+    random_state=SEED,
+    shuffle=True
+)
+
+train_pairs = list(train_pairs)
+val_pairs = list(val_pairs)
+
+print()
+print("Train slices:", len(train_pairs))
+print("Val slices  :", len(val_pairs))
+
+if len(train_pairs) != TRAIN_SIZE:
+    raise RuntimeError(
+        f"Expected {TRAIN_SIZE} training slices, "
+        f"got {len(train_pairs)}"
+    )
+
+if len(val_pairs) != VAL_SIZE:
+    raise RuntimeError(
+        f"Expected {VAL_SIZE} validation slices, "
+        f"got {len(val_pairs)}"
+    )
+
+
+# ==========================================================================================
+# 7. VALIDATION DATASET CHARACTERISTICS
+# ==========================================================================================
+
+def count_tumor_pairs(pairs):
+
+    count = 0
+
+    for _, _, seg_path in pairs:
+
+        seg = np.load(seg_path, mmap_mode="r")
+
+        if np.any(seg == 2):
+            count += 1
+
+    return count
+
+
+train_tumor_count = count_tumor_pairs(train_pairs)
+val_tumor_count = count_tumor_pairs(val_pairs)
+
+print()
+print("Train tumor-containing slices:", train_tumor_count)
+print("Train non-tumor slices       :", len(train_pairs) - train_tumor_count)
+
+print("Val tumor-containing slices  :", val_tumor_count)
+print("Val non-tumor slices         :", len(val_pairs) - val_tumor_count)
+
+# ==========================================================================================
+# 8. DATA LOADING / PREPROCESSING
+# ==========================================================================================
+
+def load_and_preprocess(vol_path, seg_path):
+
+    vol = np.load(vol_path).astype(np.float32)
+    seg = np.load(seg_path).astype(np.uint8)
+
+    if vol.size == 0:
+        raise ValueError(f"Empty volume file: {vol_path}")
+
+    if seg.size == 0:
+        raise ValueError(f"Empty segmentation file: {seg_path}")
+
+    # ------------------------------------------------------------------
+    # Ensure 2D input
+    # ------------------------------------------------------------------
+
+    if vol.ndim == 3:
+
+        # For safety: remove singleton channel if present
+        if vol.shape[-1] == 1:
+            vol = vol[..., 0]
+
+        else:
+            raise ValueError(
+                f"Unexpected volume shape {vol.shape} "
+                f"for {vol_path}"
+            )
+
+    if seg.ndim == 3:
+
+        if seg.shape[-1] == 1:
+            seg = seg[..., 0]
+
+        else:
+            raise ValueError(
+                f"Unexpected segmentation shape {seg.shape} "
+                f"for {seg_path}"
+            )
+
+    # ------------------------------------------------------------------
+    # Resize image
+    # ------------------------------------------------------------------
+
+    vol_tf = tf.convert_to_tensor(
+        vol[..., np.newaxis],
+        dtype=tf.float32
+    )
+
+    seg_tf = tf.convert_to_tensor(
+        seg[..., np.newaxis],
+        dtype=tf.float32
+    )
+
+    vol_resized = tf.image.resize(
+        vol_tf,
+        (IMAGE_SIZE, IMAGE_SIZE),
+        method="bilinear"
+    )
+
+    seg_resized = tf.image.resize(
+        seg_tf,
+        (IMAGE_SIZE, IMAGE_SIZE),
+        method="nearest"
+    )
+
+    vol_resized = vol_resized.numpy()
+    seg_resized = seg_resized.numpy()[..., 0]
+
+    # ------------------------------------------------------------------
+    # Per-slice min-max normalization
+    # ------------------------------------------------------------------
+
+    vmin = np.min(vol_resized)
+    vmax = np.max(vol_resized)
+
+    vol_normalized = (
+        vol_resized - vmin
+    ) / (
+        vmax - vmin + 1e-6
+    )
+
+    # ------------------------------------------------------------------
+    # Segmentation labels
+    # ------------------------------------------------------------------
+
+    seg_resized = np.rint(seg_resized).astype(np.uint8)
+
+    seg_resized = np.clip(
+        seg_resized,
+        0,
+        2
+    )
+
+    return (
+        vol_normalized.astype(np.float32),
+        seg_resized.astype(np.uint8)
+    )
+
+
+# ==========================================================================================
+# 9. TRAINING GENERATOR
+# ==========================================================================================
+
+def training_generator(pairs, batch_size):
+
+    local_pairs = list(pairs)
+
+    while True:
+
+        random.shuffle(local_pairs)
+
+        for start in range(
+            0,
+            len(local_pairs),
+            batch_size
+        ):
+
+            batch_pairs = local_pairs[
+                start:start + batch_size
+            ]
+
+            images = []
+            masks = []
+
+            for _, vol_path, seg_path in batch_pairs:
+
+                try:
+
+                    image, mask = load_and_preprocess(
+                        vol_path,
+                        seg_path
+                    )
+
+                    images.append(image)
+                    masks.append(mask)
+
+                except Exception as e:
+
+                    print(
+                        "WARNING: skipped sample:",
+                        vol_path,
+                        e
+                    )
+
+            if len(images) == 0:
+                continue
+
+            yield (
+                np.asarray(images, dtype=np.float32),
+                np.asarray(masks, dtype=np.uint8)
+            )
+
+
+# ==========================================================================================
+# 10. DETERMINISTIC VALIDATION GENERATOR
+# ==========================================================================================
+
+def validation_generator(pairs, batch_size):
+
+    # IMPORTANT:
+    # No shuffle here.
+
+    for start in range(
+        0,
+        len(pairs),
+        batch_size
+    ):
+
+        batch_pairs = pairs[
+            start:start + batch_size
+        ]
+
+        images = []
+        masks = []
+
+        for _, vol_path, seg_path in batch_pairs:
+
+            image, mask = load_and_preprocess(
+                vol_path,
+                seg_path
+            )
+
+            images.append(image)
+            masks.append(mask)
+
+        yield (
+            np.asarray(images, dtype=np.float32),
+            np.asarray(masks, dtype=np.uint8)
+        )
+
+
+# ==========================================================================================
+# 11. FULL VALIDATION PREDICTION
+# ==========================================================================================
+
+def predict_full_validation(model, pairs):
+
+    all_images = []
+    all_masks = []
+    all_probs = []
+
+    for start in range(
+        0,
+        len(pairs),
+        BATCH_SIZE
+    ):
+
+        batch_pairs = pairs[
+            start:start + BATCH_SIZE
+        ]
+
+        images = []
+        masks = []
+
+        for _, vol_path, seg_path in batch_pairs:
+
+            image, mask = load_and_preprocess(
+                vol_path,
+                seg_path
+            )
+
+            images.append(image)
+            masks.append(mask)
+
+        images = np.asarray(
+            images,
+            dtype=np.float32
+        )
+
+        masks = np.asarray(
+            masks,
+            dtype=np.uint8
+        )
+
+        probs = model.predict(
+            images,
+            verbose=0
+        )
+
+        all_images.append(images)
+        all_masks.append(masks)
+        all_probs.append(probs)
+
+        del images, masks, probs
+
+    images = np.concatenate(all_images, axis=0)
+    masks = np.concatenate(all_masks, axis=0)
+    probs = np.concatenate(all_probs, axis=0)
+
+    if len(images) != len(pairs):
+        raise RuntimeError(
+            f"Full validation prediction returned "
+            f"{len(images)} samples instead of {len(pairs)}"
+        )
+
+    return images, masks, probs
+
+
+# ==========================================================================================
+# 12. METRIC FUNCTIONS
+# ==========================================================================================
+
+def binary_metrics_from_masks(
+    true_mask,
+    pred_mask
+):
+
+    true_mask = true_mask.astype(np.bool_)
+    pred_mask = pred_mask.astype(np.bool_)
+
+    tp = np.logical_and(
+        true_mask,
+        pred_mask
+    ).sum()
+
+    fp = np.logical_and(
+        ~true_mask,
+        pred_mask
+    ).sum()
+
+    fn = np.logical_and(
+        true_mask,
+        ~pred_mask
+    ).sum()
+
+    dice = (
+        2.0 * tp + 1e-6
+    ) / (
+        2.0 * tp + fp + fn + 1e-6
+    )
+
+    iou = (
+        tp + 1e-6
+    ) / (
+        tp + fp + fn + 1e-6
+    )
+
+    precision = (
+        tp + 1e-6
+    ) / (
+        tp + fp + 1e-6
+    )
+
+    recall = (
+        tp + 1e-6
+    ) / (
+        tp + fn + 1e-6
+    )
+
+    return {
+        "dice": float(dice),
+        "iou": float(iou),
+        "precision": float(precision),
+        "recall": float(recall),
+        "tp": int(tp),
+        "fp": int(fp),
+        "fn": int(fn)
+    }
+
+
+def calculate_full_validation_metrics(
+    true_labels,
+    pred_labels
+):
+
+    if len(true_labels) != VAL_SIZE:
+        raise RuntimeError(
+            f"Metric calculation expected {VAL_SIZE} "
+            f"validation slices, got {len(true_labels)}"
+        )
+
+    liver_results = []
+    tumor_results = []
+
+    for i in range(len(true_labels)):
+
+        true_slice = true_labels[i]
+        pred_slice = pred_labels[i]
+
+        liver_results.append(
+            binary_metrics_from_masks(
+                true_slice == 1,
+                pred_slice == 1
+            )
+        )
+
+        tumor_results.append(
+            binary_metrics_from_masks(
+                true_slice == 2,
+                pred_slice == 2
+            )
+        )
+
+    def mean_metric(results, key):
+
+        return float(
+            np.mean(
+                [
+                    r[key]
+                    for r in results
+                ]
+            )
+        )
+
+    metrics = {
+
+        "num_validation_slices": int(len(true_labels)),
+
+        "num_tumor_positive_slices": int(
+            np.sum(
+                [
+                    np.any(x == 2)
+                    for x in true_labels
+                ]
+            )
+        ),
+
+        "num_liver_positive_slices": int(
+            np.sum(
+                [
+                    np.any(x == 1)
+                    for x in true_labels
+                ]
+            )
+        ),
+
+        "liver_dice": mean_metric(
+            liver_results,
+            "dice"
+        ),
+
+        "liver_iou": mean_metric(
+            liver_results,
+            "iou"
+        ),
+
+        "liver_precision": mean_metric(
+            liver_results,
+            "precision"
+        ),
+
+        "liver_recall": mean_metric(
+            liver_results,
+            "recall"
+        ),
+
+        "tumor_dice": mean_metric(
+            tumor_results,
+            "dice"
+        ),
+
+        "tumor_iou": mean_metric(
+            tumor_results,
+            "iou"
+        ),
+
+        "tumor_precision": mean_metric(
+            tumor_results,
+            "precision"
+        ),
+
+        "tumor_recall": mean_metric(
+            tumor_results,
+            "recall"
+        )
+    }
+
+    metrics["mean_dice"] = (
+        metrics["liver_dice"]
+        +
+        metrics["tumor_dice"]
+    ) / 2.0
+
+    return metrics
+
+
+# ==========================================================================================
+# 13. HLA
+# ==========================================================================================
+
+class HierarchicalLearningAutomata:
+
+    def __init__(
+        self,
+        num_classes=3,
+        initial_weights=None,
+        alpha_high=0.2,
+        beta_high=0.1,
+        alpha_low=0.15,
+        beta_low=0.08,
+        liver_priority=1.5,
+        tumor_priority=4.0
+    ):
+
+        self.num_classes = num_classes
+
+        self.alpha_high = alpha_high
+        self.beta_high = beta_high
+
+        self.alpha_low = alpha_low
+        self.beta_low = beta_low
+
+        self.liver_priority = liver_priority
+        self.tumor_priority = tumor_priority
+
+        if initial_weights is None:
+            initial_weights = [
+                7.0,
+                7.0,
+                7.0
+            ]
+
+        self.weights = np.asarray(
+            initial_weights,
+            dtype=np.float32
+        )
+
+        self.probabilities = (
+            self.weights /
+            np.sum(self.weights)
+        )
+
+        self.tumor_boost = 3.0
+
+        self.history = []
+
+        self.best_metric = -np.inf
+
+        self.best_weights = self.weights.copy()
+        self.best_tumor_boost = self.tumor_boost
+
+        self.moving_avg_dice_liver = []
+        self.moving_avg_dice_tumor = []
+
+        self.window_size = 5
+
+        self.high_level_probs = (
+            np.ones(num_classes) /
+            num_classes
+        )
+
+        self.low_level_probs = [
+            np.ones(3) / 3
+            for _ in range(num_classes)
+        ]
+
+        self.low_level_actions = {
+            0: 0.5,
+            1: -0.5,
+            2: 0.0
+        }
+
+        # ------------------------------------------------------------------
+        # IMPORTANT:
+        # These are TensorFlow variables so the loss sees HLA updates
+        # after each epoch.
+        # ------------------------------------------------------------------
+
+        self.weights_var = tf.Variable(
+            self.weights,
+            trainable=False,
+            dtype=tf.float32,
+            name="hla_class_weights"
+        )
+
+        self.tumor_boost_var = tf.Variable(
+            self.tumor_boost,
+            trainable=False,
+            dtype=tf.float32,
+            name="hla_tumor_boost"
+        )
+
+    def sync_tf_variables(self):
+
+        self.weights_var.assign(
+            self.weights
+        )
+
+        self.tumor_boost_var.assign(
+            self.tumor_boost
+        )
+
+    def select_action(self):
+
+        if (
+            len(self.moving_avg_dice_tumor)
+            >= self.window_size
+            and
+            np.mean(
+                self.moving_avg_dice_tumor[
+                    -self.window_size:
+                ]
+            ) < 0.80
+        ):
+
+            selected_class = 2
+
+        elif (
+            len(self.moving_avg_dice_liver)
+            >= self.window_size
+            and
+            np.mean(
+                self.moving_avg_dice_liver[
+                    -self.window_size:
+                ]
+            ) < 0.90
+        ):
+
+            selected_class = 1
+
+        else:
+
+            adjusted_probs = (
+                self.high_level_probs.copy()
+            )
+
+            adjusted_probs[1] *= (
+                self.liver_priority
+            )
+
+            adjusted_probs[2] *= (
+                self.tumor_priority
+                *
+                self.tumor_boost
+            )
+
+            adjusted_probs /= np.sum(
+                adjusted_probs
+            )
+
+            selected_class = np.random.choice(
+                self.num_classes,
+                p=adjusted_probs
+            )
+
+        low_level_action = np.random.choice(
+            3,
+            p=self.low_level_probs[
+                selected_class
+            ]
+        )
+
+        return (
+            selected_class,
+            low_level_action
+        )
+
+    def update_weights(
+        self,
+        selected_class,
+        low_level_action,
+        reward,
+        metric,
+        liver_metric,
+        tumor_metric,
+        precision_liver,
+        epoch
+    ):
+
+        self.moving_avg_dice_liver.append(
+            float(liver_metric)
+        )
+
+        self.moving_avg_dice_tumor.append(
+            float(tumor_metric)
+        )
+
+        # ------------------------------------------------------------------
+        # Tumor boost
+        # ------------------------------------------------------------------
+
+        if (
+            len(self.moving_avg_dice_tumor)
+            >= self.window_size
+        ):
+
+            avg_tumor = np.mean(
+                self.moving_avg_dice_tumor[
+                    -self.window_size:
+                ]
+            )
+
+            if avg_tumor < 0.80:
+
+                self.tumor_boost = min(
+                    self.tumor_boost + 0.1,
+                    3.0
+                )
+
+            else:
+
+                self.tumor_boost = max(
+                    self.tumor_boost - 0.05,
+                    1.0
+                )
+
+        # ------------------------------------------------------------------
+        # Combined HLA monitoring metric
+        # ------------------------------------------------------------------
+
+        combined_metric = (
+            0.4 * liver_metric
+            +
+            0.4 * tumor_metric
+            +
+            0.2 * precision_liver
+        )
+
+        if combined_metric > self.best_metric:
+
+            self.best_metric = combined_metric
+
+            self.best_weights = (
+                self.weights.copy()
+            )
+
+            self.best_tumor_boost = (
+                self.tumor_boost
+            )
+
+        # ------------------------------------------------------------------
+        # Learning rates
+        # ------------------------------------------------------------------
+
+        alpha_high = (
+            self.alpha_high
+            *
+            np.exp(-epoch / 50.0)
+            +
+            0.01
+        )
+
+        beta_high = (
+            self.beta_high
+            *
+            np.exp(-epoch / 50.0)
+            +
+            0.005
+        )
+
+        alpha_low = (
+            self.alpha_low
+            *
+            np.exp(-epoch / 50.0)
+            +
+            0.008
+        )
+
+        beta_low = (
+            self.beta_low
+            *
+            np.exp(-epoch / 50.0)
+            +
+            0.004
+        )
+
+        # ------------------------------------------------------------------
+        # High-level update
+        # ------------------------------------------------------------------
+
+        if reward > 0:
+
+            self.high_level_probs[
+                selected_class
+            ] += (
+                alpha_high
+                *
+                (
+                    1
+                    -
+                    self.high_level_probs[
+                        selected_class
+                    ]
+                )
+            )
+
+            for i in range(
+                self.num_classes
+            ):
+
+                if i != selected_class:
+
+                    self.high_level_probs[i] *= (
+                        1 - alpha_high
+                    )
+
+        else:
+
+            selected_probability = (
+                self.high_level_probs[
+                    selected_class
+                ]
+            )
+
+            self.high_level_probs[
+                selected_class
+            ] = max(
+                0.01,
+                selected_probability
+                -
+                beta_high
+                *
+                selected_probability
+            )
+
+            for i in range(
+                self.num_classes
+            ):
+
+                if i != selected_class:
+
+                    self.high_level_probs[i] += (
+                        beta_high
+                        *
+                        selected_probability
+                        /
+                        (self.num_classes - 1)
+                    )
+
+        self.high_level_probs /= np.sum(
+            self.high_level_probs
+        )
+
+        # ------------------------------------------------------------------
+        # Low-level update
+        # ------------------------------------------------------------------
+
+        if reward > 0:
+
+            self.low_level_probs[
+                selected_class
+            ][
+                low_level_action
+            ] += (
+                alpha_low
+                *
+                (
+                    1
+                    -
+                    self.low_level_probs[
+                        selected_class
+                    ][
+                        low_level_action
+                    ]
+                )
+            )
+
+            for i in range(3):
+
+                if i != low_level_action:
+
+                    self.low_level_probs[
+                        selected_class
+                    ][i] *= (
+                        1 - alpha_low
+                    )
+
+        else:
+
+            current_probability = (
+                self.low_level_probs[
+                    selected_class
+                ][
+                    low_level_action
+                ]
+            )
+
+            self.low_level_probs[
+                selected_class
+            ][
+                low_level_action
+            ] = max(
+                0.01,
+                current_probability
+                -
+                beta_low
+                *
+                current_probability
+            )
+
+            for i in range(3):
+
+                if i != low_level_action:
+
+                    self.low_level_probs[
+                        selected_class
+                    ][i] += (
+                        beta_low
+                        *
+                        current_probability
+                        /
+                        2.0
+                    )
+
+        self.low_level_probs[
+            selected_class
+        ] /= np.sum(
+            self.low_level_probs[
+                selected_class
+            ]
+        )
+
+        # ------------------------------------------------------------------
+        # Update class weights
+        # ------------------------------------------------------------------
+
+        self.weights[
+            selected_class
+        ] += self.low_level_actions[
+            low_level_action
+        ]
+
+        if (
+            selected_class == 2
+            and
+            tumor_metric < 0.80
+        ):
+
+            self.weights[2] += (
+                0.5
+                *
+                self.tumor_boost
+            )
+
+        if (
+            selected_class == 1
+            and
+            liver_metric < 0.90
+        ):
+
+            self.weights[1] += 0.5
+
+        self.weights = np.clip(
+            self.weights,
+            1.0,
+            10.0
+        )
+
+        self.probabilities = (
+            self.weights /
+            np.sum(self.weights)
+        )
+
+        # ------------------------------------------------------------------
+        # Sync with TensorFlow loss
+        # ------------------------------------------------------------------
+
+        self.sync_tf_variables()
+
+        # ------------------------------------------------------------------
+        # Save history
+        # ------------------------------------------------------------------
+
+        self.history.append(
+            {
+                "epoch": int(epoch + 1),
+
+                "weights": (
+                    self.weights.tolist()
+                ),
+
+                "probabilities": (
+                    self.probabilities.tolist()
+                ),
+
+                "metric": float(metric),
+
+                "liver_metric": float(
+                    liver_metric
+                ),
+
+                "tumor_metric": float(
+                    tumor_metric
+                ),
+
+                "precision_liver": float(
+                    precision_liver
+                ),
+
+                "tumor_boost": float(
+                    self.tumor_boost
+                ),
+
+                "high_level_action": int(
+                    selected_class
+                ),
+
+                "low_level_action": int(
+                    low_level_action
+                ),
+
+                "high_level_probs": (
+                    self.high_level_probs.tolist()
+                ),
+
+                "low_level_probs": [
+                    p.tolist()
+                    for p in self.low_level_probs
+                ]
+            }
+        )
+
+    def get_weights(self):
+
+        return self.weights.copy()
+
+    def get_best_weights(self):
+
+        return self.best_weights.copy()
+
+    def save_history(self, filepath):
+
+        with open(
+            filepath,
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            json.dump(
+                self.history,
+                f,
+                indent=2
+            )
+
+
+# ==========================================================================================
+# 14. LOSS FUNCTIONS
+# ==========================================================================================
+
+def focal_loss(
+    y_true,
+    y_pred,
+    gamma=2.0,
+    alpha=0.25
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.int32
+    )
+
+    y_true_onehot = tf.one_hot(
+        y_true,
+        depth=NUM_CLASSES
+    )
+
+    y_pred = tf.clip_by_value(
+        y_pred,
+        1e-7,
+        1.0 - 1e-7
+    )
+
+    ce = -(
+        y_true_onehot
+        *
+        tf.math.log(y_pred)
+    )
+
+    weight = (
+        y_true_onehot
+        *
+        tf.pow(
+            1.0 - y_pred,
+            gamma
+        )
+    )
+
+    return tf.reduce_mean(
+        alpha
+        *
+        weight
+        *
+        ce
+    )
+
+
+def tversky_loss(
+    y_true,
+    y_pred,
+    alpha=0.6,
+    beta=0.4
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.int32
+    )
+
+    y_true_onehot = tf.one_hot(
+        y_true,
+        depth=NUM_CLASSES
+    )
+
+    y_pred = tf.clip_by_value(
+        y_pred,
+        1e-7,
+        1.0
+    )
+
+    # [B,H,W,C]
+    true_pos = tf.reduce_sum(
+        y_true_onehot
+        *
+        y_pred,
+        axis=[1, 2]
+    )
+
+    false_neg = tf.reduce_sum(
+        y_true_onehot
+        *
+        (
+            1.0 - y_pred
+        ),
+        axis=[1, 2]
+    )
+
+    false_pos = tf.reduce_sum(
+        (
+            1.0 - y_true_onehot
+        )
+        *
+        y_pred,
+        axis=[1, 2]
+    )
+
+    tversky = (
+        true_pos
+        /
+        (
+            true_pos
+            +
+            alpha * false_neg
+            +
+            beta * false_pos
+            +
+            1e-6
+        )
+    )
+
+    return 1.0 - tf.reduce_mean(
+        tversky
+    )
+
+
+def make_hla_loss(hla):
+
+    def loss(y_true, y_pred):
+
+        y_true_int = tf.cast(
+            y_true,
+            tf.int32
+        )
+
+        y_pred = tf.clip_by_value(
+            y_pred,
+            1e-7,
+            1.0 - 1e-7
+        )
+
+        # --------------------------------------------------------------
+        # Dynamic HLA weights
+        # --------------------------------------------------------------
+
+        current_weights = tf.clip_by_value(
+            hla.weights_var,
+            1.0,
+            8.0
+        )
+
+        dynamic_weights = tf.tensor_scatter_nd_update(
+            current_weights,
+            indices=tf.constant(
+                [[2]],
+                dtype=tf.int32
+            ),
+            updates=tf.reshape(
+                tf.clip_by_value(
+                    hla.weights_var[2]
+                    *
+                    hla.tumor_boost_var,
+                    1.0,
+                    8.0
+                ),
+                [1]
+            )
+        )
+
+        voxel_weights = tf.gather(
+            dynamic_weights,
+            y_true_int
+        )
+
+        # --------------------------------------------------------------
+        # Weighted CE
+        # --------------------------------------------------------------
+
+        ce = tf.keras.losses.sparse_categorical_crossentropy(
+            y_true_int,
+            y_pred
+        )
+
+        weighted_ce = tf.reduce_mean(
+            ce
+            *
+            voxel_weights
+        )
+
+        # --------------------------------------------------------------
+        # Focal
+        # --------------------------------------------------------------
+
+        focal = focal_loss(
+            y_true_int,
+            y_pred
+        )
+
+        # --------------------------------------------------------------
+        # Tversky
+        # --------------------------------------------------------------
+
+        tversky = tversky_loss(
+            y_true_int,
+            y_pred,
+            alpha=0.6,
+            beta=0.4
+        )
+
+        # Same basic weighting as the original HLA implementation
+        return (
+            0.25 * weighted_ce
+            +
+            0.25 * focal
+            +
+            0.50 * tversky
+        )
+
+    return loss
+
+
+# ==========================================================================================
+# 15. METRIC FUNCTIONS FOR KERAS
+# ==========================================================================================
+
+def keras_class_dice(
+    y_true,
+    y_pred,
+    class_id
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.int32
+    )
+
+    pred_labels = tf.argmax(
+        y_pred,
+        axis=-1,
+        output_type=tf.int32
+    )
+
+    true_mask = tf.cast(
+        tf.equal(
+            y_true,
+            class_id
+        ),
+        tf.float32
+    )
+
+    pred_mask = tf.cast(
+        tf.equal(
+            pred_labels,
+            class_id
+        ),
+        tf.float32
+    )
+
+    intersection = tf.reduce_sum(
+        true_mask * pred_mask,
+        axis=[1, 2]
+    )
+
+    denominator = (
+        tf.reduce_sum(
+            true_mask,
+            axis=[1, 2]
+        )
+        +
+        tf.reduce_sum(
+            pred_mask,
+            axis=[1, 2]
+        )
+    )
+
+    dice = (
+        2.0 * intersection + 1e-6
+    ) / (
+        denominator + 1e-6
+    )
+
+    return tf.reduce_mean(
+        dice
+    )
+
+
+def keras_liver_dice(
+    y_true,
+    y_pred
+):
+
+    return keras_class_dice(
+        y_true,
+        y_pred,
+        1
+    )
+
+
+def keras_tumor_dice(
+    y_true,
+    y_pred
+):
+
+    return keras_class_dice(
+        y_true,
+        y_pred,
+        2
+    )
+
+
+def keras_liver_precision(
+    y_true,
+    y_pred
+):
+
+    y_true = tf.cast(
+        y_true,
+        tf.int32
+    )
+
+    pred_labels = tf.argmax(
+        y_pred,
+        axis=-1,
+        output_type=tf.int32
+    )
+
+    true_mask = tf.cast(
+        tf.equal(
+            y_true,
+            1
+        ),
+        tf.float32
+    )
+
+    pred_mask = tf.cast(
+        tf.equal(
+            pred_labels,
+            1
+        ),
+        tf.float32
+    )
+
+    tp = tf.reduce_sum(
+        true_mask * pred_mask,
+        axis=[1, 2]
+    )
+
+    pp = tf.reduce_sum(
+        pred_mask,
+        axis=[1, 2]
+    )
+
+    precision = (
+        tp + 1e-6
+    ) / (
+        pp + 1e-6
+    )
+
+    return tf.reduce_mean(
+        precision
+    )
+
+
+# ==========================================================================================
+# 16. RESUNET RESIDUAL BLOCK
+# ==========================================================================================
+
+def residual_block(
+    x,
+    filters,
+    kernel_size=3,
+    strides=1,
+    name=None
+):
+
+    shortcut = x
+
+    x = layers.Conv2D(
+        filters,
+        kernel_size,
+        strides=strides,
+        padding="same",
+        name=None if name is None else f"{name}_conv1"
+    )(x)
+
+    x = layers.BatchNormalization(
+        name=None if name is None else f"{name}_bn1"
+    )(x)
+
+    x = layers.Activation(
+        "relu",
+        name=None if name is None else f"{name}_relu1"
+    )(x)
+
+    x = layers.Conv2D(
+        filters,
+        kernel_size,
+        padding="same",
+        name=None if name is None else f"{name}_conv2"
+    )(x)
+
+    x = layers.BatchNormalization(
+        name=None if name is None else f"{name}_bn2"
+    )(x)
+
+    if (
+        strides != 1
+        or
+        shortcut.shape[-1] != filters
+    ):
+
+        shortcut = layers.Conv2D(
+            filters,
+            1,
+            strides=strides,
+            padding="same",
+            name=None if name is None else f"{name}_shortcut_conv"
+        )(shortcut)
+
+        shortcut = layers.BatchNormalization(
+            name=None if name is None else f"{name}_shortcut_bn"
+        )(shortcut)
+
+    x = layers.Add(
+        name=None if name is None else f"{name}_add"
+    )(
+        [
+            shortcut,
+            x
+        ]
+    )
+
+    x = layers.Activation(
+        "relu",
+        name=None if name is None else f"{name}_relu2"
+    )(x)
+
+    return x
+
+
+# ==========================================================================================
+# 17. SWIN-STYLE WINDOW ATTENTION
+# ==========================================================================================
+
+class WindowPartition(layers.Layer):
+
+    def __init__(
+        self,
+        window_size,
+        **kwargs
+    ):
+
+        super().__init__(**kwargs)
+
+        self.window_size = int(
+            window_size
+        )
+
+    def call(self, x):
+
+        shape = tf.shape(x)
+
+        B = shape[0]
+        H = shape[1]
+        W = shape[2]
+        C = shape[3]
+
+        ws = tf.minimum(
+            tf.cast(
+                self.window_size,
+                tf.int32
+            ),
+            tf.minimum(
+                H,
+                W
+            )
+        )
+
+        num_h = H // ws
+        num_w = W // ws
+
+        x = tf.reshape(
+            x,
+            [
+                B,
+                num_h,
+                ws,
+                num_w,
+                ws,
+                C
+            ]
+        )
+
+        x = tf.transpose(
+            x,
+            [
+                0,
+                1,
+                3,
+                2,
+                4,
+                5
+            ]
+        )
+
+        windows = tf.reshape(
+            x,
+            [
+                -1,
+                ws,
+                ws,
+                C
+            ]
+        )
+
+        return windows
+
+    def get_config(self):
+
+        config = super().get_config()
+
+        config.update(
+            {
+                "window_size":
+                self.window_size
+            }
+        )
+
+        return config
+
+
+class WindowReverse(layers.Layer):
+
+    def __init__(
+        self,
+        window_size,
+        H,
+        W,
+        **kwargs
+    ):
+
+        super().__init__(**kwargs)
+
+        self.window_size = int(
+            window_size
+        )
+
+        self.H = int(H)
+        self.W = int(W)
+
+    def call(self, windows):
+
+        shape = tf.shape(windows)
+
+        C = shape[-1]
+
+        ws = min(
+            self.window_size,
+            self.H,
+            self.W
+        )
+
+        num_h = self.H // ws
+        num_w = self.W // ws
+
+        x = tf.reshape(
+            windows,
+            [
+                -1,
+                num_h,
+                num_w,
+                ws,
+                ws,
+                C
+            ]
+        )
+
+        x = tf.transpose(
+            x,
+            [
+                0,
+                1,
+                3,
+                2,
+                4,
+                5
+            ]
+        )
+
+        x = tf.reshape(
+            x,
+            [
+                -1,
+                self.H,
+                self.W,
+                C
+            ]
+        )
+
+        return x
+
+    def get_config(self):
+
+        config = super().get_config()
+
+        config.update(
+            {
+                "window_size":
+                self.window_size,
+                "H":
+                self.H,
+                "W":
+                self.W
+            }
+        )
+
+        return config
+
+
+class WindowAttention(layers.Layer):
+
+    def __init__(
+        self,
+        dim,
+        window_size,
+        num_heads,
+        qkv_bias=True,
+        **kwargs
+    ):
+
+        super().__init__(**kwargs)
+
+        self.dim = int(dim)
+        self.window_size = int(window_size)
+        self.num_heads = int(num_heads)
+
+        if self.dim % self.num_heads != 0:
+
+            raise ValueError(
+                f"dim={dim} must be divisible by "
+                f"num_heads={num_heads}"
+            )
+
+        self.head_dim = (
+            self.dim //
+            self.num_heads
+        )
+
+        self.scale = (
+            self.head_dim ** -0.5
+        )
+
+        self.qkv = layers.Dense(
+            self.dim * 3,
+            use_bias=qkv_bias
+        )
+
+        self.proj = layers.Dense(
+            self.dim
+        )
+
+    def call(self, x):
+
+        shape = tf.shape(x)
+
+        B = shape[0]
+        H = shape[1]
+        W = shape[2]
+
+        qkv = self.qkv(x)
+
+        qkv = tf.reshape(
+            qkv,
+            [
+                B,
+                H * W,
+                3,
+                self.num_heads,
+                self.head_dim
+            ]
+        )
+
+        qkv = tf.transpose(
+            qkv,
+            [
+                2,
+                0,
+                3,
+                1,
+                4
+            ]
+        )
+
+        q = qkv[0]
+        k = qkv[1]
+        v = qkv[2]
+
+        q = q * self.scale
+
+        k = tf.transpose(
+            k,
+            [
+                0,
+                1,
+                3,
+                2
+            ]
+        )
+
+        attention = tf.matmul(
+            q,
+            k
+        )
+
+        attention = tf.nn.softmax(
+            attention,
+            axis=-1
+        )
+
+        out = tf.matmul(
+            attention,
+            v
+        )
+
+        out = tf.transpose(
+            out,
+            [
+                0,
+                2,
+                1,
+                3
+            ]
+        )
+
+        out = tf.reshape(
+            out,
+            [
+                B,
+                H,
+                W,
+                self.dim
+            ]
+        )
+
+        return self.proj(out)
+
+    def get_config(self):
+
+        config = super().get_config()
+
+        config.update(
+            {
+                "dim": self.dim,
+                "window_size":
+                self.window_size,
+                "num_heads":
+                self.num_heads
+            }
+        )
+
+        return config
+
+
+# ==========================================================================================
+# 18. SWIN BLOCK
+# ==========================================================================================
+
+class SwinTransformerBlock(layers.Layer):
+
+    def __init__(
+        self,
+        dim,
+        input_resolution,
+        num_heads,
+        window_size=8,
+        shift_size=0,
+        **kwargs
+    ):
+
+        super().__init__(**kwargs)
+
+        self.dim = int(dim)
+
+        self.input_resolution = (
+            int(input_resolution[0]),
+            int(input_resolution[1])
+        )
+
+        self.num_heads = int(
+            num_heads
+        )
+
+        self.window_size = int(
+            window_size
+        )
+
+        self.shift_size = int(
+            shift_size
+        )
+
+        self.norm1 = layers.LayerNormalization(
+            epsilon=1e-5
+        )
+
+        self.attn = WindowAttention(
+            dim=self.dim,
+            window_size=self.window_size,
+            num_heads=self.num_heads
+        )
+
+        self.norm2 = layers.LayerNormalization(
+            epsilon=1e-5
+        )
+
+        self.mlp = tf.keras.Sequential(
+            [
+                layers.Dense(
+                    self.dim * 4
+                ),
+
+                layers.Activation(
+                    "gelu"
+                ),
+
+                layers.Dense(
+                    self.dim
+                )
+            ]
+        )
+
+        self.window_partition = (
+            WindowPartition(
+                window_size=self.window_size
+            )
+        )
+
+        self.window_reverse = (
+            WindowReverse(
+                window_size=self.window_size,
+                H=self.input_resolution[0],
+                W=self.input_resolution[1]
+            )
+        )
+
+    def call(self, x):
+
+        H, W = self.input_resolution
+
+        shortcut = x
+
+        x_norm = self.norm1(x)
+
+        effective_window = min(
+            self.window_size,
+            H,
+            W
+        )
+
+        # --------------------------------------------------------------
+        # Global attention if the current stage is smaller than window
+        # --------------------------------------------------------------
+
+        if (
+            effective_window == H
+            and
+            effective_window == W
+        ):
+
+            attention_output = self.attn(
+                x_norm
+            )
+
+        else:
+
+            if self.shift_size > 0:
+
+                shifted = tf.roll(
+                    x_norm,
+                    shift=[
+                        -self.shift_size,
+                        -self.shift_size
+                    ],
+                    axis=[
+                        1,
+                        2
+                    ]
+                )
+
+            else:
+
+                shifted = x_norm
+
+            windows = self.window_partition(
+                shifted
+            )
+
+            attention_windows = self.attn(
+                windows
+            )
+
+            shifted = self.window_reverse(
+                attention_windows
+            )
+
+            if self.shift_size > 0:
+
+                attention_output = tf.roll(
+                    shifted,
+                    shift=[
+                        self.shift_size,
+                        self.shift_size
+                    ],
+                    axis=[
+                        1,
+                        2
+                    ]
+                )
+
+            else:
+
+                attention_output = shifted
+
+        x = (
+            shortcut
+            +
+            attention_output
+        )
+
+        x = (
+            x
+            +
+            self.mlp(
+                self.norm2(x)
+            )
+        )
+
+        return x
+
+    def get_config(self):
+
+        config = super().get_config()
+
+        config.update(
+            {
+                "dim":
+                self.dim,
+
+                "input_resolution":
+                self.input_resolution,
+
+                "num_heads":
+                self.num_heads,
+
+                "window_size":
+                self.window_size,
+
+                "shift_size":
+                self.shift_size
+            }
+        )
+
+        return config
+
+
+# ==========================================================================================
+# 19. SWIN-STYLE ENCODER
+# ==========================================================================================
+
+def swin_style_encoder(
+    inputs,
+    patch_stride,
+    window_size
+):
+
+    embed_dim = 96
+
+    num_heads = [
+        3,
+        6,
+        12,
+        24
+    ]
+
+    depths = [
+        2,
+        2,
+        6,
+        2
+    ]
+
+    features = []
+
+    # ------------------------------------------------------------------
+    # Patch/token embedding
+    # ------------------------------------------------------------------
+
+    x = layers.Conv2D(
+        embed_dim,
+        kernel_size=patch_stride,
+        strides=patch_stride,
+        padding="same",
+        name="patch_embedding"
+    )(inputs)
+
+    x = layers.LayerNormalization(
+        epsilon=1e-5
+    )(x)
+
+    H = IMAGE_SIZE // patch_stride
+    W = IMAGE_SIZE // patch_stride
+
+    x = layers.Reshape(
+        (
+            H,
+            W,
+            embed_dim
+        )
+    )(x)
+
+    # ------------------------------------------------------------------
+    # Four stages
+    # ------------------------------------------------------------------
+
+    for stage in range(4):
+
+        dim = embed_dim
+
+        for block_idx in range(
+            depths[stage]
+        ):
+
+            shift = (
+                window_size // 2
+                if block_idx % 2 == 1
+                else 0
+            )
+
+            # If stage is smaller than window, no meaningful shift
+            if min(H, W) <= window_size:
+                shift = 0
+
+            x = SwinTransformerBlock(
+                dim=dim,
+                input_resolution=(
+                    H,
+                    W
+                ),
+                num_heads=num_heads[stage],
+                window_size=window_size,
+                shift_size=shift,
+                name=(
+                    f"swin_stage{stage+1}"
+                    f"_block{block_idx+1}"
+                )
+            )(x)
+
+        features.append(x)
+
+        # ------------------------------------------------------------------
+        # Downsampling between stages
+        # ------------------------------------------------------------------
+
+        if stage < 3:
+
+            next_dim = embed_dim * 2
+
+            x = layers.Conv2D(
+                next_dim,
+                kernel_size=2,
+                strides=2,
+                padding="same",
+                name=(
+                    f"patch_merging_stage"
+                    f"{stage+1}"
+                )
+            )(x)
+
+            x = layers.LayerNormalization(
+                epsilon=1e-5
+            )(x)
+
+            H //= 2
+            W //= 2
+
+            embed_dim = next_dim
+
+            x = layers.Reshape(
+                (
+                    H,
+                    W,
+                    embed_dim
+                )
+            )(x)
+
+    return features
+
+
+# ==========================================================================================
+# 20. COMPLETE RESUNET + SWIN MODEL
+# ==========================================================================================
+
+def build_resunet_swin(
+    patch_stride,
+    window_size
+):
+
+    inputs = layers.Input(
+        shape=(
+            IMAGE_SIZE,
+            IMAGE_SIZE,
+            1
+        ),
+        name="input_image"
+    )
+
+    features = swin_style_encoder(
+        inputs,
+        patch_stride=patch_stride,
+        window_size=window_size
+    )
+
+    c1, c2, c3, c4 = features
+
+    # ------------------------------------------------------------------
+    # Bridge
+    # ------------------------------------------------------------------
+
+    bridge = residual_block(
+        c4,
+        1024,
+        name="bridge"
+    )
+
+    # ------------------------------------------------------------------
+    # Decoder 4
+    # ------------------------------------------------------------------
+
+    u4 = layers.Conv2DTranspose(
+        512,
+        2,
+        strides=2,
+        padding="same",
+        name="up4"
+    )(bridge)
+
+    c3_proj = layers.Conv2D(
+        512,
+        1,
+        padding="same",
+        name="skip3_projection"
+    )(c3)
+
+    u4 = layers.Concatenate(
+        name="concat4"
+    )(
+        [
+            u4,
+            c3_proj
+        ]
+    )
+
+    d4 = residual_block(
+        u4,
+        512,
+        name="decoder4"
+    )
+
+    # ------------------------------------------------------------------
+    # Decoder 3
+    # ------------------------------------------------------------------
+
+    u3 = layers.Conv2DTranspose(
+        256,
+        2,
+        strides=2,
+        padding="same",
+        name="up3"
+    )(d4)
+
+    c2_proj = layers.Conv2D(
+        256,
+        1,
+        padding="same",
+        name="skip2_projection"
+    )(c2)
+
+    u3 = layers.Concatenate(
+        name="concat3"
+    )(
+        [
+            u3,
+            c2_proj
+        ]
+    )
+
+    d3 = residual_block(
+        u3,
+        256,
+        name="decoder3"
+    )
+
+    # ------------------------------------------------------------------
+    # Decoder 2
+    # ------------------------------------------------------------------
+
+    u2 = layers.Conv2DTranspose(
+        128,
+        2,
+        strides=2,
+        padding="same",
+        name="up2"
+    )(d3)
+
+    c1_proj = layers.Conv2D(
+        128,
+        1,
+        padding="same",
+        name="skip1_projection"
+    )(c1)
+
+    u2 = layers.Concatenate(
+        name="concat2"
+    )(
+        [
+            u2,
+            c1_proj
+        ]
+    )
+
+    d2 = residual_block(
+        u2,
+        128,
+        name="decoder2"
+    )
+
+    # ------------------------------------------------------------------
+    # Final upsampling to 128x128
+    #
+    # For stride=4:
+    #   c1 = 32x32 -> 128x128
+    #
+    # For stride=2:
+    #   c1 = 64x64 -> 128x128
+    #
+    # Therefore use dynamic scale.
+    # ------------------------------------------------------------------
+
+    final_scale = patch_stride
+
+    u1 = layers.Conv2DTranspose(
+        64,
+        kernel_size=final_scale,
+        strides=final_scale,
+        padding="same",
+        name="up1"
+    )(d2)
+
+    input_features = layers.Conv2D(
+        64,
+        1,
+        padding="same",
+        name="input_skip"
+    )(inputs)
+
+    u1 = layers.Concatenate(
+        name="concat_input"
+    )(
+        [
+            u1,
+            input_features
+        ]
+    )
+
+    d1 = residual_block(
+        u1,
+        64,
+        name="decoder1"
+    )
+
+    outputs = layers.Conv2D(
+        NUM_CLASSES,
+        1,
+        activation="softmax",
+        name="segmentation_output"
+    )(d1)
+
+    return Model(
+        inputs,
+        outputs,
+        name=(
+            "Tuned_ResUNet_Swin_HLA"
+            f"_S{patch_stride}"
+            f"_W{window_size}"
+        )
+    )
+
+
+# ==========================================================================================
+# 21. HLA CALLBACK
+# ==========================================================================================
+
+class HLAUpdateCallback(callbacks.Callback):
+
+    def __init__(self, hla):
+
+        super().__init__()
+
+        self.hla = hla
+
+    def on_epoch_begin(
+        self,
+        epoch,
+        logs=None
+    ):
+
+        self.epoch_start = time.time()
+
+    def on_epoch_end(
+        self,
+        epoch,
+        logs=None
+    ):
+
+        logs = logs or {}
+
+        val_liver = float(
+            logs.get(
+                "val_liver_dice",
+                0.0
+            )
+        )
+
+        val_tumor = float(
+            logs.get(
+                "val_tumor_dice",
+                0.0
+            )
+        )
+
+        val_precision_liver = float(
+            logs.get(
+                "val_liver_precision",
+                0.0
+            )
+        )
+
+        val_mean_dice = (
+            val_liver
+            +
+            val_tumor
+        ) / 2.0
+
+        combined_metric = (
+            0.4 * val_liver
+            +
+            0.4 * val_tumor
+            +
+            0.2 * val_precision_liver
+        )
+
+        if (
+            len(
+                self.hla.moving_avg_dice_liver
+            ) >= self.hla.window_size
+        ):
+
+            moving_liver = np.mean(
+                self.hla.moving_avg_dice_liver[
+                    -self.hla.window_size:
+                ]
+            )
+
+        else:
+
+            moving_liver = 0.90
+
+        if (
+            len(
+                self.hla.moving_avg_dice_tumor
+            ) >= self.hla.window_size
+        ):
+
+            moving_tumor = np.mean(
+                self.hla.moving_avg_dice_tumor[
+                    -self.hla.window_size:
+                ]
+            )
+
+        else:
+
+            moving_tumor = 0.80
+
+        improvement = (
+            combined_metric
+            -
+            self.hla.best_metric
+        )
+
+        if (
+            val_liver >= moving_liver * 0.95
+            and
+            val_tumor >= moving_tumor * 0.95
+        ):
+
+            reward = np.clip(
+                improvement * 10.0,
+                -1.0,
+                1.0
+            )
+
+        else:
+
+            reward = -0.5
+
+        selected_class, low_action = (
+            self.hla.select_action()
+        )
+
+        self.hla.update_weights(
+            selected_class=selected_class,
+            low_level_action=low_action,
+            reward=reward,
+            metric=val_mean_dice,
+            liver_metric=val_liver,
+            tumor_metric=val_tumor,
+            precision_liver=val_precision_liver,
+            epoch=epoch
+        )
+
+        weights = (
+            self.hla.get_weights()
+        )
+
+        print(
+            f"\nHLA | "
+            f"Liver Dice={val_liver:.4f} | "
+            f"Tumor Dice={val_tumor:.4f} | "
+            f"LR={float(tf.keras.backend.get_value(self.model.optimizer.learning_rate)):.2e}"
+        )
+
+        print(
+            f"HLA weights: "
+            f"bg={weights[0]:.3f}, "
+            f"liver={weights[1]:.3f}, "
+            f"tumor={weights[2]:.3f}, "
+            f"tumor_boost={self.hla.tumor_boost:.3f}"
+        )
+
+        print(
+            f"Epoch time: "
+            f"{time.time() - self.epoch_start:.2f} sec"
+        )
+
+
+# ==========================================================================================
+# 22. TRAIN ONE CONFIGURATION
+# ==========================================================================================
+
+def train_one_configuration(
+    config,
+    train_pairs,
+    val_pairs
+):
+
+    config_name = config["name"]
+
+    config_dir = os.path.join(
+        OUTPUT_PATH,
+        config_name
+    )
+
+    os.makedirs(
+        config_dir,
+        exist_ok=True
+    )
+
+    best_weights_path = os.path.join(
+        config_dir,
+        "best.weights.h5"
+    )
+
+    best_model_path = os.path.join(
+        config_dir,
+        "best_model.keras"
+    )
+
+    history_path = os.path.join(
+        config_dir,
+        "history.json"
+    )
+
+    hla_history_path = os.path.join(
+        config_dir,
+        "hla_history.json"
+    )
+
+    evaluation_path = os.path.join(
+        config_dir,
+        "evaluation_full_200.json"
+    )
+
+    config_json_path = os.path.join(
+        config_dir,
+        "config.json"
+    )
+
+    # ------------------------------------------------------------------
+    # Save configuration
+    # ------------------------------------------------------------------
+
+    with open(
+        config_json_path,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            config,
+            f,
+            indent=2
+        )
+
+    print()
+    print("=" * 100)
+    print(f"TRAINING {config_name}")
+    print("=" * 100)
+
+    print(
+        "Patch stride :",
+        config["patch_stride"]
+    )
+
+    print(
+        "Window size  :",
+        config["window_size"]
+    )
+
+    print(
+        "Learning rate:",
+        config["learning_rate"]
+    )
+
+    # ------------------------------------------------------------------
+    # Clear old TensorFlow graph
+    # ------------------------------------------------------------------
+
+    tf.keras.backend.clear_session()
+    gc.collect()
+
+    # ------------------------------------------------------------------
+    # HLA
+    # ------------------------------------------------------------------
+
+    hla = HierarchicalLearningAutomata(
+        num_classes=NUM_CLASSES,
+        initial_weights=[
+            7.0,
+            7.0,
+            7.0
+        ],
+        alpha_high=0.2,
+        beta_high=0.1,
+        alpha_low=0.15,
+        beta_low=0.08,
+        liver_priority=1.5,
+        tumor_priority=4.0
+    )
+
+    hla.sync_tf_variables()
+
+    # ------------------------------------------------------------------
+    # Model
+    # ------------------------------------------------------------------
+
+    model = build_resunet_swin(
+        patch_stride=config["patch_stride"],
+        window_size=config["window_size"]
+    )
+
+    # Print parameters once per configuration
+    print()
+    print(
+        "Trainable parameters:",
+        model.count_params()
+    )
+
+    # ------------------------------------------------------------------
+    # Optimizer
+    # ------------------------------------------------------------------
+
+    optimizer = tf.keras.optimizers.Adam(
+        learning_rate=config["learning_rate"]
+    )
+
+    # ------------------------------------------------------------------
+    # Compile
+    # ------------------------------------------------------------------
+
+    model.compile(
+        optimizer=optimizer,
+
+        loss=make_hla_loss(hla),
+
+        metrics=[
+            keras_liver_dice,
+            keras_tumor_dice,
+            keras_liver_precision
+        ]
+    )
+
+    # ------------------------------------------------------------------
+    # Generators
+    # ------------------------------------------------------------------
+
+    train_gen = training_generator(
+        train_pairs,
+        BATCH_SIZE
+    )
+
+    val_gen = validation_generator(
+        val_pairs,
+        BATCH_SIZE
+    )
+
+    train_steps = int(
+        np.ceil(
+            len(train_pairs)
+            /
+            BATCH_SIZE
+        )
+    )
+
+    val_steps = int(
+        np.ceil(
+            len(val_pairs)
+            /
+            BATCH_SIZE
+        )
+    )
+
+    print()
+    print("Train steps per epoch:", train_steps)
+    print("Validation steps      :", val_steps)
+
+    # ------------------------------------------------------------------
+    # Callbacks
+    # ------------------------------------------------------------------
+
+    checkpoint = callbacks.ModelCheckpoint(
+        filepath=best_weights_path,
+        monitor="val_tumor_dice",
+        mode="max",
+        save_best_only=True,
+        save_weights_only=True,
+        verbose=1
+    )
+
+    reduce_lr = callbacks.ReduceLROnPlateau(
+        monitor="val_tumor_dice",
+        mode="max",
+        factor=0.5,
+        patience=6,
+        min_lr=1e-6,
+        verbose=1
+    )
+
+    early_stopping = callbacks.EarlyStopping(
+        monitor="val_tumor_dice",
+        mode="max",
+        patience=15,
+        min_delta=0.001,
+        restore_best_weights=False,
+        verbose=1
+    )
+
+    hla_callback = HLAUpdateCallback(
+        hla
+    )
+
+    # ------------------------------------------------------------------
+    # Training
+    # ------------------------------------------------------------------
+
+    start_time = time.time()
+
+    history = model.fit(
+        train_gen,
+
+        steps_per_epoch=train_steps,
+
+        validation_data=val_gen,
+
+        validation_steps=val_steps,
+
+        epochs=MAX_EPOCHS,
+
+        callbacks=[
+            checkpoint,
+            reduce_lr,
+            early_stopping,
+            hla_callback
+        ],
+
+        verbose=1
+    )
+
+    training_minutes = (
+        time.time() - start_time
+    ) / 60.0
+
+    print()
+    print(
+        f"{config_name} training time: "
+        f"{training_minutes:.2f} minutes"
+    )
+
+    # ------------------------------------------------------------------
+    # Save history
+    # ------------------------------------------------------------------
+
+    with open(
+        history_path,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            {
+                key: [
+                    float(v)
+                    for v in values
+                ]
+                for key, values
+                in history.history.items()
+            },
+            f,
+            indent=2
+        )
+
+    hla.save_history(
+        hla_history_path
+    )
+
+    # ------------------------------------------------------------------
+    # Make sure best checkpoint exists
+    # ------------------------------------------------------------------
+
+    if not os.path.exists(
+        best_weights_path
+    ):
+
+        print(
+            "WARNING: best checkpoint was not found. "
+            "Saving current weights instead."
+        )
+
+        model.save_weights(
+            best_weights_path
+        )
+
+    # ------------------------------------------------------------------
+    # Load BEST epoch weights
+    # ------------------------------------------------------------------
+
+    model.load_weights(
+        best_weights_path
+    )
+
+    print()
+    print(
+        "✓ Best epoch weights loaded:"
+    )
+
+    print(
+        best_weights_path
+    )
+
+    # ------------------------------------------------------------------
+    # Save complete best model
+    # ------------------------------------------------------------------
+
+    model.save(
+        best_model_path
+    )
+
+    # ======================================================================================
+    # FULL 200-SLICE VALIDATION
+    # ======================================================================================
+
+    print()
+    print("=" * 100)
+    print(
+        f"FULL VALIDATION EVALUATION — {config_name}"
+    )
+    print("=" * 100)
+
+    eval_start = time.time()
+
+    (
+        val_images,
+        val_true,
+        val_probs
+    ) = predict_full_validation(
+        model,
+        val_pairs
+    )
+
+    val_pred = np.argmax(
+        val_probs,
+        axis=-1
+    ).astype(
+        np.uint8
+    )
+
+    # ------------------------------------------------------------------
+    # Primary raw prediction evaluation
+    # ------------------------------------------------------------------
+
+    full_metrics = (
+        calculate_full_validation_metrics(
+            val_true,
+            val_pred
+        )
+    )
+
+    full_metrics[
+        "training_minutes"
+    ] = float(
+        training_minutes
+    )
+
+    full_metrics[
+        "evaluation_minutes"
+    ] = float(
+        (
+            time.time()
+            -
+            eval_start
+        ) / 60.0
+    )
+
+    full_metrics[
+        "best_epoch_val_tumor_dice"
+    ] = float(
+        np.max(
+            history.history.get(
+                "val_tumor_dice",
+                [0.0]
+            )
+        )
+    )
+
+    full_metrics[
+        "best_epoch"
+    ] = int(
+        np.argmax(
+            history.history.get(
+                "val_tumor_dice",
+                [0.0]
+            )
+        )
+        + 1
+    )
+
+    full_metrics[
+        "hla_final_weights"
+    ] = [
+        float(x)
+        for x in hla.get_weights()
+    ]
+
+    full_metrics[
+        "hla_final_tumor_boost"
+    ] = float(
+        hla.tumor_boost
+    )
+
+    # ------------------------------------------------------------------
+    # Save evaluation
+    # ------------------------------------------------------------------
+
+    with open(
+        evaluation_path,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            full_metrics,
+            f,
+            indent=2
+        )
+
+    # ------------------------------------------------------------------
+    # Print final metrics
+    # ------------------------------------------------------------------
+
+    print()
+    print(
+        f"Validation slices: "
+        f"{full_metrics['num_validation_slices']}"
+    )
+
+    print(
+        f"Tumor-positive slices: "
+        f"{full_metrics['num_tumor_positive_slices']}"
+    )
+
+    print()
+    print(
+        f"Liver Dice      : "
+        f"{full_metrics['liver_dice']:.4f}"
+    )
+
+    print(
+        f"Liver IoU       : "
+        f"{full_metrics['liver_iou']:.4f}"
+    )
+
+    print(
+        f"Liver Precision : "
+        f"{full_metrics['liver_precision']:.4f}"
+    )
+
+    print(
+        f"Liver Recall    : "
+        f"{full_metrics['liver_recall']:.4f}"
+    )
+
+    print()
+    print(
+        f"Tumor Dice      : "
+        f"{full_metrics['tumor_dice']:.4f}"
+    )
+
+    print(
+        f"Tumor IoU       : "
+        f"{full_metrics['tumor_iou']:.4f}"
+    )
+
+    print(
+        f"Tumor Precision : "
+        f"{full_metrics['tumor_precision']:.4f}"
+    )
+
+    print(
+        f"Tumor Recall    : "
+        f"{full_metrics['tumor_recall']:.4f}"
+    )
+
+    print()
+    print(
+        f"Mean Dice       : "
+        f"{full_metrics['mean_dice']:.4f}"
+    )
+
+    print(
+        f"Best epoch      : "
+        f"{full_metrics['best_epoch']}"
+    )
+
+    print(
+        f"Best epoch val tumor Dice: "
+        f"{full_metrics['best_epoch_val_tumor_dice']:.4f}"
+    )
+
+    print()
+    print(
+        f"✓ Full evaluation saved to:\n"
+        f"{evaluation_path}"
+    )
+
+    return {
+        "config": config,
+        "metrics": full_metrics,
+        "config_dir": config_dir,
+        "best_weights_path": best_weights_path,
+        "best_model_path": best_model_path,
+        "history_path": history_path,
+        "hla_history_path": hla_history_path
+    }
+
+
+# ==========================================================================================
+# 23. RUN ALL CONFIGURATIONS
+# ==========================================================================================
+
+all_results = []
+
+experiment_start = time.time()
+
+for config_index, config in enumerate(
+    CONFIGS,
+    1
+):
+
+    print()
+    print("#" * 100)
+    print(
+        f"CONFIGURATION {config_index}/{len(CONFIGS)}"
+    )
+    print(
+        config["name"]
+    )
+    print("#" * 100)
+
+    try:
+
+        result = train_one_configuration(
+            config,
+            train_pairs,
+            val_pairs
+        )
+
+        all_results.append(
+            result
+        )
+
+    except Exception as e:
+
+        print()
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        )
+
+        print(
+            f"ERROR in {config['name']}:"
+        )
+
+        print(
+            repr(e)
+        )
+
+        print(
+            "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        )
+
+        # Save failure information
+        failed_dir = os.path.join(
+            OUTPUT_PATH,
+            config["name"]
+        )
+
+        os.makedirs(
+            failed_dir,
+            exist_ok=True
+        )
+
+        with open(
+            os.path.join(
+                failed_dir,
+                "FAILED.txt"
+            ),
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            f.write(
+                repr(e)
+            )
+
+        # Continue to next configuration
+        continue
+
+    finally:
+
+        tf.keras.backend.clear_session()
+
+        gc.collect()
+
+
+# ==========================================================================================
+# 24. CREATE SUMMARY
+# ==========================================================================================
+
+total_experiment_minutes = (
+    time.time()
+    -
+    experiment_start
+) / 60.0
+
+print()
+print("=" * 100)
+print("FINAL CONFIGURATION SUMMARY")
+print("=" * 100)
+
+summary_rows = []
+
+for result in all_results:
+
+    cfg = result["config"]
+    m = result["metrics"]
+
+    row = {
+        "configuration":
+            cfg["name"],
+
+        "patch_stride":
+            cfg["patch_stride"],
+
+        "window_size":
+            cfg["window_size"],
+
+        "learning_rate":
+            cfg["learning_rate"],
+
+        "validation_slices":
+            m["num_validation_slices"],
+
+        "tumor_positive_slices":
+            m["num_tumor_positive_slices"],
+
+        "liver_dice":
+            m["liver_dice"],
+
+        "liver_iou":
+            m["liver_iou"],
+
+        "liver_precision":
+            m["liver_precision"],
+
+        "liver_recall":
+            m["liver_recall"],
+
+        "tumor_dice":
+            m["tumor_dice"],
+
+        "tumor_iou":
+            m["tumor_iou"],
+
+        "tumor_precision":
+            m["tumor_precision"],
+
+        "tumor_recall":
+            m["tumor_recall"],
+
+        "mean_dice":
+            m["mean_dice"],
+
+        "best_epoch":
+            m["best_epoch"],
+
+        "training_minutes":
+            m["training_minutes"],
+
+        "best_epoch_val_tumor_dice":
+            m["best_epoch_val_tumor_dice"]
+    }
+
+    summary_rows.append(
+        row
+    )
+
+# ------------------------------------------------------------------------------------------
+# Sort ONLY for reporting/selection by full-validation tumor Dice.
+# This is not an overall quality ranking; it is the predeclared model-selection criterion.
+# ------------------------------------------------------------------------------------------
+
+if len(summary_rows) > 0:
+
+    best_row = max(
+        summary_rows,
+        key=lambda x: x["tumor_dice"]
+    )
+
+else:
+
+    best_row = None
+
+
+# ==========================================================================================
+# 25. SAVE SUMMARY CSV
+# ==========================================================================================
+
+summary_csv = os.path.join(
+    OUTPUT_PATH,
+    "all_configurations_summary.csv"
+)
+
+if len(summary_rows) > 0:
+
+    fieldnames = list(
+        summary_rows[0].keys()
+    )
+
+    with open(
+        summary_csv,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as f:
+
+        writer = csv.DictWriter(
+            f,
+            fieldnames=fieldnames
+        )
+
+        writer.writeheader()
+
+        writer.writerows(
+            summary_rows
+        )
+
+
+# ==========================================================================================
+# 26. SAVE COMPLETE SUMMARY JSON
+# ==========================================================================================
+
+summary_json = os.path.join(
+    OUTPUT_PATH,
+    "all_configurations_summary.json"
+)
+
+with open(
+    summary_json,
+    "w",
+    encoding="utf-8"
+) as f:
+
+    json.dump(
+        {
+            "seed": SEED,
+
+            "image_size": IMAGE_SIZE,
+
+            "batch_size": BATCH_SIZE,
+
+            "max_epochs": MAX_EPOCHS,
+
+            "train_size": TRAIN_SIZE,
+
+            "validation_size": VAL_SIZE,
+
+            "selection_criterion":
+                "full_validation_tumor_dice",
+
+            "total_experiment_minutes":
+                total_experiment_minutes,
+
+            "results":
+                summary_rows
+        },
+        f,
+        indent=2
+    )
+
+
+# ==========================================================================================
+# 27. AUTOMATIC BEST CONFIGURATION
+# ==========================================================================================
+
+if best_row is not None:
+
+    best_config_name = (
+        best_row["configuration"]
+    )
+
+    best_result = next(
+        r for r in all_results
+        if r["config"]["name"]
+        ==
+        best_config_name
+    )
+
+    best_config_dir = (
+        best_result["config_dir"]
+    )
+
+    source_best_weights = (
+        best_result["best_weights_path"]
+    )
+
+    source_best_model = (
+        best_result["best_model_path"]
+    )
+
+    # ------------------------------------------------------------------
+    # Copy best weights to experiment root
+    # ------------------------------------------------------------------
+
+    best_weights_root = os.path.join(
+        OUTPUT_PATH,
+        "BEST_MODEL.weights.h5"
+    )
+
+    shutil.copy2(
+        source_best_weights,
+        best_weights_root
+    )
+
+    # ------------------------------------------------------------------
+    # Copy best complete model
+    # ------------------------------------------------------------------
+
+    best_model_root = os.path.join(
+        OUTPUT_PATH,
+        "BEST_MODEL.keras"
+    )
+
+    shutil.copy2(
+        source_best_model,
+        best_model_root
+    )
+
+    # ------------------------------------------------------------------
+    # Save best configuration metadata
+    # ------------------------------------------------------------------
+
+    best_config_json = os.path.join(
+        OUTPUT_PATH,
+        "BEST_CONFIGURATION.json"
+    )
+
+    with open(
+        best_config_json,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            {
+                "selection_criterion":
+                    "full_validation_tumor_dice",
+
+                "selected_configuration":
+                    best_row,
+
+                "best_weights":
+                    best_weights_root,
+
+                "best_model":
+                    best_model_root
+            },
+            f,
+            indent=2
+        )
+
+    print()
+    print("=" * 100)
+    print("AUTOMATIC MODEL SELECTION")
+    print("=" * 100)
+
+    print(
+        "Selection criterion:"
+    )
+
+    print(
+        "FULL VALIDATION TUMOR DICE "
+        "over all 200 validation slices"
+    )
+
+    print()
+    print(
+        "Selected configuration:"
+    )
+
+    print(
+        best_config_name
+    )
+
+    print()
+    print(
+        f"Patch stride : "
+        f"{best_row['patch_stride']}"
+    )
+
+    print(
+        f"Window size  : "
+        f"{best_row['window_size']}"
+    )
+
+    print(
+        f"Learning rate: "
+        f"{best_row['learning_rate']}"
+    )
+
+    print()
+    print(
+        f"Full validation Tumor Dice: "
+        f"{best_row['tumor_dice']:.4f}"
+    )
+
+    print(
+        f"Full validation Liver Dice: "
+        f"{best_row['liver_dice']:.4f}"
+    )
+
+    print(
+        f"Full validation Mean Dice: "
+        f"{best_row['mean_dice']:.4f}"
+    )
+
+    print()
+    print(
+        "Best weights:"
+    )
+
+    print(
+        best_weights_root
+    )
+
+    print()
+    print(
+        "Best model:"
+    )
+
+    print(
+        best_model_root
+    )
+
+    print()
+    print(
+        "Best configuration metadata:"
+    )
+
+    print(
+        best_config_json
+    )
+
+else:
+
+    print()
+    print(
+        "No configuration completed successfully."
+    )
+
+
+# ==========================================================================================
+# 28. PRINT COMPARISON TABLE
+# ==========================================================================================
+
+if len(summary_rows) > 0:
+
+    print()
+    print("=" * 100)
+    print("FULL-VALIDATION RESULTS — ALL CONFIGURATIONS")
+    print("=" * 100)
+
+    header = (
+        f"{'Configuration':40s} "
+        f"{'Tumor Dice':>12s} "
+        f"{'Tumor IoU':>12s} "
+        f"{'Tumor Prec.':>12s} "
+        f"{'Tumor Recall':>12s} "
+        f"{'Liver Dice':>12s} "
+        f"{'Mean Dice':>12s}"
+    )
+
+    print(header)
+    print("-" * len(header))
+
+    for row in summary_rows:
+
+        print(
+            f"{row['configuration']:40s} "
+            f"{row['tumor_dice']:12.4f} "
+            f"{row['tumor_iou']:12.4f} "
+            f"{row['tumor_precision']:12.4f} "
+            f"{row['tumor_recall']:12.4f} "
+            f"{row['liver_dice']:12.4f} "
+            f"{row['mean_dice']:12.4f}"
+        )
+
+
+# ==========================================================================================
+# 29. SAVE DATA SPLIT INFORMATION
+# ==========================================================================================
+
+split_info_path = os.path.join(
+    OUTPUT_PATH,
+    "data_split_information.json"
+)
+
+def pair_to_json(pair):
+
+    sid, vol_path, seg_path = pair
+
+    return {
+        "slice_id": int(sid),
+        "volume": vol_path,
+        "segmentation": seg_path
+    }
+
+
+with open(
+    split_info_path,
+    "w",
+    encoding="utf-8"
+) as f:
+
+    json.dump(
+        {
+            "seed": SEED,
+
+            "selected_total":
+                len(selected_pairs),
+
+            "train_total":
+                len(train_pairs),
+
+            "validation_total":
+                len(val_pairs),
+
+            "train_tumor_positive":
+                train_tumor_count,
+
+            "validation_tumor_positive":
+                val_tumor_count,
+
+            "train_pairs":
+                [
+                    pair_to_json(x)
+                    for x in train_pairs
+                ],
+
+            "validation_pairs":
+                [
+                    pair_to_json(x)
+                    for x in val_pairs
+                ],
+
+            "unmatched_volume_ids":
+                missing_seg_ids,
+
+            "unmatched_segmentation_ids":
+                missing_vol_ids
+        },
+        f,
+        indent=2
+    )
+
+
+# ==========================================================================================
+# 30. FINAL STATUS
+# ==========================================================================================
+
+print()
+print("=" * 100)
+print("EXPERIMENT FINISHED")
+print("=" * 100)
+
+print(
+    f"Total experiment time: "
+    f"{total_experiment_minutes:.2f} minutes"
+)
+
+print()
+print(
+    "Results directory:"
+)
+
+print(
+    OUTPUT_PATH
+)
+
+print()
+print(
+    "Saved files include:"
+)
+
+print(
+    "✓ all_configurations_summary.csv"
+)
+
+print(
+    "✓ all_configurations_summary.json"
+)
+
+print(
+    "✓ data_split_information.json"
+)
+
+if best_row is not None:
+
+    print(
+        "✓ BEST_MODEL.weights.h5"
+    )
+
+    print(
+        "✓ BEST_MODEL.keras"
+    )
+
+    print(
+        "✓ BEST_CONFIGURATION.json"
+    )
+
+print()
+print(
+    "IMPORTANT:"
+)
+
+print(
+    "The reported primary Tumor Dice is calculated "
+    "from ALL 200 validation slices for each configuration."
+)
+
+print(
+    "No 5-sample tumor-only stopping criterion is used."
+)
+
+print(
+    "The selected model is the configuration with the "
+    "highest FULL-VALIDATION tumor Dice."
+)
+
+print(
+    "These are validation results, not independent test-set results."
+)
+
+print()
+print("=" * 100)
+
