@@ -1,0 +1,1039 @@
+# ====================== FULL CELL: CLA Stability Analysis + Table 12 ======================
+
+import os
+import re
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+from pathlib import Path
+from google.colab import drive
+from IPython.display import display
+from openpyxl.styles import Alignment, Font, Border, Side
+
+# ================================================================
+# 1. MOUNT GOOGLE DRIVE AND SET PATHS
+# ================================================================
+
+drive.mount("/content/drive")
+
+BASE = '/content/drive/MyDrive/LITS/cla_results'
+
+# تمام خروجی‌ها در این پوشه ذخیره می‌شوند
+OUTPUT_DIR = os.path.join(BASE, 'comment14')
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+print(f'Input base directory: {BASE}')
+print(f'Output directory: {OUTPUT_DIR}')
+
+# ================================================================
+# 2. INPUT FILES FOR THE FOUR METHODS
+# ================================================================
+
+methods = {
+    'Proposed (0.3/0.5/0.2)': {
+        'weights': os.path.join(
+            BASE, 'proposed', 'CLA_weights_per_epoch.xlsx'
+        ),
+        'history': os.path.join(
+            BASE, 'proposed', 'history_dynamic_cla.csv'
+        ),
+        'reward_fn': lambda dl, dt, pl: 0.3 * dl + 0.5 * dt + 0.2 * pl
+    },
+
+    'Tumor-only': {
+        'weights': os.path.join(
+            BASE, 'tumor_only', 'CLA_weights_per_epoch.xlsx'
+        ),
+        'history': os.path.join(
+            BASE, 'tumor_only', 'history_dynamic_cla.csv'
+        ),
+        'reward_fn': lambda dl, dt, pl: dt
+    },
+
+    'Equal Dice (0.5/0.5)': {
+        'weights': os.path.join(
+            BASE, 'equal_dice', 'CLA_weights_per_epoch.xlsx'
+        ),
+        'history': os.path.join(
+            BASE, 'equal_dice', 'history_dynamic_cla.csv'
+        ),
+        'reward_fn': lambda dl, dt, pl: 0.5 * dl + 0.5 * dt
+    },
+
+    'G-mean': {
+        'weights': os.path.join(
+            BASE, 'gmean', 'CLA_weights_per_epoch.xlsx'
+        ),
+        'history': os.path.join(
+            BASE, 'gmean', 'history_dynamic_cla.csv'
+        ),
+        'reward_fn': lambda dl, dt, pl: np.sqrt(
+            np.maximum(dl, 1e-8) * np.maximum(dt, 1e-8)
+        )
+    }
+}
+
+# بررسی وجود فایل‌های ورودی پیش از شروع تحلیل
+required_input_files = []
+
+for name, cfg in methods.items():
+    required_input_files.extend([
+        cfg['weights'],
+        cfg['history']
+    ])
+
+for path in required_input_files:
+    if not os.path.isfile(path):
+        raise FileNotFoundError(
+            f'\nInput file not found:\n{path}\n'
+            'Please check the file name and folder path.'
+        )
+
+print('\nAll weight and history input files were found.')
+
+# ================================================================
+# 3. QUANTITATIVE STABILITY ANALYSIS — LAST 20 EPOCHS
+# ================================================================
+
+stability_rows = []
+weight_data = {}
+
+for name, cfg in methods.items():
+
+    wdf = pd.read_excel(cfg['weights'])
+
+    required_columns = [
+        'epoch', 'background', 'liver', 'tumor'
+    ]
+
+    missing_columns = [
+        col for col in required_columns
+        if col not in wdf.columns
+    ]
+
+    if missing_columns:
+        raise ValueError(
+            f'Missing columns in {cfg["weights"]}: {missing_columns}'
+        )
+
+    weight_data[name] = wdf
+    last20 = wdf.tail(20)
+
+    row = {'Reward Formulation': name}
+
+    for col in ['background', 'liver', 'tumor']:
+
+        mean_val = last20[col].mean()
+        std_val = last20[col].std(ddof=1)
+
+        cv_pct = (
+            std_val / mean_val * 100
+            if mean_val > 1e-8
+            else 0.0
+        )
+
+        row[f'{col}_mean'] = mean_val
+        row[f'{col}_std'] = std_val
+        row[f'{col}_CV(%)'] = cv_pct
+
+    row['Mean_CV(%)'] = np.mean([
+        row['background_CV(%)'],
+        row['liver_CV(%)'],
+        row['tumor_CV(%)']
+    ])
+
+    stability_rows.append(row)
+
+stab_df = pd.DataFrame(stability_rows)
+
+print('\n' + '=' * 80)
+print('Quantitative Stability Analysis (last 20 epochs)')
+print('=' * 80)
+
+print(
+    stab_df[
+        [
+            'Reward Formulation',
+            'background_CV(%)',
+            'liver_CV(%)',
+            'tumor_CV(%)',
+            'Mean_CV(%)'
+        ]
+    ].round(2).to_string(index=False)
+)
+
+stability_path = os.path.join(
+    OUTPUT_DIR,
+    'Table_Stability_CV_last20epochs.xlsx'
+)
+
+stab_df.to_excel(stability_path, index=False)
+
+print(f'\nSaved: {stability_path}')
+
+# ================================================================
+# 4. RECONSTRUCT REWARD TRAJECTORY AND ALIGN WITH WEIGHTS
+# ================================================================
+
+reward_traj = {}
+aligned = {}
+
+for name, cfg in methods.items():
+
+    hdf = pd.read_csv(cfg['history'])
+
+    required_history_columns = [
+        'epoch',
+        'dice_liver',
+        'dice_tumor',
+        'precision_liver'
+    ]
+
+    missing_columns = [
+        col for col in required_history_columns
+        if col not in hdf.columns
+    ]
+
+    if missing_columns:
+        raise ValueError(
+            f'Missing columns in {cfg["history"]}: {missing_columns}'
+        )
+
+    # If there are multiple rows for an epoch, average them
+    if hdf['epoch'].duplicated().any():
+        hdf = hdf.groupby(
+            'epoch',
+            as_index=False
+        ).mean(numeric_only=True)
+
+    hdf['reward'] = cfg['reward_fn'](
+        hdf['dice_liver'].values,
+        hdf['dice_tumor'].values,
+        hdf['precision_liver'].values
+    )
+
+    wdf = weight_data[name]
+
+    merged = pd.merge(
+        wdf[['epoch', 'background', 'liver', 'tumor']],
+        hdf[
+            [
+                'epoch',
+                'reward',
+                'dice_liver',
+                'dice_tumor',
+                'precision_liver'
+            ]
+        ],
+        on='epoch',
+        how='inner'
+    )
+
+    if merged.empty:
+        raise ValueError(
+            f'No common epochs found between weight and history files '
+            f'for method: {name}'
+        )
+
+    aligned[name] = merged
+    reward_traj[name] = merged
+
+print('\nReward trajectories reconstructed and aligned successfully.')
+
+# ================================================================
+# 5. PLOT SETTINGS
+# ================================================================
+
+colors = {
+    'Proposed (0.3/0.5/0.2)': '#1f77b4',
+    'Tumor-only': '#ff7f0e',
+    'Equal Dice (0.5/0.5)': '#2ca02c',
+    'G-mean': '#d62728'
+}
+
+linestyles = {
+    'Proposed (0.3/0.5/0.2)': '-',
+    'Tumor-only': '--',
+    'Equal Dice (0.5/0.5)': '-.',
+    'G-mean': ':'
+}
+
+# ================================================================
+# 6. INDEPENDENT WEIGHT EVOLUTION PLOTS
+# ================================================================
+
+for cls in ['background', 'liver', 'tumor']:
+
+    fig, ax = plt.subplots(figsize=(11, 6))
+
+    for name in methods:
+
+        df = aligned[name]
+
+        ax.plot(
+            df['epoch'],
+            df[cls],
+            color=colors[name],
+            linestyle=linestyles[name],
+            linewidth=2.2,
+            label=name
+        )
+
+    ax.set_title(
+        f'{cls.capitalize()} Weight Evolution',
+        fontsize=15
+    )
+
+    ax.set_xlabel('Epoch', fontsize=12)
+    ax.set_ylabel('Weight', fontsize=12)
+    ax.grid(True, alpha=0.3)
+    ax.legend(fontsize=10, loc='best')
+
+    fig.tight_layout()
+
+    figure_path = os.path.join(
+        OUTPUT_DIR,
+        f'Weight_Evolution_{cls.capitalize()}.png'
+    )
+
+    fig.savefig(
+        figure_path,
+        dpi=300,
+        bbox_inches='tight'
+    )
+
+    print(f'Saved: {figure_path}')
+
+    plt.show()
+    plt.close(fig)
+
+# ================================================================
+# 7. INDEPENDENT REWARD TRAJECTORY PLOTS
+# ================================================================
+
+for name in methods:
+
+    df = aligned[name]
+
+    fig, ax = plt.subplots(figsize=(11, 6))
+
+    ax.plot(
+        df['epoch'],
+        df['reward'],
+        color=colors[name],
+        linestyle=linestyles[name],
+        linewidth=2.4
+    )
+
+    ax.set_title(
+        f'Reward Trajectory - {name}',
+        fontsize=15
+    )
+
+    ax.set_xlabel('Epoch', fontsize=12)
+    ax.set_ylabel('Reward', fontsize=12)
+    ax.grid(True, alpha=0.3)
+
+    fig.tight_layout()
+
+    safe_name = (
+        name.replace(' ', '_')
+            .replace('/', '_')
+            .replace('(', '')
+            .replace(')', '')
+    )
+
+    figure_path = os.path.join(
+        OUTPUT_DIR,
+        f'Reward_Trajectory_{safe_name}.png'
+    )
+
+    fig.savefig(
+        figure_path,
+        dpi=300,
+        bbox_inches='tight'
+    )
+
+    print(f'Saved: {figure_path}')
+
+    plt.show()
+    plt.close(fig)
+
+# ================================================================
+# 8. REWARD VS. CHANGE IN TUMOR WEIGHT
+# ================================================================
+
+fig, ax = plt.subplots(figsize=(11, 7))
+
+for name in methods:
+
+    df = aligned[name].copy()
+    df['delta_tumor'] = df['tumor'].diff()
+
+    ax.scatter(
+        df['reward'].iloc[1:],
+        df['delta_tumor'].iloc[1:],
+        s=28,
+        alpha=0.65,
+        color=colors[name],
+        label=name
+    )
+
+ax.axhline(
+    0,
+    color='gray',
+    linestyle='--',
+    linewidth=1.2
+)
+
+ax.set_xlabel('Reward at Epoch t', fontsize=12)
+ax.set_ylabel('Change in Tumor Weight', fontsize=12)
+
+ax.set_title(
+    'Relationship between Reward and Tumor Weight Update',
+    fontsize=14
+)
+
+ax.legend(fontsize=10, loc='best')
+ax.grid(True, alpha=0.3)
+
+fig.tight_layout()
+
+figure_path = os.path.join(
+    OUTPUT_DIR,
+    'Figure13_Reward_Weight_Dynamics_Stability.png'
+)
+
+fig.savefig(
+    figure_path,
+    dpi=300,
+    bbox_inches='tight'
+)
+
+print(f'Saved: {figure_path}')
+
+plt.show()
+plt.close(fig)
+
+# ================================================================
+# 9. COMBINED FIGURE: WEIGHTS AND REWARD DYNAMICS
+# ================================================================
+
+fig = plt.figure(figsize=(22, 22))
+
+gs = GridSpec(
+    4,
+    3,
+    figure=fig,
+    hspace=0.40,
+    wspace=0.30
+)
+
+# Weight evolution: background, liver and tumor
+weight_classes = ['background', 'liver', 'tumor']
+
+for i, cls in enumerate(weight_classes):
+
+    ax = fig.add_subplot(gs[0, i])
+
+    for name in methods:
+
+        df = aligned[name]
+
+        ax.plot(
+            df['epoch'],
+            df[cls],
+            color=colors[name],
+            linestyle=linestyles[name],
+            linewidth=2,
+            label=name
+        )
+
+    ax.set_title(
+        f'{cls.capitalize()} Weight',
+        fontsize=12
+    )
+
+    ax.set_xlabel('Epoch')
+    ax.set_ylabel('Weight')
+    ax.grid(True, alpha=0.3)
+
+    if i == 0:
+        ax.legend(fontsize=8, loc='best')
+
+# Reward trajectory: one subplot per method
+for i, name in enumerate(methods):
+
+    row = 1 + i // 3
+    col = i % 3
+
+    ax = fig.add_subplot(gs[row, col])
+    df = aligned[name]
+
+    ax.plot(
+        df['epoch'],
+        df['reward'],
+        color=colors[name],
+        linestyle=linestyles[name],
+        linewidth=2.2
+    )
+
+    ax.set_title(
+        f'Reward - {name}',
+        fontsize=11
+    )
+
+    ax.set_xlabel('Epoch')
+    ax.set_ylabel('Reward')
+    ax.grid(True, alpha=0.3)
+
+# Reward vs. tumor weight change
+ax = fig.add_subplot(gs[2, 1:3])
+
+for name in methods:
+
+    df = aligned[name].copy()
+    delta_tumor = df['tumor'].diff()
+
+    ax.scatter(
+        df['reward'].iloc[1:],
+        delta_tumor.iloc[1:],
+        s=20,
+        alpha=0.65,
+        color=colors[name],
+        label=name
+    )
+
+ax.axhline(
+    0,
+    color='gray',
+    linestyle='--',
+    linewidth=1
+)
+
+ax.set_xlabel('Reward at Epoch t')
+ax.set_ylabel('Change in Tumor Weight')
+
+ax.set_title(
+    'Reward vs Tumor Weight Update',
+    fontsize=12
+)
+
+ax.legend(fontsize=9)
+ax.grid(True, alpha=0.3)
+
+fig.suptitle(
+    'CLA Reward-Weight Dynamics and Stability Analysis',
+    fontsize=18,
+    fontweight='bold',
+    y=0.995
+)
+
+fig.tight_layout(rect=[0, 0, 1, 0.98])
+
+combined_path = os.path.join(
+    OUTPUT_DIR,
+    'Figure13_Combined_Weight_Reward_Dynamics.png'
+)
+
+fig.savefig(
+    combined_path,
+    dpi=300,
+    bbox_inches='tight'
+)
+
+print(f'Saved combined figure: {combined_path}')
+
+plt.show()
+plt.close(fig)
+
+# ================================================================
+# 10. COMPARISON WITH MOVING AVERAGE AND MOMENTUM
+# ================================================================
+
+print('\n' + '=' * 80)
+print('Comparison with simpler alternatives (observed tumor weights)')
+print('=' * 80)
+
+def moving_average(series, window=5):
+    return series.rolling(
+        window=window,
+        min_periods=1
+    ).mean()
+
+
+def momentum_update(series, beta=0.9):
+
+    out = [series.iloc[0]]
+
+    for i in range(1, len(series)):
+        out.append(
+            beta * out[-1] + (1 - beta) * series.iloc[i]
+        )
+
+    return pd.Series(
+        out,
+        index=series.index
+    )
+
+
+comparison_rows = []
+
+for name in methods:
+
+    df = aligned[name]
+    tumor = df['tumor']
+
+    cv_cla = (
+        tumor.tail(20).std()
+        / tumor.tail(20).mean()
+        * 100
+    )
+
+    ma = moving_average(
+        tumor,
+        window=5
+    )
+
+    mom = momentum_update(
+        tumor,
+        beta=0.85
+    )
+
+    cv_ma = (
+        ma.tail(20).std()
+        / ma.tail(20).mean()
+        * 100
+    )
+
+    cv_mom = (
+        mom.tail(20).std()
+        / mom.tail(20).mean()
+        * 100
+    )
+
+    comparison_rows.append({
+        'Method': name,
+        'CLA_CV(%)': round(cv_cla, 2),
+        'After_MA5_CV(%)': round(cv_ma, 2),
+        'After_Momentum_CV(%)': round(cv_mom, 2)
+    })
+
+comp_df = pd.DataFrame(comparison_rows)
+
+print(comp_df.to_string(index=False))
+
+comparison_path = os.path.join(
+    OUTPUT_DIR,
+    'Comparison_CLA_vs_MA_Momentum.xlsx'
+)
+
+comp_df.to_excel(
+    comparison_path,
+    index=False
+)
+
+print(f'Saved: {comparison_path}')
+
+# ================================================================
+# 11. TABLE 12: READ REPORT.TXT DIRECTLY FROM EACH METHOD FOLDER
+# ================================================================
+
+report_files = {
+    'Proposed (0.3/0.5/0.2)': os.path.join(
+        BASE, 'proposed', 'report.txt'
+    ),
+    'Tumor-only': os.path.join(
+        BASE, 'tumor_only', 'report.txt'
+    ),
+    'Equal Dice (0.5/0.5)': os.path.join(
+        BASE, 'equal_dice', 'report.txt'
+    ),
+    'G-mean': os.path.join(
+        BASE, 'gmean', 'report.txt'
+    )
+}
+
+def parse_final_metrics(file_path):
+
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError(
+            f'\nReport file not found:\n{file_path}\n'
+            'Please check the method-specific folder and report.txt filename.'
+        )
+
+    report_text = Path(file_path).read_text(
+        encoding='utf-8-sig',
+        errors='replace'
+    )
+
+    match = re.search(
+        r'Final Metrics\s*\(Mean\s*±\s*SD\)\s*=*\s*\n'
+        r'(.*?)(?=\n\s*(?:={3,}|$))',
+        report_text,
+        flags=re.IGNORECASE | re.DOTALL
+    )
+
+    if match:
+        metrics_text = match.group(1)
+
+    else:
+
+        match = re.search(
+            r'Final Metrics\s*\(Mean\s*±\s*SD\)',
+            report_text,
+            flags=re.IGNORECASE
+        )
+
+        if not match:
+            raise ValueError(
+                f'Final Metrics section not found in:\n{file_path}'
+            )
+
+        metrics_text = report_text[match.end():]
+
+    NUM = r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?'
+
+    results = {}
+
+    for line in metrics_text.splitlines():
+
+        m = re.match(
+            rf'\s*([A-Za-z0-9_]+)\s*:\s*'
+            rf'({NUM})\s*±\s*({NUM})',
+            line
+        )
+
+        if m:
+
+            metric_name = m.group(1).strip()
+
+            results[metric_name] = {
+                'mean': float(m.group(2)),
+                'sd': float(m.group(3))
+            }
+
+    required = [
+        'Liver_DSC',
+        'Tumor_DSC',
+        'Tumor_Precision',
+        'Tumor_Recall'
+    ]
+
+    missing = [
+        metric for metric in required
+        if metric not in results
+    ]
+
+    if missing:
+        raise ValueError(
+            f'Missing metrics in {file_path}: {missing}\n'
+            f'Extracted metrics: {list(results.keys())}'
+        )
+
+    return results
+
+
+# ================================================================
+# 12. BUILD TABLE 12
+# ================================================================
+
+rows = []
+
+for method, file_path in report_files.items():
+
+    final_metrics = parse_final_metrics(file_path)
+
+    row = {
+        'Reward Formulation': method,
+
+        'Liver DSC': (
+            f"{final_metrics['Liver_DSC']['mean']:.4f} ± "
+            f"{final_metrics['Liver_DSC']['sd']:.4f}"
+        ),
+
+        'Tumor DSC': (
+            f"{final_metrics['Tumor_DSC']['mean']:.4f} ± "
+            f"{final_metrics['Tumor_DSC']['sd']:.4f}"
+        ),
+
+        'Tumor Precision': (
+            f"{final_metrics['Tumor_Precision']['mean']:.4f} ± "
+            f"{final_metrics['Tumor_Precision']['sd']:.4f}"
+        ),
+
+        'Tumor Recall': (
+            f"{final_metrics['Tumor_Recall']['mean']:.4f} ± "
+            f"{final_metrics['Tumor_Recall']['sd']:.4f}"
+        )
+    }
+
+    rows.append(row)
+
+table12 = pd.DataFrame(rows)
+
+# ================================================================
+# 13. TUMOR WEIGHT CV — LAST 20 EPOCHS
+# ================================================================
+
+stability_values = {}
+
+for method in report_files:
+
+    if method not in weight_data:
+        raise ValueError(
+            f'Weight data for "{method}" is unavailable.'
+        )
+
+    wdf = weight_data[method]
+
+    if 'tumor' not in wdf.columns:
+        raise ValueError(
+            f'The "tumor" column is missing for "{method}".'
+        )
+
+    tumor_weights = pd.to_numeric(
+        wdf['tumor'].tail(20),
+        errors='coerce'
+    ).dropna()
+
+    if len(tumor_weights) < 2:
+        raise ValueError(
+            f'Insufficient tumor weight values for "{method}".'
+        )
+
+    mean_weight = tumor_weights.mean()
+    std_weight = tumor_weights.std(ddof=1)
+
+    cv = (
+        std_weight / abs(mean_weight) * 100
+        if abs(mean_weight) > 1e-8
+        else np.nan
+    )
+
+    stability_values[method] = cv
+
+table12['Tumor Weight CV (last 20)'] = (
+    table12['Reward Formulation']
+    .map(stability_values)
+    .map(lambda x: f'{x:.2f}%' if pd.notna(x) else 'N/A')
+)
+
+# ================================================================
+# 14. RELATIVE STABILITY RANKING
+# ================================================================
+
+valid_methods = [
+    method for method in report_files
+    if pd.notna(stability_values[method])
+    and np.isfinite(stability_values[method])
+]
+
+sorted_methods = sorted(
+    valid_methods,
+    key=lambda method: stability_values[method]
+)
+
+stability_labels = [
+    'Most stable',
+    'More stable',
+    'Less stable',
+    'Least stable'
+]
+
+stability_map = {
+    method: stability_labels[i]
+    for i, method in enumerate(sorted_methods)
+}
+
+table12['Overall Stability'] = (
+    table12['Reward Formulation']
+    .map(stability_map)
+    .fillna('N/A')
+)
+
+# ================================================================
+# 15. DISPLAY TABLE 12 IN GOOGLE COLAB
+# ================================================================
+
+print('\n' + '=' * 100)
+print('TABLE 12 — FINAL SEGMENTATION METRICS AND STABILITY')
+print('=' * 100)
+
+styled_table = (
+    table12.style
+    .hide(axis='index')
+    .set_properties(**{
+        'text-align': 'center',
+        'vertical-align': 'middle',
+        'white-space': 'normal',
+        'padding': '8px',
+        'min-width': '100px'
+    })
+    .set_table_styles([
+        {
+            'selector': 'table',
+            'props': [
+                ('border-collapse', 'collapse'),
+                ('width', '100%'),
+                ('font-size', '12px')
+            ]
+        },
+        {
+            'selector': 'th',
+            'props': [
+                ('text-align', 'center'),
+                ('vertical-align', 'middle'),
+                ('white-space', 'normal'),
+                ('font-weight', 'bold'),
+                ('background-color', '#D9EAF7'),
+                ('border', '1px solid #999999'),
+                ('padding', '10px')
+            ]
+        },
+        {
+            'selector': 'td',
+            'props': [
+                ('text-align', 'center'),
+                ('vertical-align', 'middle'),
+                ('border', '1px solid #CCCCCC'),
+                ('padding', '8px')
+            ]
+        }
+    ])
+)
+
+display(styled_table)
+
+# ================================================================
+# 16. SAVE FORMATTED TABLE 12 TO EXCEL
+# ================================================================
+
+output_path = os.path.join(
+    OUTPUT_DIR,
+    'Table12_Corrected_FinalMetrics.xlsx'
+)
+
+with pd.ExcelWriter(
+    output_path,
+    engine='openpyxl'
+) as writer:
+
+    table12.to_excel(
+        writer,
+        sheet_name='Table 12',
+        index=False
+    )
+
+    ws = writer.sheets['Table 12']
+
+    column_widths = {
+        'A': 29,
+        'B': 20,
+        'C': 20,
+        'D': 23,
+        'E': 21,
+        'F': 29,
+        'G': 20
+    }
+
+    for col, width in column_widths.items():
+        ws.column_dimensions[col].width = width
+
+    for cell in ws[1]:
+
+        cell.font = Font(
+            bold=True,
+            size=11
+        )
+
+        cell.alignment = Alignment(
+            horizontal='center',
+            vertical='center',
+            wrap_text=True
+        )
+
+    thin_gray = Side(
+        style='thin',
+        color='CCCCCC'
+    )
+
+    for row in ws.iter_rows():
+
+        for cell in row:
+
+            cell.alignment = Alignment(
+                horizontal='center',
+                vertical='center',
+                wrap_text=True
+            )
+
+            cell.border = Border(
+                left=thin_gray,
+                right=thin_gray,
+                top=thin_gray,
+                bottom=thin_gray
+            )
+
+    ws.row_dimensions[1].height = 38
+
+    for r in range(2, ws.max_row + 1):
+        ws.row_dimensions[r].height = 32
+
+    ws.freeze_panes = 'A2'
+    ws.auto_filter.ref = ws.dimensions
+
+    ws.page_setup.orientation = 'landscape'
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+
+print('\n' + '=' * 100)
+print('Table 12 saved successfully.')
+print(f'Excel file: {output_path}')
+print('=' * 100)
+
+# ================================================================
+# 17. VERIFY GENERATED OUTPUT FILES
+# ================================================================
+
+expected_files = [
+    'Table_Stability_CV_last20epochs.xlsx',
+    'Figure13_Reward_Weight_Dynamics_Stability.png',
+    'Figure13_Combined_Weight_Reward_Dynamics.png',
+    'Comparison_CLA_vs_MA_Momentum.xlsx',
+    'Table12_Corrected_FinalMetrics.xlsx',
+    'Weight_Evolution_Background.png',
+    'Weight_Evolution_Liver.png',
+    'Weight_Evolution_Tumor.png',
+    'Reward_Trajectory_Proposed_0.3_0.5_0.2.png',
+    'Reward_Trajectory_Tumor-only.png',
+    'Reward_Trajectory_Equal_Dice_0.5_0.5.png',
+    'Reward_Trajectory_G-mean.png'
+]
+
+print('\n' + '=' * 75)
+print('VERIFICATION OF GENERATED OUTPUT FILES')
+print('=' * 75)
+
+for filename in expected_files:
+
+    path = os.path.join(
+        OUTPUT_DIR,
+        filename
+    )
+
+    if os.path.isfile(path):
+
+        size_kb = os.path.getsize(path) / 1024
+
+        print(
+            f'EXISTS | {filename} | {size_kb:.1f} KB'
+        )
+
+    else:
+        print(f'NOT FOUND | {filename}')
+
+print('\nAll output files are stored in:')
+print(OUTPUT_DIR)
