@@ -1,0 +1,75 @@
+import graphviz
+from datetime import datetime
+import os
+from google.colab import drive
+
+# اتصال به Google Drive
+drive.mount('/content/drive', force_remount=True)
+
+output_dir = '/content/drive/MyDrive/LITS/'
+os.makedirs(output_dir, exist_ok=True)
+
+# ایجاد گراف با کیفیت بالا
+dot = graphviz.Digraph(
+    comment='CLA-ResUNet Workflow',
+    format='png',
+    graph_attr={
+        'rankdir': 'TB',
+        'splines': 'ortho',
+        'nodesep': '0.7',
+        'ranksep': '1.0',
+        'dpi': '600',           # کیفیت بسیار بالا
+        'size': '22,30!',       # اندازه مناسب برای مقاله
+        'fontname': 'Arial',
+        'bgcolor': 'white'
+    }
+)
+
+# تنظیمات نودها (فونت بزرگ‌تر برای خوانایی)
+dot.attr('node', shape='box', style='filled', fontname='Arial', fontsize='14', penwidth='2.0')
+
+# نودها
+dot.node('A', 'Start', shape='ellipse', fillcolor='#90EE90', fontcolor='black')
+dot.node('B', 'Input\nMedical Images\n128×128×1', fillcolor='#E6F3FF')
+dot.node('C', 'Preprocessing\nNormalization\nResize to 128×128', fillcolor='#E6F3FF')
+dot.node('D', 'Train ResUNet Model', fillcolor='#E6F3FF')
+dot.node('E', 'ResUNet Architecture\nEncoder: 4 ResBlocks\nDecoder: Up-sampling\nSkip Connections', fillcolor='#E6F3FF')
+dot.node('F', 'Combined Loss\nWCE + Focal + Tversky', fillcolor='#E6F3FF')
+dot.node('G', 'CLA Module\nGaussian-based\nDice Reward', fillcolor='#E6F3FF')
+dot.node('H', 'Evaluate Metrics\nDice, IoU, Precision, Recall\nVOE, RVD, ASSD, MSD, ICC', fillcolor='#E6F3FF')
+dot.node('I', 'Post-process\nPredictions', fillcolor='#E6F3FF')
+dot.node('J', 'Threshold\nTumor: θ=0.35', fillcolor='#E6F3FF')
+dot.node('K', 'Remove Small Regions\nLiver: <30 pixels\nTumor: <3 pixels', fillcolor='#E6F3FF')
+dot.node('L', 'Output\nPredicted Masks\nFinal Metrics', fillcolor='#E6F3FF')
+dot.node('M', 'End', shape='ellipse', fillcolor='#FF9999', fontcolor='black')
+
+# اتصالات
+dot.edge('A', 'B')
+dot.edge('B', 'C')
+dot.edge('C', 'D')
+dot.edge('D', 'E')
+dot.edge('D', 'F')
+dot.edge('D', 'G')
+dot.edge('E', 'H')
+dot.edge('F', 'H')
+dot.edge('G', 'H', label='Update')
+dot.edge('H', 'I')
+dot.edge('I', 'J')
+dot.edge('J', 'K')
+dot.edge('K', 'L')
+dot.edge('L', 'M')
+
+# ذخیره با کیفیت بالا
+timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+base_name = f'{output_dir}Figure8_CLA_ResUNet_Flowchart_{timestamp}'
+
+# ذخیره در فرمت‌های مختلف با کیفیت بالا
+dot.render(base_name, format='png', cleanup=True)   # 600 DPI
+dot.render(base_name, format='pdf', cleanup=True)   # Vector (بهترین کیفیت)
+dot.render(base_name, format='svg', cleanup=True)   # Vector
+
+print(f"✅ Flowchart saved with high resolution (600 DPI):\n{base_name}.png\n{base_name}.pdf\n{base_name}.svg")
+
+# نمایش در Colab
+from IPython.display import Image
+display(Image(filename=f"{base_name}.png"))
