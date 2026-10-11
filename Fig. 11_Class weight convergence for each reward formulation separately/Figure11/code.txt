@@ -1,0 +1,131 @@
+
+from PIL import Image
+import matplotlib.pyplot as plt
+from google.colab import drive
+import os
+
+# ============================================================
+# Mount Google Drive
+# ============================================================
+drive.mount('/content/drive', force_remount=True)
+
+# ============================================================
+# Paths
+# ============================================================
+base_path = '/content/drive/MyDrive/LITS/cla_results'
+
+files = {
+    '(a) Proposed':
+        os.path.join(base_path, 'proposed', 'CLA_Weight_Convergence.png'),
+
+    '(b) Tumor-only':
+        os.path.join(base_path, 'tumor_only', 'CLA_Weight_Convergence.png'),
+
+    '(c) Equal Dice':
+        os.path.join(base_path, 'equal_dice', 'CLA_Weight_Convergence.png'),
+
+    '(d) G-mean':
+        os.path.join(base_path, 'gmean', 'CLA_Weight_Convergence.png')
+}
+
+# ============================================================
+# Check files
+# ============================================================
+print("=" * 70)
+print("Checking input files")
+print("=" * 70)
+
+for label, path in files.items():
+    if os.path.exists(path):
+        print(f"✅ {label}: {path}")
+    else:
+        print(f"❌ NOT FOUND: {path}")
+
+# ============================================================
+# Load images
+# ============================================================
+images = {}
+
+for label, path in files.items():
+    if os.path.exists(path):
+        images[label] = Image.open(path).convert('RGB')
+
+if len(images) != 4:
+    raise FileNotFoundError(
+        f"Expected 4 images, but found {len(images)}. "
+        "Please check the paths printed above."
+    )
+
+# ============================================================
+# Print original dimensions
+# ============================================================
+print("\nOriginal image dimensions:")
+
+for label, img in images.items():
+    print(f"{label}: {img.size[0]} × {img.size[1]}")
+
+# ============================================================
+# Create 2 × 2 figure
+# ============================================================
+fig, axes = plt.subplots(
+    2, 2,
+    figsize=(14, 10),
+    dpi=300
+)
+
+axes = axes.flatten()
+
+for ax, (label, img) in zip(axes, images.items()):
+
+    # Display image while keeping each panel the same size
+    ax.imshow(img, aspect='auto')
+
+    # Panel label
+    ax.set_title(
+        label,
+        fontsize=14,
+        fontweight='bold',
+        pad=8
+    )
+
+    # Remove axes
+    ax.axis('off')
+
+# ============================================================
+# Overall layout
+# ============================================================
+plt.subplots_adjust(
+    left=0.02,
+    right=0.98,
+    top=0.94,
+    bottom=0.02,
+    wspace=0.04,
+    hspace=0.08
+)
+
+# ============================================================
+# Save final figure
+# ============================================================
+Figure11_path= '/content/drive/MyDrive/LITS/cla_results/Figure11'
+# Create the folder if it does not exist
+os.makedirs(Figure11_path, exist_ok=True)
+
+output_path = os.path.join(
+    Figure11_path,
+    'Figure11_Class_Weight_Convergence_Combined.png'
+)
+
+plt.savefig(
+    output_path,
+    dpi=300,
+    bbox_inches='tight',
+    pad_inches=0.05
+)
+
+plt.show()
+
+print("\n" + "=" * 70)
+print("✅ Figure 11 created successfully!")
+print("=" * 70)
+print("Saved to:")
+print(output_path)

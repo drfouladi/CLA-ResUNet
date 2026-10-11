@@ -1,3 +1,4 @@
+#reward_type="equal_dice"
 import os
 import numpy as np
 import tensorflow as tf
@@ -16,6 +17,11 @@ print("GPU Available:", tf.config.list_physical_devices('GPU'))
 print("TensorFlow Version:", tf.__version__)
 
 drive.mount('/content/drive', force_remount=True)
+
+# ====================== Output Directory ======================
+OUTPUT_DIR = "/content/drive/MyDrive/LITS/cla_results/equal_dice"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+print(f"All outputs will be saved in: {OUTPUT_DIR}")
 
 SEED = 42
 os.environ["PYTHONHASHSEED"] = str(SEED)
@@ -333,7 +339,7 @@ model.compile(
 
 class ContinuousLearningAutomataCallback(callbacks.Callback):
 
-    def __init__(self, cla, reward_type="proposed"):
+    def __init__(self, cla, reward_type="equal_dice"):
         super().__init__()
 
         self.cla = cla
@@ -489,14 +495,14 @@ reduce_lr = callbacks.ReduceLROnPlateau(
 )
 
 checkpoint_best = callbacks.ModelCheckpoint(
-    '/content/drive/MyDrive/LITS/resunet_dynamic_cla_best.keras',
+    os.path.join(OUTPUT_DIR, 'resunet_dynamic_cla_best.keras'),
     monitor='val_dice_tumor',
     save_best_only=True,
     mode='max'
 )
 
 history_saver = callbacks.CSVLogger(
-    '/content/drive/MyDrive/LITS/history_dynamic_cla.csv',
+    os.path.join(OUTPUT_DIR, 'history_dynamic_cla.csv'),
     append=True
 )
 # ====================== Training ======================
@@ -528,7 +534,21 @@ epochs = np.arange(1, len(history)+1)
 bg = [h['weights'][0] for h in history]
 liver = [h['weights'][1] for h in history]
 tumor = [h['weights'][2] for h in history]
+# ====================== Save CLA Weights to Excel ======================
 
+df_weights = pd.DataFrame({
+    'epoch': epochs,
+    'background': bg,
+    'liver': liver,
+    'tumor': tumor
+})
+
+excel_path = os.path.join(OUTPUT_DIR, "CLA_weights_per_epoch.xlsx")
+
+df_weights.to_excel(excel_path, index=False)
+
+print(f"CLA weights saved to: {excel_path}")
+display(df_weights)
 plt.figure(figsize=(7,5))
 
 plt.plot(epochs, bg, linewidth=2, label='Background')
@@ -541,7 +561,7 @@ plt.grid(alpha=0.3)
 plt.legend()
 
 plt.tight_layout()
-plt.savefig("/content/drive/MyDrive/LITS/CLA_Weight_Convergence.png", dpi=300)
+plt.savefig(os.path.join(OUTPUT_DIR, "CLA_Weight_Convergence.png"), dpi=300)
 
 plt.show()
 
@@ -623,7 +643,7 @@ def calculate_metrics(model, val_gen, num_samples):
         ci_low, ci_high = bootstrap_ci(df[col].values)
         print(f"{col}: {mean_val:.4f} ± {std_val:.4f} | 95% CI: [{ci_low:.4f}, {ci_high:.4f}]")
 
-    df.to_csv("/content/drive/MyDrive/LITS/cla_per_slice_metrics.csv", index=False)
+    df.to_csv(os.path.join(OUTPUT_DIR, "cla_per_slice_metrics.csv"), index=False)
     print("\nMetrics saved successfully.")
 
     return df
@@ -632,6 +652,6 @@ def calculate_metrics(model, val_gen, num_samples):
 final_df = calculate_metrics(model, val_gen, num_samples=len(val_pairs)//8)
 
 # Save model
-model.save('/content/resunet_dynamic_cla_final.keras')
-!cp /content/resunet_dynamic_cla_final.keras /content/drive/MyDrive/LITS/
-print("Model saved and copied.")
+final_model_path = os.path.join(OUTPUT_DIR, 'resunet_dynamic_cla_final.keras')
+model.save(final_model_path)
+print(f"Final model saved to: {final_model_path}")
