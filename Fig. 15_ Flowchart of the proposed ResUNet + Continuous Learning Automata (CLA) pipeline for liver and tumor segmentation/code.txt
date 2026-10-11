@@ -1,0 +1,117 @@
+import graphviz
+from datetime import datetime
+import os
+from google.colab import drive
+
+drive.mount('/content/drive', force_remount=True)
+output_dir = '/content/drive/MyDrive/LITS/'
+os.makedirs(output_dir, exist_ok=True)
+
+dot = graphviz.Digraph(
+    comment='ResUNet + CLA Pipeline',
+    format='png',
+    graph_attr={
+        'rankdir': 'TB',
+        'splines': 'ortho',
+        'nodesep': '0.55',
+        'ranksep': '0.7',
+        'dpi': '400',
+        'fontname': 'Arial',
+        'bgcolor': 'white',
+        'pad': '0.4'
+    }
+)
+
+# تنظیمات کلی نود
+dot.attr('node', shape='box', style='rounded,filled', fontname='Arial', fontsize='11',
+         penwidth='1.6', margin='0.15,0.1')
+
+# رنگ‌های ملایم و علمی
+c_input   = '#E8F5E9'   # سبز خیلی روشن
+c_prep    = '#E3F2FD'   # آبی روشن
+c_model   = '#E8EAF6'   # بنفش خیلی روشن
+c_cla     = '#FFF3E0'   # نارنجی روشن
+c_post    = '#F3E5F5'   # بنفش روشن
+c_final   = '#FFEBEE'   # قرمز روشن
+
+# ====================== ردیف بالا ======================
+with dot.subgraph(name='cluster_top') as c:
+    c.attr(style='invis')
+    
+    # 1. Input
+    c.node('input', '1) Input\nMedical Images\n128 × 128 × 1', fillcolor=c_input)
+    
+    # 2. Preprocessing
+    c.node('prep', '2) Preprocessing\n• Normalization\n• Resize to 128×128', fillcolor=c_prep)
+    
+    # 3. ResUNet Architecture
+    c.node('resunet', '''3) ResUNet Architecture
+Encoder (4 ResBlocks)  →  Decoder (Up-sampling)
+↓ Down-sampling          ↑ Up-sampling
+- - - - - - Skip Connections - - - - - -
+Output: Segmentation Probability Map''', 
+           fillcolor=c_model, width='4.2')
+
+# ====================== بخش CLA (وسط) ======================
+with dot.subgraph(name='cluster_cla') as c:
+    c.attr(label='4) Training with Continuous Learning Automata (CLA)',
+           style='dashed,rounded', color='#EF6C00', fontname='Arial', fontsize='12',
+           labelloc='t', penwidth='2.0')
+    
+    c.node('loss', '''Loss Function (Combined)
+Weighted Cross Entropy (WCE)
++ Focal Loss
++ Tversky Loss''', fillcolor='#FFF8E1')
+    
+    c.node('cla_core', '''Continuous Learning Automata (CLA)
+Action Selection (Gaussian-based)
+↕ Iterative Update
+Reward Calculation (Dice-based)
+Dice = 2|P ∩ G| / (|P| + |G|)
+Adaptive Class Weights (w_bg, w_liver, w_tumor)
+Update Probability Distribution''', fillcolor=c_cla, width='3.8')
+    
+    c.node('metrics', '''Evaluation Metrics
+(on Validation Set)
+• Dice  • IoU  • Precision  • Recall
+• VOE   • RVD  • ASSD  • MSD  • ICC''', fillcolor='#E3F2FD')
+
+# ====================== ردیف راست (Post-processing) ======================
+with dot.subgraph(name='cluster_post') as c:
+    c.attr(style='invis')
+    
+    c.node('post1', '5) Post-processing\nThresholding\nTumor: θ = 0.35', fillcolor=c_post)
+    c.node('post2', 'Remove Small Regions\nLiver < 30 pixels\nTumor < 3 pixels', fillcolor=c_post)
+    c.node('output_masks', 'Output\nPredicted Masks', fillcolor=c_post)
+
+# ====================== Final ======================
+dot.node('final', '''6) Final Output & Evaluation
+Final Segmentation Masks
++ Quantitative Metrics''', fillcolor=c_final, shape='box')
+
+# ====================== اتصالات ======================
+dot.edge('input', 'prep')
+dot.edge('prep', 'resunet')
+dot.edge('resunet', 'cla_core')          # اتصال اصلی به CLA
+dot.edge('cla_core', 'metrics')
+dot.edge('metrics', 'post1')
+dot.edge('post1', 'post2')
+dot.edge('post2', 'output_masks')
+dot.edge('output_masks', 'final')
+
+# اتصالات داخلی CLA
+dot.edge('loss', 'cla_core', style='dashed', constraint='false')
+dot.edge('cla_core', 'loss', style='dashed', label='Parameter Update\n(Backpropagation)', fontsize='9')
+
+# ذخیره
+timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+base_name = f'{output_dir}Figure_ResUNet_CLA_Pipeline_Clean_{timestamp}'
+
+dot.render(base_name, format='png', cleanup=True)
+dot.render(base_name, format='pdf', cleanup=True)
+dot.render(base_name, format='svg', cleanup=True)
+
+print(f"✅ شکل تمیز ذخیره شد:\n{base_name}.png\n{base_name}.pdf\n{base_name}.svg")
+
+from IPython.display import Image
+display(Image(filename=f"{base_name}.png"))

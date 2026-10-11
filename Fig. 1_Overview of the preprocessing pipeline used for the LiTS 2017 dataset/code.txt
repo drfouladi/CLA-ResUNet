@@ -1,0 +1,114 @@
+import graphviz
+from datetime import datetime
+import os
+from google.colab import drive
+
+drive.mount('/content/drive', force_remount=True)
+output_dir = '/content/drive/MyDrive/LITS/'
+os.makedirs(output_dir, exist_ok=True)
+
+dot = graphviz.Digraph(
+    comment='LiTS Preprocessing Pipeline - Compact',
+    format='png',
+    graph_attr={
+        'rankdir': 'TB',          # عمودی
+        'splines': 'ortho',
+        'nodesep': '0.30',
+        'ranksep': '0.35',
+        'dpi': '350',
+        'fontname': 'Arial',
+        'bgcolor': 'white',
+        'pad': '0.2',
+        'size': '7.5,10!'         # محدود کردن اندازه برای A4
+    }
+)
+
+dot.attr('node', shape='box', style='rounded,filled', fontname='Arial',
+         fontsize='9.5', penwidth='1.4', margin='0.08,0.06')
+
+# رنگ‌های ملایم
+c1 = '#E3F2FD'
+c2 = '#E8F5E9'
+c3 = '#FFF8E1'
+c4 = '#FFF3E0'
+c5 = '#F3E5F5'
+c6 = '#FFEBEE'
+c7 = '#E0F7FA'
+c8 = '#F1F8E9'
+c9 = '#E8EAF6'
+
+# ====================== مراحل ======================
+dot.node('1', 
+'''1. Raw LiTS 2017 Dataset
+131 CT volumes + masks (NIfTI)
+Labels: 0=Background, 1=Liver, 2=Tumor''', 
+fillcolor=c1)
+
+dot.node('2', 
+'''2. Load 3D NIfTI Volumes
+Load CT volumes and masks using Nibabel
+(H × W × D arrays)''', 
+fillcolor=c2)
+
+dot.node('3', 
+'''3. Intensity Normalization (Min–Max)
+Normalize CT intensities to [0, 1]  (Eq. 1)
+vol = (vol − min) / (max − min + ε)''', 
+fillcolor=c3)
+
+dot.node('4', 
+'''4. Remove Background-Only Slices
+Retain only slices with liver or tumor
+→ 19,163 informative slices from 131 volumes''', 
+fillcolor=c4)
+
+dot.node('5', 
+'''5. Convert to 2D Slices
+Convert retained slices to 2D (512 × 512)''', 
+fillcolor=c5)
+
+dot.node('6', 
+'''6. Resize for Network Input
+Resize slices: 512 × 512 → 128 × 128''', 
+fillcolor=c6)
+
+dot.node('7', 
+'''7. Save Processed Data
+Save as NumPy arrays (.npy)
+CT: float32 | Mask: uint8
+Total files: 38,326 (19,163 CT + 19,163 masks)''', 
+fillcolor=c7)
+
+dot.node('8', 
+'''8. Generate Metadata (slice_metadata.json)
+Store mapping: volume_id, original_depth,
+num_retained_slices, saved_slice_index_range''', 
+fillcolor=c8)
+
+dot.node('9', 
+'''9. Preprocessing Summary
+• 131 CT volumes
+• 19,163 informative slices retained
+• Slice size: 512 → 128
+• Ready for model training and evaluation''', 
+fillcolor=c9)
+
+# ====================== اتصالات ======================
+dot.edge('1', '2')
+dot.edge('2', '3')
+dot.edge('3', '4')
+dot.edge('4', '5')
+dot.edge('5', '6')
+dot.edge('6', '7')
+dot.edge('7', '8')
+dot.edge('8', '9')
+
+# ذخیره
+timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+base_name = f'{output_dir}Figure1_Preprocessing_Pipeline_A4_{timestamp}'
+
+dot.render(base_name, format='png', cleanup=True)
+dot.render(base_name, format='pdf', cleanup=True)
+dot.render(base_name, format='svg', cleanup=True)   # ← این خط را اضافه کن
+
+print(f"✅ شکل فشرده و مناسب A4 ذخیره شد:\n{base_name}.png\n{base_name}.pdf\n{base_name}.svg")

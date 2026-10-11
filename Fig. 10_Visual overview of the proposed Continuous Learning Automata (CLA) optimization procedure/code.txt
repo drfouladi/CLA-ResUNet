@@ -1,0 +1,164 @@
+import graphviz
+from datetime import datetime
+import os
+from google.colab import drive
+
+drive.mount('/content/drive', force_remount=True)
+output_dir = '/content/drive/MyDrive/LITS/'
+os.makedirs(output_dir, exist_ok=True)
+
+dot = graphviz.Digraph(
+    comment='CLA Algorithm Overview',
+    format='png',
+    graph_attr={
+        'rankdir': 'TB',
+        'splines': 'ortho',
+        'nodesep': '0.45',
+        'ranksep': '0.55',
+        'dpi': '400',
+        'fontname': 'Arial',
+        'bgcolor': 'white',
+        'pad': '0.3'
+    }
+)
+
+dot.attr('node', shape='box', style='rounded,filled', fontname='Arial', 
+         fontsize='10.5', penwidth='1.5', margin='0.12,0.08')
+
+# رنگ‌های ملایم علمی
+c1 = '#E3F2FD'   # آبی روشن - Initialization
+c2 = '#E8F5E9'   # سبز روشن - Training Loop
+c3 = '#FFF8E1'   # زرد روشن - Model Evaluation
+c4 = '#FFF3E0'   # نارنجی روشن - CLA Update
+c5 = '#FFEBEE'   # قرمز روشن - Weight Constraints
+c6 = '#F3E5F5'   # بنفش روشن - Output
+
+# ====================== 1. Initialization ======================
+with dot.subgraph(name='cluster_init') as c:
+    c.attr(label='1. Initialization', style='rounded', color='#1565C0',
+           fontname='Arial', fontsize='12', labelloc='t', penwidth='2')
+    
+    c.node('init_params', 
+           '''Initialize class means   μ = [0.5, 0.5, 0.5]
+Initialize variances     σ² = [0.1, 0.1, 0.1]
+Initialize class weights W = [1, 1, 1]
+Initialize tumor boost   β = 1.0''', 
+           fillcolor=c1, align='left')
+    
+    c.node('classes', 
+           '''Classes:
+1: Background
+2: Liver
+3: Tumor''', 
+           fillcolor='#BBDEFB')
+
+# ====================== 2. Training Loop ======================
+dot.node('loop', '2. Training Loop\nfor epoch = 1 : MaxEpoch do', 
+         fillcolor=c2, shape='box', style='rounded,filled', penwidth='2')
+
+# ====================== 3. Model Evaluation ======================
+with dot.subgraph(name='cluster_eval') as c:
+    c.attr(label='3. Model Evaluation', style='rounded', color='#F57C00',
+           fontname='Arial', fontsize='12', labelloc='t', penwidth='2')
+    
+    c.node('train', '1. Train ResUNet using current class weights W', fillcolor=c3)
+    
+    c.node('metrics', 
+           '''2. Compute validation metrics:
+Dice_liver   |   Dice_tumor   |   Precision_liver''', 
+           fillcolor=c3)
+    
+    c.node('reward', 
+           '''3. Compute composite reward r:
+r = 0.3·Dice_liver + 0.5·Dice_tumor + 0.2·Precision_liver''', 
+           fillcolor='#FFECB3')
+    
+    c.node('boost', '4. Update tumor boost β\nbased on moving average of Dice_tumor', fillcolor=c3)
+
+# ====================== 4. CLA Update ======================
+with dot.subgraph(name='cluster_cla') as c:
+    c.attr(label='4. CLA Update   (for each class c ∈ {1,2,3})', 
+           style='rounded', color='#EF6C00', fontname='Arial', fontsize='12',
+           labelloc='t', penwidth='2')
+    
+    c.node('update_mu', 
+           '''① Update mean μ_c and variance σ²_c
+using reward signal (Eqs. 14–17)
+
+μ_c(t+1) = μ_c(t) + α r (x_c − μ_c(t))
+σ²_c(t+1) = σ²_c(t) + α r [(x_c − μ_c(t))² − σ²_c(t)]''', 
+           fillcolor=c4, align='left')
+    
+    c.node('gauss', 
+           '''② Compute Gaussian probability
+(Eq. 12)
+
+p_c = (1 / √(2πσ²_c)) · exp( −(x_c − μ_c)² / (2σ²_c) )''', 
+           fillcolor=c4, align='left')
+    
+    c.node('weight', 
+           '''③ Update class weight w_c
+(Eq. 13)
+
+w_c = (p_c / Σ p_j) · β_c''', 
+           fillcolor=c4, align='left')
+    
+    c.node('tumor_boost', 
+           '''④ Apply tumor boost for class 3
+
+β_c = β   if c = 3
+β_c = 1   otherwise''', 
+           fillcolor='#FFE0B2', align='left')
+
+# ====================== 5. Weight Constraints ======================
+dot.node('clip', 
+         '''5. Weight Constraints
+W = Clip(W, 1.0, 8.0)
+i.e.,  1.0 ≤ w_c ≤ 8.0   ∀ c ∈ {1,2,3}''', 
+         fillcolor=c5, penwidth='2')
+
+# ====================== Decision ======================
+dot.node('decision', 'Next epoch?', shape='diamond', fillcolor='#FFF9C4', 
+         width='1.4', height='0.9', fontsize='11')
+
+# ====================== 6. Output ======================
+dot.node('output', 
+         '''6. Output
+• Predicted masks (Liver & Tumor)
+• Final evaluation metrics
+  (Dice, IoU, Precision, Recall,
+   VOE, RVD, ASSD, MSD, ICC)''', 
+         fillcolor=c6, penwidth='2')
+
+# ====================== اتصالات ======================
+dot.edge('init_params', 'loop')
+dot.edge('classes', 'loop', style='invis')   # فقط برای چیدمان
+
+dot.edge('loop', 'train')
+dot.edge('train', 'metrics')
+dot.edge('metrics', 'reward')
+dot.edge('reward', 'boost')
+
+dot.edge('boost', 'update_mu')
+dot.edge('update_mu', 'gauss')
+dot.edge('gauss', 'weight')
+dot.edge('weight', 'tumor_boost')
+
+dot.edge('tumor_boost', 'clip')
+dot.edge('clip', 'decision')
+
+dot.edge('decision', 'loop', label='Yes', fontcolor='#2E7D32')
+dot.edge('decision', 'output', label='No', fontcolor='#C62828')
+
+# ذخیره
+timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+base_name = f'{output_dir}Figure10_CLA_Algorithm_Overview_Clean_{timestamp}'
+
+dot.render(base_name, format='png', cleanup=True)
+dot.render(base_name, format='pdf', cleanup=True)
+dot.render(base_name, format='svg', cleanup=True)
+
+print(f"✅ شکل تمیز ذخیره شد:\n{base_name}.png\n{base_name}.pdf\n{base_name}.svg")
+
+from IPython.display import Image
+display(Image(filename=f"{base_name}.png"))
