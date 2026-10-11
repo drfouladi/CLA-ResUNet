@@ -1,0 +1,180 @@
+
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+from google.colab import drive
+
+# ============================================================
+# 1. Mount Google Drive
+# ============================================================
+drive.mount('/content/drive', force_remount=True)
+
+# ============================================================
+# 2. Paths
+# ============================================================
+base_path = '/content/drive/MyDrive/LITS/cla_results'
+
+files = {
+    'Proposed': os.path.join(
+        base_path, 'proposed', 'CLA_weights_per_epoch.xlsx'
+    ),
+    'Equal Dice': os.path.join(
+        base_path, 'equal_dice', 'CLA_weights_per_epoch.xlsx'
+    ),
+    'G-mean': os.path.join(
+        base_path, 'gmean', 'CLA_weights_per_epoch.xlsx'
+    ),
+    'Tumor-only': os.path.join(
+        base_path, 'tumor_only', 'CLA_weights_per_epoch.xlsx'
+    )
+}
+
+# ============================================================
+# 3. Create Figure12 folder
+# ============================================================
+output_dir = os.path.join(base_path, 'Figure12')
+os.makedirs(output_dir, exist_ok=True)
+
+output_path = os.path.join(
+    output_dir,
+    'Figure12_Weight_Convergence_Combined.png'
+)
+
+# ============================================================
+# 4. Check input files
+# ============================================================
+print("=" * 70)
+print("Checking Excel files")
+print("=" * 70)
+
+for name, path in files.items():
+    if os.path.isfile(path):
+        print(f"✅ {name}: {path}")
+    else:
+        raise FileNotFoundError(
+            f"Excel file not found for {name}:\n{path}"
+        )
+
+# ============================================================
+# 5. Load Excel data
+# ============================================================
+data = {}
+
+required_columns = ['epoch', 'background', 'liver', 'tumor']
+
+for name, path in files.items():
+    df = pd.read_excel(path)
+
+    missing_columns = [
+        col for col in required_columns
+        if col not in df.columns
+    ]
+
+    if missing_columns:
+        raise ValueError(
+            f"{name}: Missing columns {missing_columns}"
+        )
+
+    data[name] = df
+
+    print(f"✅ Loaded {name}: {len(df)} rows")
+
+# ============================================================
+# 6. Plot Figure 12
+# ============================================================
+fig, axs = plt.subplots(
+    1, 3,
+    figsize=(18, 6),
+    sharey=True
+)
+
+colors = {
+    'Proposed': '#1f77b4',
+    'Tumor-only': '#ff7f0e',
+    'Equal Dice': '#2ca02c',
+    'G-mean': '#d62728'
+}
+
+linestyles = {
+    'Proposed': '-',
+    'Tumor-only': '--',
+    'Equal Dice': '-.',
+    'G-mean': ':'
+}
+
+for name, df in data.items():
+    epochs = df['epoch']
+
+    axs[0].plot(
+        epochs, df['background'],
+        color=colors[name],
+        linestyle=linestyles[name],
+        linewidth=2.2,
+        label=name
+    )
+
+    axs[1].plot(
+        epochs, df['liver'],
+        color=colors[name],
+        linestyle=linestyles[name],
+        linewidth=2.2,
+        label=name
+    )
+
+    axs[2].plot(
+        epochs, df['tumor'],
+        color=colors[name],
+        linestyle=linestyles[name],
+        linewidth=2.2,
+        label=name
+    )
+
+# ============================================================
+# 7. Subplot formatting
+# ============================================================
+titles = ['Background', 'Liver', 'Tumor']
+
+for ax, title in zip(axs, titles):
+    ax.set_xlabel('Epoch', fontsize=12)
+    ax.set_title(title, fontsize=14, pad=10)
+    ax.grid(True, alpha=0.3)
+
+axs[0].set_ylabel('Adaptive Class Weight', fontsize=12)
+
+fig.suptitle(
+    'Class Weight Convergence under Different Reward Formulations',
+    fontsize=16,
+    y=1.02
+)
+
+handles, labels = axs[0].get_legend_handles_labels()
+
+fig.legend(
+    handles,
+    labels,
+    loc='upper center',
+    ncol=4,
+    fontsize=11,
+    bbox_to_anchor=(0.5, 0.96)
+)
+
+plt.tight_layout(rect=[0, 0, 1, 0.90])
+
+# ============================================================
+# 8. Save Figure 12
+# ============================================================
+fig.savefig(
+    output_path,
+    dpi=300,
+    bbox_inches='tight',
+    pad_inches=0.05
+)
+
+plt.show()
+plt.close(fig)
+
+print("\n" + "=" * 70)
+print("✅ Figure 12 created and saved successfully!")
+print("=" * 70)
+print(f"Output folder: {output_dir}")
+print(f"Image path: {output_path}")
