@@ -1,0 +1,81 @@
+Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount("/content/drive", force_remount=True).
+Input base directory: /content/drive/MyDrive/LITS/cla_results
+Output directory: /content/drive/MyDrive/LITS/cla_results/comment14
+
+All weight and history input files were found.
+
+================================================================================
+Quantitative Stability Analysis (last 20 epochs)
+================================================================================
+    Reward Formulation  background_CV(%)  liver_CV(%)  tumor_CV(%)  Mean_CV(%)
+Proposed (0.3/0.5/0.2)              2.46         1.16         2.87        2.16
+            Tumor-only              7.15         1.12        12.00        6.76
+  Equal Dice (0.5/0.5)              0.63         0.32        10.69        3.88
+                G-mean              2.24         0.75         6.63        3.21
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Table_Stability_CV_last20epochs.xlsx
+
+Reward trajectories reconstructed and aligned successfully.
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Weight_Evolution_Background.png
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Weight_Evolution_Liver.png
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Weight_Evolution_Tumor.png
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Reward_Trajectory_Proposed_0.3_0.5_0.2.png
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Reward_Trajectory_Tumor-only.png
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Reward_Trajectory_Equal_Dice_0.5_0.5.png
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Reward_Trajectory_G-mean.png
+
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Figure13_Reward_Weight_Dynamics_Stability.png
+
+/tmp/ipykernel_437/3998357021.py:533: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout(rect=[0, 0, 1, 0.98])
+Saved combined figure: /content/drive/MyDrive/LITS/cla_results/comment14/Figure13_Combined_Weight_Reward_Dynamics.png
+
+
+================================================================================
+Comparison with simpler alternatives (observed tumor weights)
+================================================================================
+                Method  CLA_CV(%)  After_MA5_CV(%)  After_Momentum_CV(%)
+Proposed (0.3/0.5/0.2)       2.78             1.86                  0.94
+            Tumor-only      12.99            12.95                 11.30
+  Equal Dice (0.5/0.5)      11.72            10.28                 11.85
+                G-mean       6.96             6.45                  6.89
+Saved: /content/drive/MyDrive/LITS/cla_results/comment14/Comparison_CLA_vs_MA_Momentum.xlsx
+
+====================================================================================================
+TABLE 12 — FINAL SEGMENTATION METRICS AND STABILITY
+====================================================================================================
+Reward Formulation	Liver DSC	Tumor DSC	Tumor Precision	Tumor Recall	Tumor Weight CV (last 20)	Overall Stability
+Proposed (0.3/0.5/0.2)	0.9729 ± 0.1207	0.9277 ± 0.2033	0.3769 ± 0.4606	0.3857 ± 0.4663	2.87%	Most stable
+Tumor-only	0.9721 ± 0.1206	0.9153 ± 0.2254	0.3712 ± 0.4586	0.3775 ± 0.4621	12.00%	Least stable
+Equal Dice (0.5/0.5)	0.9726 ± 0.1207	0.9326 ± 0.1882	0.3820 ± 0.4602	0.3913 ± 0.4657	10.69%	Less stable
+G-mean	0.9725 ± 0.1207	0.9331 ± 0.1948	0.3828 ± 0.4636	0.3912 ± 0.4680	6.63%	More stable
+
+====================================================================================================
+Table 12 saved successfully.
+Excel file: /content/drive/MyDrive/LITS/cla_results/comment14/Table12_Corrected_FinalMetrics.xlsx
+====================================================================================================
+
+===========================================================================
+VERIFICATION OF GENERATED OUTPUT FILES
+===========================================================================
+EXISTS | Table_Stability_CV_last20epochs.xlsx | 5.6 KB
+EXISTS | Figure13_Reward_Weight_Dynamics_Stability.png | 364.1 KB
+EXISTS | Figure13_Combined_Weight_Reward_Dynamics.png | 1087.0 KB
+EXISTS | Comparison_CLA_vs_MA_Momentum.xlsx | 5.0 KB
+EXISTS | Table12_Corrected_FinalMetrics.xlsx | 5.5 KB
+EXISTS | Weight_Evolution_Background.png | 284.2 KB
+EXISTS | Weight_Evolution_Liver.png | 314.4 KB
+EXISTS | Weight_Evolution_Tumor.png | 298.8 KB
+EXISTS | Reward_Trajectory_Proposed_0.3_0.5_0.2.png | 137.7 KB
+EXISTS | Reward_Trajectory_Tumor-only.png | 123.3 KB
+EXISTS | Reward_Trajectory_Equal_Dice_0.5_0.5.png | 134.2 KB
+EXISTS | Reward_Trajectory_G-mean.png | 135.3 KB
+
+All output files are stored in:
+/content/drive/MyDrive/LITS/cla_results/comment14
